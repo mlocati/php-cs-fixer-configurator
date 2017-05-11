@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>PHP-CS-Fixer Configurator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="stylesheet" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css" />
+        <link rel="stylesheet" href="css/prism.css" />
+    </head>
+    <body>
+        <ul id="list"></ul>
+
+        <script id="template-fixer-details" type="x-tmpl-handlebars">
+            <div class="modal">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><code>{{ name }}</code> fixer</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {{#if codeSamples.length}}
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#template-fixer-details-main" role="tab">General</a>
+                                    </li>
+                                    {{#each codeSamples as |codeSample codeSampleIndex|}}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#template-fixer-details-example-{{ @index }}" role="tab">Example #{{add1 codeSampleIndex}}</a>
+                                        </li>
+                                    {{/each}}
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="template-fixer-details-main" role="tabpanel">
+                                        <br />
+                            {{/if}}
+                                        <dl class="row">
+                                            {{#if summary }}
+                                                <dt class="col-sm-3">Summary</dt>
+                                                <dd class="col-sm-9">{{ summary }}</dd>
+                                            {{/if}}
+                                            {{#if description }}
+                                                <dt class="col-sm-3">Description</dt>
+                                                <dd class="col-sm-9">{{ description }}</dd>
+                                            {{/if}}
+                                            {{#if risky }}
+                                                <dt class="col-sm-3">Risky</dt>
+                                                <dd class="col-sm-9">
+                                                    <div class="alert alert-danger" role="alert">
+                                                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                                        {{#if riskyDescription }}
+                                                            {{ riskyDescription }}
+                                                        {{else}}
+                                                            This fixer is marked as risky!
+                                                        {{/if}}
+                                                    </div>
+                                                </dd>
+                                            {{/if}}
+                                            {{#unless configurationOptions.length}}
+                                                <dt class="col-sm-3">Configuration</dt>
+                                                <dd class="col-sm-9">This fixer is not configurable</dt>
+                                            {{/unless}}     
+                                        </dl>
+                                        {{#each configurationOptions}}
+                                            {{#if @index}}<br />{{/if}}
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <code>{{ name }}</code> option
+                                                </div>
+                                                <div class="card-block">
+                                                    {{#if description}}
+                                                        <p class="card-text">{{ description }}</p>
+                                                    {{/if}}
+                                                    <dl class="row">
+                                                        <dt class="col-sm-3">Default value</dt>
+                                                        <dd class="col-sm-9">
+                                                            {{#if hasDefaultValue}}
+                                                                <code>{{toJSON defaultValue }}</code>
+                                                            {{else}}
+                                                                <i>none</i>
+                                                            {{/if}}
+                                                        </dd>
+                                                        {{#if allowedTypes.length}}
+                                                            <dt class="col-sm-3">Allowed types</dt>
+                                                            <dd class="col-sm-9">
+                                                                <ul class="list-unstyled">
+                                                                    {{#each allowedTypes}}
+                                                                        <li><code>{{ . }}</code></li>
+                                                                    {{/each}}
+                                                                </ul>
+                                                            </dd>
+                                                        {{/if}}
+                                                        {{#if allowedValues.length}}
+                                                            <dt class="col-sm-3">Allowed values</dt>
+                                                            <dd class="col-sm-9">
+                                                                <ul class="list-unstyled">
+                                                                    {{#each allowedValues}}
+                                                                        <li><code>{{toJSON .}}</code></li>
+                                                                    {{/each}}
+                                                                </ul>
+                                                            </dd>
+                                                        {{/if}}
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                            {{#if codeSamples.length}}
+                                    </div>
+                                    {{#each codeSamples as |codeSample codeSampleIndex|}}
+                                        <div class="tab-pane" id="template-fixer-details-example-{{ codeSampleIndex }}" role="tabpanel">
+                                            <br />
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    Configuration
+                                                </div>
+                                                <div class="card-block">
+                                                    {{#if isConfigured}}
+                                                        <dl class="row" style="margin-bottom:0">
+                                                            {{#each configuration as |configurationValue configurationKey|}}
+                                                                <dt class="col-sm-3"><code>{{ configurationKey }}</code></dt>
+                                                                <dd class="col-sm-9"><code>{{toJSON configurationValue }}</code></dd>
+                                                            {{/each}}
+                                                        </dl>
+                                                    {{else}}
+                                                        <i>Default configuration</i>
+                                                    {{/if}}
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <ul class="nav nav-tabs" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" data-toggle="tab" href="#template-fixer-details-example-{{ codeSampleIndex }}-input" role="tab">Input</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" data-toggle="tab" href="#template-fixer-details-example-{{ codeSampleIndex }}-output" role="tab">Output</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="template-fixer-details-example-{{ codeSampleIndex }}-input" role="tabpanel">
+                                                    <pre class="prismify-me"><code class="language-php">{{ fromCode }}</code></pre>
+                                                </div>
+                                                <div class="tab-pane" id="template-fixer-details-example-{{ codeSampleIndex }}-output" role="tabpanel">
+                                                    <pre class="prismify-me"><code class="language-php">{{ toCode }}</code></pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+                                </div>
+                            {{/if}}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        
+        <script src="js/jquery.min.js"></script>
+        <script src="js/tether.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/handlebars.min.js"></script>
+        <script src="js/prism.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>
