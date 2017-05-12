@@ -2161,7 +2161,6 @@
                 {
                     "name": "dir",
                     "description": "The directory where the project code is placed.",
-                    "defaultValue": "",
                     "allowedTypes": [
                         "string"
                     ]
@@ -2170,10 +2169,6 @@
             "summary": "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name.",
             "riskyDescription": "This fixer may change your class name, which will break the code that is depended on old name.",
             "codeSamples": [
-                {
-                    "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass Psr0Fixer {}\n"
-                },
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
                     "to": "<?php\nnamespace PhpCsFixer\\Fixer\\Basic;\nclass Psr0Fixer {}\n",
