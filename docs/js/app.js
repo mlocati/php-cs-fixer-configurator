@@ -75,6 +75,13 @@ var Template = (function () {
 
 var ModalManager = (function () {
     var stack = [];
+    $(window).on('keyup', function (e) {
+        if ((e.keyCode || e.which) === 27) {
+            if (stack.length > 0) {
+                stack[stack.length - 1].modal('hide');
+            }
+        }
+    });
     return {
         show: function (dialog) {
             var $dialog;
@@ -100,7 +107,7 @@ var ModalManager = (function () {
                     }
                 })
                 .modal({
-                    keyboard: true,
+                    keyboard: false,
                     focus: true,
                     show: true
                 })
