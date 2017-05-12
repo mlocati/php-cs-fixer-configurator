@@ -2161,6 +2161,7 @@
                 {
                     "name": "dir",
                     "description": "The directory where the project code is placed.",
+                    "defaultValue": "",
                     "allowedTypes": [
                         "string"
                     ]
@@ -2171,7 +2172,7 @@
             "codeSamples": [
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "*** RequiredFixerConfigurationException ***"
+                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass Psr0Fixer {}\n"
                 },
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",

@@ -1,8 +1,7 @@
 <?php
 namespace MLocati\PhpCsFixerConfigurator;
 
-use PhpCsFixer\ConfigurationException\InvalidFixerConfigurationException;
-use PhpCsFixer\ConfigurationException\RequiredFixerConfigurationException;
+use Exception;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
@@ -12,6 +11,7 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
 use PhpCsFixer\StdinFileInfo;
 use PhpCsFixer\Tokenizer\Tokens;
+use Throwable;
 
 class DataExtractor
 {
@@ -88,19 +88,19 @@ class DataExtractor
                     $new = null;
                     try {
                         $tokens = Tokens::fromCode($old);
-                    } catch (\Exception $x) {
-                        $new = '*** Tokens::fromCode failed *** ';
-                    } catch (\Throwable $x) {
-                        $new = '*** Tokens::fromCode failed *** ';
+                    } catch (Exception $x) {
+                        $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
+                    } catch (Throwable $x) {
+                        $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
                     }
                     if ($new === null) {
                         if ($fixer instanceof ConfigurableFixerInterface) {
                             try {
                                 $fixer->configure($configuration);
-                            } catch (RequiredFixerConfigurationException $x) {
-                                $new = '*** RequiredFixerConfigurationException ***';
-                            } catch (InvalidFixerConfigurationException $x) {
-                                $new = '*** InvalidFixerConfigurationException ***';
+                            } catch (Exception $x) {
+                                $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
+                            } catch (Exception $x) {
+                                $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
                             }
                         }
                         if ($new === null) {

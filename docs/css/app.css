@@ -1,0 +1,13 @@
+div.pcs-fixercard {
+	margin-bottom: 20px;
+}
+div.pcs-fixercard>.card>.card-block>.card-title>.fa-exclamation-triangle {
+	float: right;
+}
+div.pcs-fixercard>.card>.card-block>footer {
+	margin-bottom: -1em;
+	text-align: right;
+}
+div.pcs-search-failed {
+	display: none;
+}

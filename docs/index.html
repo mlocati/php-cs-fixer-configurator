@@ -8,10 +8,55 @@
         <link rel="stylesheet" href="css/bootstrap.min.css" />
         <link rel="stylesheet" href="css/font-awesome.min.css" />
         <link rel="stylesheet" href="css/prism.css" />
+        <link rel="stylesheet" href="css/app.css" />
     </head>
     <body>
-        <ul id="list"></ul>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <form class="form-inline" onsubmit="return false">
+                        <label class="sr-only" for="pcs-search">Search</label>
+                        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                            <div class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></div>
+                            <input type="search" class="form-control" id="pcs-search" placeholder="Enter search text" />
+                        </div>
+                    </form>
+                    <ul id="pcs-available"></ul>
+                </div>
+            </div>
+            <div class="row" id="pcs-cards">
+            </div>
+        </div>
 
+        <script id="template-fixer-card" type="x-tmpl-handlebars">
+            <div class="col-sm-6 col-lg-3 pcs-fixercard" id="pcs-fixercard-{{ name }}">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">
+							{{#if risky }}
+								<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+							{{/if}}
+							<a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
+						</h5>
+                        <p class="card-text">
+                            {{#if summary }}
+                                {{ summary }}
+                            {{else}}
+                                {{ description }}
+                            {{/if}}
+                        </p>
+                        {{#if sets.length }}
+                            <footer>
+								{{#each sets}}
+									<a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+								{{/each}}
+                            </footer>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+		</script>
+        
         <script id="template-fixer-details" type="x-tmpl-handlebars">
             <div class="modal">
                 <div class="modal-dialog modal-lg" role="document">
@@ -39,14 +84,6 @@
                                         <br />
                             {{/if}}
                                         <dl class="row">
-                                            {{#if summary }}
-                                                <dt class="col-sm-3">Summary</dt>
-                                                <dd class="col-sm-9">{{ summary }}</dd>
-                                            {{/if}}
-                                            {{#if description }}
-                                                <dt class="col-sm-3">Description</dt>
-                                                <dd class="col-sm-9">{{ description }}</dd>
-                                            {{/if}}
                                             {{#if risky }}
                                                 <dt class="col-sm-3">Risky</dt>
                                                 <dd class="col-sm-9">
@@ -60,6 +97,24 @@
                                                     </div>
                                                 </dd>
                                             {{/if}}
+                                            {{#if summary }}
+                                                <dt class="col-sm-3">Summary</dt>
+                                                <dd class="col-sm-9">{{ summary }}</dd>
+                                            {{/if}}
+                                            {{#if description }}
+                                                <dt class="col-sm-3">Description</dt>
+                                                <dd class="col-sm-9">{{ description }}</dd>
+                                            {{/if}}
+                                            <dt class="col-sm-3">Used in presets</dt>
+                                            <dd class="col-sm-9">
+                                                {{#if sets.length}}
+                                                    {{#each sets}}
+                                                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+                                                    {{/each}}
+                                                {{else}}
+                                                    <i>none</i>
+                                                {{/if}}
+                                            </dd>
                                             {{#unless configurationOptions.length}}
                                                 <dt class="col-sm-3">Configuration</dt>
                                                 <dd class="col-sm-9">This fixer is not configurable</dt>
@@ -151,6 +206,60 @@
                                     {{/each}}
                                 </div>
                             {{/if}}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        
+        <script id="template-fixerset-details" type="x-tmpl-handlebars">
+            <div class="modal">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><code>{{ name }}</code> fixer set</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {{#if risky }}
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                    This preset contains risky fixers!
+                                </div>
+                            {{/if}}
+                            <p>This preset uses these fixers</p>
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Fixer</th>
+                                        <th>Configuration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each fixers}}
+                                        <tr>
+                                            <td><a href="#" class="badge badge-info" <code data-pcf-show-fixer="{{ fixer.name }}">{{fixer.name}}</a></td>
+                                            <td>
+                                                {{#if isConfigured}}
+                                                    <dl>
+                                                        {{#each configuration as |configurationValue configurationKey|}}
+                                                            <dt><span class="badge badge-default">{{ configurationKey }}</span></dt>
+                                                            <dd><code>{{toJSON configurationValue }}</code></dd>
+                                                        {{/each}}
+                                                    </dl>
+                                                {{else}}
+                                                    <i>default</i>
+                                                {{/if}}
+                                            </td>
+                                        </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table> 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
