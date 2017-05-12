@@ -278,6 +278,9 @@ Fixer.prototype = {
                 me.sets.push(fixerSet);
             }
         });
+    },
+    initializeView: function () {
+        this.view = new FixerView(this);
     }
 };
 
@@ -393,14 +396,61 @@ FixerSet.prototype = {
 };
 
 FixerSet.SelectedList = (function () {
-    var selected = [];
+    var selected = [],
+        $selected = $('#pcs-selected-presets'),
+        $unselected = $('#pcs-selected-presets-add');
+    function refreshCards() {
+        Fixers.getAll().forEach(function (fixer) {
+            fixer.view.updateClasses();
+        });
+    }
+    function updateView() {
+        $selected.empty();
+        $unselected.empty();
+        selected.forEach(function (fixerSet, fixerSetIndex) {
+            $selected.append($('<span class="badge badge-info" />')
+                .text(fixerSet.name + ' ')
+                .append($('<a href="#" class="badge badge-danger"><i class="fa fa-minus" aria-hidden="true"></i></a>')
+                    .on('click', function (e) {
+                        e.preventDefault();
+                        selected.splice(fixerSetIndex, 1);
+                        updateView();
+                        refreshCards();
+                    })
+                )
+            );
+        });
+        FixerSets.getAll().forEach(function (fixerSet) {
+            if (selected.indexOf(fixerSet) >= 0) {
+                return;
+            }
+            $unselected.append($('<a class="dropdown-item" href="#" />')
+                .text(fixerSet.name)
+                .on('click', function (e) {
+                    e.preventDefault();
+                    setTimeout(
+                        function () {
+                            selected.push(fixerSet);
+                            updateView();
+                            refreshCards();
+                        },
+                        20
+                    );
+                })
+            );
+        });
+    }
     return {
+        initialize: function() {
+            updateView();
+            delete FixerSet.SelectedList.initialize;
+        },
         get: function () {
             return [].concat(selected);
         },
         containsFixer: function (fixer) {
             for (var i = 0; i < selected.length; i++) {
-                if (FixerSets.getByName(selected[i]).hasFixer(fixer)) {
+                if (selected[i].hasFixer(fixer)) {
                     return true;
                 }
             }
@@ -482,8 +532,9 @@ $.ajax({
     });
     Search.initialize();
     FixerSetFilter.initialize();
+    FixerSet.SelectedList.initialize();
     Fixers.getAll().forEach(function (fixer) {
-        new FixerView(fixer);
+        fixer.initializeView();
     });
 });
 

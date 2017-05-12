@@ -24,6 +24,17 @@
                 </ul>
                 <form class="form-inline" onsubmit="return false">
                     <div class="input-group">
+                        <span class="input-group-addon">Presets</span>
+                        <span class="form-control" id="pcs-selected-presets"></span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" id="pcs-selected-presets-add">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
                         <input type="search" class="form-control" id="pcs-search" placeholder="Enter search text" />
                         <div class="input-group-btn">
@@ -46,7 +57,7 @@
         </div>
 
         <script id="template-fixer-card" type="x-tmpl-handlebars">
-            <div class="col-sm-6 col-lg-3 pcs-fixercard" id="pcs-fixercard-{{ name }}">
+            <div class="col-sm-6 col-lg-4 col-xl-3 pcs-fixercard" id="pcs-fixercard-{{ name }}">
                 <div class="card">
                     <div class="card-block">
                         <h5 class="card-title">
