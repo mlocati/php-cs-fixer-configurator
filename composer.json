@@ -12,7 +12,7 @@
 	"description" : "Inspect PHP-CS-Fixer fixers and easily configure it",
 	"license" : "MIT",
 	"require" : {
-		"php" : ">=7.0",
+		"php" : ">=7.1",
 		"friendsofphp/php-cs-fixer" : "~2.3"
 	},
 	"homepage" : "https://github.com/mlocati/php-cs-fixer-configurator",
