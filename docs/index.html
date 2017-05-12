@@ -49,13 +49,22 @@
                                 {{ description }}
                             {{/if}}
                         </p>
-                        {{#if sets.length }}
-                            <footer>
-								{{#each sets}}
-									<a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
-								{{/each}}
-                            </footer>
-                        {{/if}}
+                        <footer>
+							<div class="pcs-fixer-configure">
+								{{#if configurationOptions.length}}
+									<button class="btn btn-primary btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
+								{{else}}
+									<button class="btn btn-secondary btn-sm disabled" data-toggle="tooltip" title="This fixer is not configurable"><i class="fa fa-cog" aria-hidden="true"></i></button>
+								{{/if}}
+							</div>
+                        	{{#if sets.length }}
+								<div class="pcs-fixer-sets">
+									{{#each sets}}
+										<a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+									{{/each}}
+								<div>
+                            {{/if}}
+                        </footer>
                     </div>
                 </div>
             </div>

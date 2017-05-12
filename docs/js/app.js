@@ -364,7 +364,14 @@ $.ajax({
     Search.initialize();
     var $cardsContainer = $('#pcs-cards');
     Fixers.getAll().forEach(function (fixer) {
-        $cardsContainer.append(Template.build('fixer-card', fixer));
+        var $card = $(Template.build('fixer-card', fixer));
+        $card.find('button, a').click(function (e) {
+            e.stopPropagation();
+        });
+        $card.find('>.card').click(function() {
+            $card.find('>.card').toggleClass('card-success')
+        });
+        $cardsContainer.append($card);
     });
 });
 
