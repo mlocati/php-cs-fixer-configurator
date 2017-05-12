@@ -2173,7 +2173,7 @@
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
                     "to": "<?php\nnamespace PhpCsFixer\\Fixer\\Basic;\nclass Psr0Fixer {}\n",
                     "configuration": {
-                        "dir": "C:\\Dev\\Web\\php-cs-fixer-configurator\\vendor\\friendsofphp\\php-cs-fixer\\src"
+                        "dir": "\/path\/to\/vendor\/friendsofphp\/php-cs-fixer\/src"
                     }
                 }
             ]

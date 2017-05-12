@@ -117,7 +117,7 @@ class DataExtractor
                         'to' => $new,
                     ];
                     if ($configuration !== null) {
-                        $codeSampleData['configuration'] = $configuration;
+                        $codeSampleData['configuration'] = $this->anonymizePaths($configuration);
                     }
                     $fixerData['codeSamples'][] = $codeSampleData;
                 }
@@ -139,6 +139,27 @@ class DataExtractor
                 $config[$ruleName] = $ruleConfiguration === true ? null : $ruleConfiguration;
             }
             $result[$setName] = $config;
+        }
+
+        return $result;
+    }
+
+    private function anonymizePaths($value)
+    {
+        if (is_array($value)) {
+            $result = [];
+            foreach ($value as $key => $item) {
+                $result[$key] = $this->anonymizePaths($item);
+            }
+        } else {
+            $result = $value;
+            if (is_string($value)) {
+                $valueNormalized = str_replace(DIRECTORY_SEPARATOR, '/', $value);
+                $rootNormalized = rtrim(str_replace(DIRECTORY_SEPARATOR, '/', dirname(__DIR__, 1)), '/') . '/';
+                if (strpos($valueNormalized, $rootNormalized) === 0) {
+                    $result = '/path/to/' . substr($valueNormalized, strlen($rootNormalized));
+                }
+            }
         }
 
         return $result;
