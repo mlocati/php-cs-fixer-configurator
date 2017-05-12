@@ -9,14 +9,31 @@ div.pcs-fixercard>.card>.card-block>footer {
 }
 div.pcs-fixercard>.card>.card-block>footer>.pcs-fixer-configure {
 	float: left;
-	visibility: hidden;
-}
-div.pcs-fixercard>.card.card-success>.card-block>footer>.pcs-fixer-configure {
-	visibility: visible;
 }
 div.pcs-fixercard>.card>.card-block>footer>.pcs-fixer-sets {
 	float: right;
 }
 div.pcs-search-failed {
 	display: none;
+}
+
+
+.pcs-fixerselection-no>.card {
+}
+.pcs-fixerselection-byfixerset-excluded>.card {
+	background-color: #eca6a4;
+	border-color: #eca6a4;
+}
+.pcs-fixerselection-byfixerset-included>.card {
+	background-color: #ace8b7;
+	border-color: #ace8b7;
+}
+.pcs-fixerselection-yes>.card {
+	background-color: #5cb85c;
+	border-color: #5cb85c;
+}
+
+.pcs-fixerselection-no .pcs-fixer-configure,
+	.pcs-fixerselection-byfixerset-excluded .pcs-fixer-configure {
+	visibility: hidden;
 }

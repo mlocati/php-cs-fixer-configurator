@@ -48,10 +48,10 @@ var Template = (function () {
             var template = Template.get(id),
                 html = template(data),
                 $node = $(html);
-            $node.find('.prismify-me>code').each(function() {
+            $node.find('.prismify-me>code').each(function () {
                 Prism.highlightElement(this);
             });
-            $node.find('[data-pcf-show-fixer]').each(function() {
+            $node.find('[data-pcf-show-fixer]').each(function () {
                 var $a = $(this), fixerName = $a.data('pcf-show-fixer');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixer');
                 $a.click(function (e) {
@@ -59,7 +59,7 @@ var Template = (function () {
                     Fixers.getByName(fixerName).showDetails();
                 });
             });
-            $node.find('[data-pcf-show-fixerset]').each(function() {
+            $node.find('[data-pcf-show-fixerset]').each(function () {
                 var $a = $(this), fixerSetName = $a.data('pcf-show-fixerset');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixerset');
                 $a.click(function (e) {
@@ -73,7 +73,7 @@ var Template = (function () {
     };
 })();
 
-var ModalManager = (function() {
+var ModalManager = (function () {
     var stack = [];
     return {
         show: function (dialog) {
@@ -109,18 +109,22 @@ var ModalManager = (function() {
     };
 })();
 
-var Search = (function() {
-    var lastSearchText = '', $search;
+var Search = (function () {
+    var lastSearchText = '', lastFixerSets = [], $search;
     function performSearch() {
-        var searchText = $.trim($search.val());
+        var searchText = $.trim($search.val()),
+            filterSets = FixerSetFilter.getSelectedFixerSets();
         if (searchText === lastSearchText) {
-            return;
+            if (lastFixerSets.length === filterSets.length && lastFixerSets.join('\n') === filterSets.join('\n')) {
+                return;
+            }
         }
         lastSearchText = searchText;
+        lastFixerSets = filterSets;
         var searchArray = getSearchableArray(searchText);
         Fixers.getAll().forEach(function (fixer) {
             var $card = $('#pcs-fixercard-' + fixer.name);
-            if (fixer.satisfySearch(searchArray) === true) {
+            if (fixer.satisfySearch(searchArray, filterSets) === true) {
                 $card.removeClass('pcs-search-failed');
             } else {
                 $card.addClass('pcs-search-failed');
@@ -128,12 +132,56 @@ var Search = (function() {
         });
     }
     return {
-        initialize: function() {
+        initialize: function () {
             $search = $('#pcs-search');
-            $search.on('keydown keyup keypress change blur mousedown mouseup', function() {
+            $search.on('keydown keyup keypress change blur mousedown mouseup', function () {
                 performSearch();
             });
             delete Search.initialize;
+        },
+        perform: function () {
+            performSearch();
+        }
+    };
+})();
+
+var FixerSetFilter = (function () {
+    var $menuItems, selected;
+    function updateSelected() {
+        selected = [];
+        $menuItems.find('i.fa-check-square-o').each(function () {
+            selected.push($(this).closest('a[data-fixerset]').data('fixerset'));
+        });
+        if (selected.length === $menuItems.length) {
+            selected = [];
+        }
+    }
+    function toggleFixerSet(name) {
+        $menuItems.filter('[data-fixerset="' + name + '"]').find('i.fa').toggleClass('fa-check-square-o fa-square-o');
+        updateSelected();
+        Search.perform();
+    }
+    return {
+        initialize: function () {
+            var $menu = $('#pcs-filter-sets');
+            FixerSets.getAll().forEach(function (fixerSet) {
+                $menu.append($('<a class="dropdown-item" href="#" />')
+                    .attr('data-fixerset', fixerSet.name)
+                    .text(' ' + fixerSet.name)
+                    .prepend('<i class="fa fa-square-o" aria-hidden="true"></i>')
+                );
+            });
+            $menuItems = $menu.find('a[data-fixerset]');
+            $menuItems.click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFixerSet($(this).data('fixerset'));
+            });
+            updateSelected();
+            delete FixerSetFilter.initialize;
+        },
+        getSelectedFixerSets: function () {
+            return selected;
         }
     };
 })();
@@ -160,15 +208,6 @@ var Fixers = (function () {
                 }
             }
             return null;
-        },
-        search: function (string) {
-            var seachableArray = getSearchableArray(string), result = [];
-            list.forEach(function (fixer) {
-                if (fixer.satisfySearch(seachableArray)) {
-                    result.push(fixer);
-                }
-            });
-            return result;
         }
     };
 })();
@@ -205,11 +244,25 @@ function Fixer(name, def) {
     this.searchableString = ' ' + getSearchableArray(strings.join(' ')).join(' ') + ' ';
 }
 Fixer.prototype = {
-    satisfySearch: function (seachableArray) {
-        var ok = true, numWords = seachableArray.length, wordIndex;
-        for (wordIndex = 0; ok === true && wordIndex < numWords; wordIndex++) {
+    satisfySearch: function (seachableArray, filterSets) {
+        var ok = true;
+        for (var wordIndex = 0; ok === true && wordIndex < seachableArray.length; wordIndex++) {
             if (this.searchableString.indexOf(seachableArray[wordIndex]) < 0) {
                 ok = false;
+            }
+        }
+        if (ok === true && filterSets.length > 0) {
+            ok = false;
+            if (this.sets.length === 0) {
+                if (filterSets.indexOf('') >= 0) {
+                    ok = true;
+                }
+            } else {
+                for (var setIndex = 0; ok === false && setIndex < this.sets.length; setIndex++) {
+                    if (filterSets.indexOf(this.sets[setIndex].name) >= 0) {
+                        ok = true;
+                    }
+                }
             }
         }
         return ok;
@@ -217,7 +270,7 @@ Fixer.prototype = {
     showDetails: function () {
         ModalManager.show(Template.build('fixer-details', this));
     },
-    resolveSets: function() {
+    resolveSets: function () {
         var me = this;
         me.sets = [];
         FixerSets.getAll().forEach(function (fixerSet) {
@@ -339,6 +392,71 @@ FixerSet.prototype = {
     }
 };
 
+FixerSet.SelectedList = (function () {
+    var selected = [];
+    return {
+        get: function () {
+            return [].concat(selected);
+        },
+        containsFixer: function (fixer) {
+            for (var i = 0; i < selected.length; i++) {
+                if (FixerSets.getByName(selected[i]).hasFixer(fixer)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+})();
+
+function FixerView(fixer) {
+    var me = this;
+    me.fixer = fixer;
+    me.selected = null;
+    me.configuration = null;
+    me.$card = $(Template.build('fixer-card', fixer));
+    me.$card.find('button, a').click(function (e) {
+        e.stopPropagation();
+    });
+    me.$card.find('>.card').click(function () {
+        me.toggleManualSelection();
+    });
+    $('#pcs-cards').append(me.$card);
+    me.updateClasses();
+}
+FixerView.prototype = {
+    toggleManualSelection: function () {
+        if (FixerSet.SelectedList.containsFixer(this.fixer)) {
+            if (this.selected === true || this.selected === null) {
+                this.selected = false;
+            } else {
+                this.selected = null;
+            }
+        } else {
+            if (this.selected === true) {
+                this.selected = null;
+            } else {
+                this.selected = this.selected ? null : true;
+            }
+        }
+        this.updateClasses();
+    },
+    updateClasses: function () {
+        this.$card.removeClass('pcs-fixerselection-no pcs-fixerselection-byfixerset-excluded pcs-fixerselection-byfixerset-included pcs-fixerselection-yes');
+        if (FixerSet.SelectedList.containsFixer(this.fixer)) {
+            if (this.selected === false) {
+                this.$card.addClass('pcs-fixerselection-byfixerset-excluded');
+            } else {
+                this.$card.addClass('pcs-fixerselection-byfixerset-included');
+            }
+        } else if (this.selected === true) {
+            this.$card.addClass('pcs-fixerselection-yes');
+        } else {
+            this.$card.addClass('pcs-fixerselection-no');
+        }
+    }
+};
+
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-data.min.json',
@@ -348,6 +466,7 @@ $.ajax({
 })
 .done(function (data) {
     PHPCsFixerVersion = data.version;
+    $('#pcs-version').text(PHPCsFixerVersion);
     for (var fixerName in data.fixers) {
         if (data.fixers.hasOwnProperty(fixerName)) {
             Fixers.add(new Fixer(fixerName, data.fixers[fixerName]));
@@ -362,16 +481,9 @@ $.ajax({
         fixer.resolveSets();
     });
     Search.initialize();
-    var $cardsContainer = $('#pcs-cards');
+    FixerSetFilter.initialize();
     Fixers.getAll().forEach(function (fixer) {
-        var $card = $(Template.build('fixer-card', fixer));
-        $card.find('button, a').click(function (e) {
-            e.stopPropagation();
-        });
-        $card.find('>.card').click(function() {
-            $card.find('>.card').toggleClass('card-success')
-        });
-        $cardsContainer.append($card);
+        new FixerView(fixer);
     });
 });
 

@@ -11,19 +11,36 @@
         <link rel="stylesheet" href="css/app.css" />
     </head>
     <body>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <form class="form-inline" onsubmit="return false">
-                        <label class="sr-only" for="pcs-search">Search</label>
-                        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                            <div class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></div>
-                            <input type="search" class="form-control" id="pcs-search" placeholder="Enter search text" />
+        <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#pcf-toolbar" aria-controls="pcf-toolbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">PHP-CS-Fixer configuration v<span id="pcs-version"></span></a>
+            <div class="collapse navbar-collapse" id="pcf-toolbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                </ul>
+                <form class="form-inline" onsubmit="return false">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
+                        <input type="search" class="form-control" id="pcs-search" placeholder="Enter search text" />
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Sets
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" id="pcs-filter-sets">
+                                <a class="dropdown-item" href="#" data-fixerset=""><i class="fa fa-square-o" aria-hidden="true"></i> In no presets</a>
+                                <div role="separator" class="dropdown-divider"></div>
+                            </div>
                         </div>
-                    </form>
-                    <ul id="pcs-available"></ul>
-                </div>
+                    </div>
+                </form>
             </div>
+        </nav>
+
+        <div class="container-fluid">
             <div class="row" id="pcs-cards">
             </div>
         </div>
@@ -33,15 +50,15 @@
                 <div class="card">
                     <div class="card-block">
                         <h5 class="card-title">
-							{{#if risky }}
-								{{#if riskyDescription}}
-									<i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
-								{{else}}
-									<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-								{{/if}}
-							{{/if}}
-							<a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
-						</h5>
+                            {{#if risky }}
+                                {{#if riskyDescription}}
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
+                                {{else}}
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                {{/if}}
+                            {{/if}}
+                            <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
+                        </h5>
                         <p class="card-text">
                             {{#if summary }}
                                 {{ summary }}
@@ -50,26 +67,26 @@
                             {{/if}}
                         </p>
                         <footer>
-							<div class="pcs-fixer-configure">
-								{{#if configurationOptions.length}}
-									<button class="btn btn-primary btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
-								{{else}}
-									<button class="btn btn-secondary btn-sm disabled" data-toggle="tooltip" title="This fixer is not configurable"><i class="fa fa-cog" aria-hidden="true"></i></button>
-								{{/if}}
-							</div>
-                        	{{#if sets.length }}
-								<div class="pcs-fixer-sets">
-									{{#each sets}}
-										<a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
-									{{/each}}
-								<div>
+                            <div class="pcs-fixer-configure">
+                                {{#if configurationOptions.length}}
+                                    <button class="btn btn-primary btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                                {{else}}
+                                    <button class="btn btn-secondary btn-sm disabled" data-toggle="tooltip" title="This fixer is not configurable"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                                {{/if}}
+                            </div>
+                            {{#if sets.length }}
+                                <div class="pcs-fixer-sets">
+                                    {{#each sets}}
+                                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+                                    {{/each}}
+                                <div>
                             {{/if}}
                         </footer>
                     </div>
                 </div>
             </div>
-		</script>
-        
+        </script>
+
         <script id="template-fixer-details" type="x-tmpl-handlebars">
             <div class="modal">
                 <div class="modal-dialog modal-lg" role="document">
@@ -131,7 +148,7 @@
                                             {{#unless configurationOptions.length}}
                                                 <dt class="col-sm-3">Configuration</dt>
                                                 <dd class="col-sm-9">This fixer is not configurable</dt>
-                                            {{/unless}}     
+                                            {{/unless}}
                                         </dl>
                                         {{#each configurationOptions}}
                                             {{#if @index}}<br />{{/if}}
@@ -227,7 +244,7 @@
                 </div>
             </div>
         </script>
-        
+
         <script id="template-fixerset-details" type="x-tmpl-handlebars">
             <div class="modal">
                 <div class="modal-dialog modal-lg" role="document">
@@ -272,7 +289,7 @@
                                         </tr>
                                     {{/each}}
                                 </tbody>
-                            </table> 
+                            </table>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -281,7 +298,7 @@
                 </div>
             </div>
         </script>
-        
+
         <script src="js/jquery.min.js"></script>
         <script src="js/tether.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
