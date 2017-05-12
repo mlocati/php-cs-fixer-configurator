@@ -34,7 +34,11 @@
                     <div class="card-block">
                         <h5 class="card-title">
 							{{#if risky }}
-								<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+								{{#if riskyDescription}}
+									<i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
+								{{else}}
+									<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+								{{/if}}
 							{{/if}}
 							<a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
 						</h5>

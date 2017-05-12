@@ -67,6 +67,7 @@ var Template = (function () {
                     FixerSets.getByName(fixerSetName).showDetails();
                 });
             });
+            $node.find('[data-toggle="tooltip"]').tooltip();
             return $node;
         }
     };
