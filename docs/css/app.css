@@ -1,3 +1,6 @@
+html, body {
+  min-height: 100%;
+}
 #pcs-selected-presets {
 	border: 0;
 	min-width: 5em;
@@ -50,4 +53,26 @@ div.pcs-search-failed {
 .pcs-fixerselection-no .pcs-fixer-configure,
 	.pcs-fixerselection-byfixerset-excluded .pcs-fixer-configure {
 	visibility: hidden;
+}
+
+#pcs-save {
+    position: fixed;
+    display: none;
+    top: 0;
+    right: -460px;
+    width: 460px;
+    max-width: 100%;
+	min-height: 100%;
+    -webkit-transition: right 0.3s ease-in-out;
+    -moz-transition: right 0.3s ease-in-out;
+    -o-transition: right 0.3s ease-in-out;
+    -ms-transition: right 0.3s ease-in-out;
+    transition: right 0.3s ease-in-out;
+    z-index: 3;
+}
+#pcs-save.open {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
 }

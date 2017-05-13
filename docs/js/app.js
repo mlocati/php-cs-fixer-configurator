@@ -478,6 +478,11 @@ function FixerView(fixer) {
     me.$card.find('>.card').click(function () {
         me.toggleManualSelection();
     });
+    if (me.fixer.configurationOptions.length > 0) {
+        me.$card.find('.pcs-fixer-configure button').on('click', function () {
+            me.configure();
+        });
+    }
     $('#pcs-cards').append(me.$card);
     me.updateClasses();
 }
@@ -511,8 +516,61 @@ FixerView.prototype = {
         } else {
             this.$card.addClass('pcs-fixerselection-no');
         }
+    },
+    configure: function () {
+        window.alert('@todo');
     }
 };
+
+var SavePanel = (function () {
+    var $btnShow = $('#pcs-btn-save'),
+        $panel = $('#pcs-save'),
+        originalRight = $panel.css('right'),
+        shown = false;
+    function toggleVisibility() {
+        if (shown) {
+            hide();
+        } else {
+            show();
+        }
+    }
+    function show() {
+        if (shown === true) {
+            return;
+        }
+        shown = true;
+        $(document.body).css('overflow-x', 'hidden');
+        $panel.addClass('open');
+        setTimeout(function() {
+            $panel.css({'right': '0'});
+        }, 10);
+    }
+    function hide() {
+        if (shown === false) {
+            return;
+        }
+        shown = false;
+        $panel.css({'right': originalRight});
+        setTimeout(function() {
+            $panel.removeClass('open');
+            $(document.body).css('overflow-x', '');
+        }, 300);
+    }
+    $btnShow.on('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleVisibility();
+    });
+    $(document.body).on('click', function (e) {
+        if (shown === true && $panel.is(e.target) === false && $panel.find(e.target).length === 0) {
+            hide();
+        }
+    });
+    return {
+        show: show,
+        hide: hide
+    };
+})();
 
 $.ajax({
     dataType: 'json',

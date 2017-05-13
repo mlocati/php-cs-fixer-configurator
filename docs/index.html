@@ -15,12 +15,9 @@
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#pcf-toolbar" aria-controls="pcf-toolbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#">PHP-CS-Fixer configuration v<span id="pcs-version"></span></a>
+            <span class="navbar-brand">PHP-CS-Fixer configuration v<span id="pcs-version"></span></span>
             <div class="collapse navbar-collapse" id="pcf-toolbar">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
                 </ul>
                 <form class="form-inline" onsubmit="return false">
                     <div class="input-group">
@@ -48,6 +45,8 @@
                             </div>
                         </div>
                     </div>
+                    &nbsp;
+                    <button class="btn btn-default" id="pcs-btn-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
                 </form>
             </div>
         </nav>
@@ -55,6 +54,10 @@
         <div class="container-fluid">
             <div class="row" id="pcs-cards">
             </div>
+        </div>
+
+        <div id="pcs-save" class="card">
+            @todo
         </div>
 
         <script id="template-fixer-card" type="x-tmpl-handlebars">
