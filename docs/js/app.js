@@ -117,10 +117,21 @@ var ModalManager = (function () {
 })();
 
 var Search = (function () {
-    var lastSearchText = '', lastFixerSets = [], $search;
+    var lastSearchText = '', lastFixerSets = [], $search, $fixerSetItems, selectedFixerSets = [];
+    function toggleFixerSet(name) {
+        $fixerSetItems.filter('[data-fixerset="' + name + '"]').find('i.fa').toggleClass('fa-check-square-o fa-square-o');
+        selectedFixerSets = [];
+        $fixerSetItems.find('i.fa-check-square-o').each(function () {
+            selectedFixerSets.push($(this).closest('a[data-fixerset]').data('fixerset'));
+        });
+        if (selectedFixerSets.length === $fixerSetItems.length) {
+            selectedFixerSets = [];
+        }
+        performSearch();
+    }
     function performSearch() {
         var searchText = $.trim($search.val()),
-            filterSets = FixerSetFilter.getSelectedFixerSets();
+            filterSets = [].concat(selectedFixerSets);
         if (searchText === lastSearchText) {
             if (lastFixerSets.length === filterSets.length && lastFixerSets.join('\n') === filterSets.join('\n')) {
                 return;
@@ -141,54 +152,24 @@ var Search = (function () {
     return {
         initialize: function () {
             $search = $('#pcs-search');
-            $search.on('keydown keyup keypress change blur mousedown mouseup', function () {
-                performSearch();
-            });
-            delete Search.initialize;
-        },
-        perform: function () {
-            performSearch();
-        }
-    };
-})();
-
-var FixerSetFilter = (function () {
-    var $menuItems, selected;
-    function updateSelected() {
-        selected = [];
-        $menuItems.find('i.fa-check-square-o').each(function () {
-            selected.push($(this).closest('a[data-fixerset]').data('fixerset'));
-        });
-        if (selected.length === $menuItems.length) {
-            selected = [];
-        }
-    }
-    function toggleFixerSet(name) {
-        $menuItems.filter('[data-fixerset="' + name + '"]').find('i.fa').toggleClass('fa-check-square-o fa-square-o');
-        updateSelected();
-        Search.perform();
-    }
-    return {
-        initialize: function () {
-            var $menu = $('#pcs-filter-sets');
+            var $fixerSetMenu = $('#pcs-filter-sets');
             FixerSets.getAll().forEach(function (fixerSet) {
-                $menu.append($('<a class="dropdown-item" href="#" />')
+                $fixerSetMenu.append($('<a class="dropdown-item" href="#" />')
                     .attr('data-fixerset', fixerSet.name)
                     .text(' ' + fixerSet.name)
                     .prepend('<i class="fa fa-square-o" aria-hidden="true"></i>')
                 );
             });
-            $menuItems = $menu.find('a[data-fixerset]');
-            $menuItems.click(function (e) {
+            $fixerSetItems = $fixerSetMenu.find('a[data-fixerset]');
+            $search.on('keydown keyup keypress change blur mousedown mouseup', function () {
+                performSearch();
+            });
+            $fixerSetItems.click(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleFixerSet($(this).data('fixerset'));
             });
-            updateSelected();
-            delete FixerSetFilter.initialize;
-        },
-        getSelectedFixerSets: function () {
-            return selected;
+            delete Search.initialize;
         }
     };
 })();
@@ -526,6 +507,7 @@ var SavePanel = (function () {
     var $btnShow = $('#pcs-btn-save'),
         $panel = $('#pcs-save'),
         originalRight = $panel.css('right'),
+        $backdrop = null,
         shown = false;
     function toggleVisibility() {
         if (shown) {
@@ -535,25 +517,30 @@ var SavePanel = (function () {
         }
     }
     function show() {
-        if (shown === true) {
+        if (shown !== false) {
             return;
         }
         shown = true;
-        $(document.body).css('overflow-x', 'hidden');
+        $(document.body).css('overflow', 'hidden').append($backdrop = $('<div class="modal-backdrop show" />'));
         $panel.addClass('open');
         setTimeout(function() {
             $panel.css({'right': '0'});
+            $backdrop.on('click', function () {
+                hide();
+            })
         }, 10);
     }
     function hide() {
-        if (shown === false) {
+        if (shown !== true) {
             return;
         }
         shown = false;
         $panel.css({'right': originalRight});
         setTimeout(function() {
             $panel.removeClass('open');
-            $(document.body).css('overflow-x', '');
+            $(document.body).css('overflow', '');
+            $backdrop.remove();
+            $backdrop = null;
         }, 300);
     }
     $btnShow.on('click', function (e) {
@@ -561,10 +548,8 @@ var SavePanel = (function () {
         e.stopPropagation();
         toggleVisibility();
     });
-    $(document.body).on('click', function (e) {
-        if (shown === true && $panel.is(e.target) === false && $panel.find(e.target).length === 0) {
-            hide();
-        }
+    $panel.find('>.card-footer button').on('click', function () {
+        hide();
     });
     return {
         show: show,
@@ -596,7 +581,6 @@ $.ajax({
         fixer.resolveSets();
     });
     Search.initialize();
-    FixerSetFilter.initialize();
     FixerSet.SelectedList.initialize();
     Fixers.getAll().forEach(function (fixer) {
         fixer.initializeView();

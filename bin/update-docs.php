@@ -9,6 +9,8 @@ echo 'Extracting data... ';
 $dataExtractor = new DataExtractor();
 $data = [
     'version' => $dataExtractor->getVersion(),
+    'indent' => $dataExtractor->getDefaultIndent(),
+    'lineEnding' => $dataExtractor->getDefaultLineEnding(),
     'fixers' => $dataExtractor->getFixers(),
     'sets' => $dataExtractor->getSets(),
 ];

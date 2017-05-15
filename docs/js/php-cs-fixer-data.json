@@ -1,5 +1,7 @@
 {
     "version": "2.3.1",
+    "indent": "    ",
+    "lineEnding": "\n",
     "fixers": {
         "encoding": {
             "summary": "PHP code MUST use only UTF-8 without BOM (remove BOM).",

@@ -2,6 +2,7 @@
 namespace MLocati\PhpCsFixerConfigurator;
 
 use Exception;
+use PhpCsFixer\Config;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
@@ -25,6 +26,29 @@ class DataExtractor
         return Application::VERSION;
     }
 
+    /**
+     * Get the default indent.
+     *
+     * @return string
+     */
+    public function getDefaultIndent()
+    {
+        return (new Config())->getIndent();
+    }
+
+    /**
+     * Get the default line ending.
+     *
+     * @return string
+     */
+    public function getDefaultLineEnding()
+    {
+        return (new Config())->getLineEnding();
+    }
+
+    /**
+     * @return array
+     */
     public function getFixers()
     {
         $result = [];
@@ -128,6 +152,9 @@ class DataExtractor
         return $result;
     }
 
+    /**
+     * @return array
+     */
     public function getSets()
     {
         $result = [];
@@ -144,6 +171,11 @@ class DataExtractor
         return $result;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
     private function anonymizePaths($value)
     {
         if (is_array($value)) {

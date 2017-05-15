@@ -61,14 +61,15 @@ div.pcs-search-failed {
     top: 0;
     right: -460px;
     width: 460px;
-    max-width: 100%;
-	min-height: 100%;
+    max-width: 100vw;
+	height: 100vh;
+	overflow: auto;
     -webkit-transition: right 0.3s ease-in-out;
     -moz-transition: right 0.3s ease-in-out;
     -o-transition: right 0.3s ease-in-out;
     -ms-transition: right 0.3s ease-in-out;
     transition: right 0.3s ease-in-out;
-    z-index: 3;
+    z-index: 1045;
 }
 #pcs-save.open {
 	display: -webkit-box;
