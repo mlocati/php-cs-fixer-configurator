@@ -61,7 +61,39 @@
                 <h4>Save</h4>
             </div>
             <div class="card-block">
-                @todo
+                <div class="form-group row">
+                    <label for="pcs-save-format" class="col-4 col-form-label">Format</label>
+                    <div class="col-8">
+                        <select id="pcs-save-format" class="form-control"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pcs-save-indent" class="col-4 col-form-label">Indent</label>
+                    <div class="col-8">
+                        <select id="pcs-save-indent" class="form-control">
+                            <option value=" ">1 space</option>
+                            <option value="  ">2 spaces</option>
+                            <option value="   ">3 spaces</option>
+                            <option value="    ">4 spaces</option>
+                            <option value="     ">5 spaces</option>
+                            <option value="      ">6 spaces</option>
+                            <option value="       ">7 spaces</option>
+                            <option value="        ">8 spaces</option>
+                            <option value="\t">tab</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pcs-save-line-ending" class="col-4 col-form-label">Line ending</label>
+                    <div class="col-8">
+                        <select id="pcs-save-line-ending" class="form-control">
+                            <option value="\n">*nix (\n)</option>
+                            <option value="\r\n">Windows (\r\n)</option>
+                            <option value="\r">Old Mac (\r)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="pcs-save-output"></div>
             </div>
             <div class="card-footer">
                 <button class="btn btn-primary">Close</button>
@@ -92,7 +124,7 @@
                         <footer>
                             <div class="pcs-fixer-configure">
                                 {{#if configurationOptions.length}}
-                                    <button class="btn btn-primary btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                                    <button class="btn btn-info btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
                                 {{else}}
                                     <button class="btn btn-secondary btn-sm disabled" data-toggle="tooltip" title="This fixer is not configurable"><i class="fa fa-cog" aria-hidden="true"></i></button>
                                 {{/if}}

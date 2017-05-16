@@ -20,8 +20,29 @@ Handlebars.registerHelper('add1', function (value) {
     return 1 + value;
 });
 
+/**
+ * The version of PHP-CS-Fixer.
+ *
+ * @type {string}
+ */
 var PHPCsFixerVersion;
 
+/**
+ * The default white space definitions (indentation, new lines).
+ *
+ * @namespace
+ * @property {string} indent
+ * @property {string} lineEnding
+ */
+var DefaultWhitespaceConfig;
+
+/**
+ * Normalize a string, extracting normalized words contained in it.
+ *
+ * @param {string} string
+ *
+ * @returns {string[]}
+ */
 function getSearchableArray(string) {
     return string
         .replace(/[^\w\.]+/g, ' ')
@@ -35,7 +56,7 @@ function getSearchableArray(string) {
     ;
 }
 
-var Template = (function () {
+var Templater = (function () {
     var loadedTemplates = {};
     return {
         get: function (id, data) {
@@ -45,7 +66,7 @@ var Template = (function () {
             return loadedTemplates[id];
         },
         build: function (id, data) {
-            var template = Template.get(id),
+            var template = Templater.get(id),
                 html = template(data),
                 $node = $(html);
             $node.find('.prismify-me>code').each(function () {
@@ -67,7 +88,9 @@ var Template = (function () {
                     FixerSets.getByName(fixerSetName).showDetails();
                 });
             });
-            $node.find('[data-toggle="tooltip"]').tooltip();
+            $node.find('[data-toggle="tooltip"]').tooltip({
+                animation: false
+            });
             return $node;
         }
     };
@@ -200,6 +223,12 @@ var Fixers = (function () {
     };
 })();
 
+/**
+ * @class
+ * @constructor
+ * @param {string} name
+ * @param {object} def
+ */
 function Fixer(name, def) {
     this.name = name;
     this.risky = !!def.risky;
@@ -256,7 +285,7 @@ Fixer.prototype = {
         return ok;
     },
     showDetails: function () {
-        ModalManager.show(Template.build('fixer-details', this));
+        ModalManager.show(Templater.build('fixer-details', this));
     },
     resolveSets: function () {
         var me = this;
@@ -272,6 +301,11 @@ Fixer.prototype = {
     }
 };
 
+/**
+ * @class
+ * @constructor
+ * @param {object} co
+ */
 Fixer.ConfigurationOption = function (co) {
     this.name = co.name;
     this.description = co.hasOwnProperty('description') ? co.description : '';
@@ -297,6 +331,11 @@ Fixer.ConfigurationOption = function (co) {
     this.allowedValuesAsJson = allowedValuesAsJson;
 };
 
+/**
+ * @class
+ * @constructor
+ * @param {object} cs
+ */
 Fixer.CodeSample = function (cs) {
     this.fromCode = cs.from;
     this.toCode = cs.to;
@@ -332,6 +371,12 @@ var FixerSets = (function () {
     };
 })();
 
+/**
+ * @class
+ * @constructor
+ * @param {string} name
+ * @param {object[]} fixerDefs
+ */
 function FixerSet(name, fixerDefs) {
     this.name = name;
     this.fixers = [];
@@ -379,7 +424,7 @@ FixerSet.prototype = {
         return false;
     },
     showDetails: function () {
-        ModalManager.show(Template.build('fixerset-details', this));
+        ModalManager.show(Templater.build('fixerset-details', this));
     }
 };
 
@@ -395,13 +440,16 @@ FixerSet.SelectedList = (function () {
     function updateView() {
         $selected.empty();
         $unselected.empty();
-        selected.forEach(function (fixerSet, fixerSetIndex) {
-            $selected.append($('<span class="badge badge-info" />')
-                .text(fixerSet.name + ' ')
-                .append($('<a href="#" class="badge badge-danger"><i class="fa fa-minus" aria-hidden="true"></i></a>')
+        selected.forEach(function (item, itemIndex) {
+            $selected.append($('<span class="badge ' + (item[1] ? 'badge-success' : 'badge-danger') + '" />')
+                .text(item[0].name + ' ')
+                .append($('<a href="#" class="badge badge-warning"><i class="fa fa-times" aria-hidden="true"></i></a>')
                     .on('click', function (e) {
                         e.preventDefault();
-                        selected.splice(fixerSetIndex, 1);
+                        selected.splice(itemIndex, 1);
+                        while (selected.length > 0 && selected[0][1] === false) {
+                            selected.splice(0, 1);
+                        }
                         updateView();
                         refreshCards();
                     })
@@ -409,50 +457,93 @@ FixerSet.SelectedList = (function () {
             );
         });
         FixerSets.getAll().forEach(function (fixerSet) {
-            if (selected.indexOf(fixerSet) >= 0) {
+            var isSelected = false, somePlus = false;
+            selected.forEach(function (item) {
+                if (item[0] === fixerSet) {
+                    isSelected = true;
+                }
+                if (item[1] === true) {
+                    somePlus = true;
+                }
+            });
+            if (isSelected) {
                 return;
             }
-            $unselected.append($('<a class="dropdown-item" href="#" />')
-                .text(fixerSet.name)
-                .on('click', function (e) {
-                    e.preventDefault();
-                    setTimeout(
-                        function () {
-                            selected.push(fixerSet);
-                            updateView();
-                            refreshCards();
-                        },
-                        20
-                    );
-                })
-            );
+            var $item;
+            $unselected
+                .append($item = $('<div class="dropdown-item" />')
+                    .text(' ' + fixerSet.name)
+                );
+            if (somePlus) {
+                $item
+                    .prepend($('<a href="#" class="btn btn-sm btn-danger' + (somePlus ? '' : 'disabled') + '"><i class="fa fa-minus" aria-hidden="true"></i></a>')
+                        .on('click', function (e) {
+                            e.preventDefault();
+                            setTimeout(
+                                function () {
+                                    selected.push([fixerSet, false]);
+                                    updateView();
+                                    refreshCards();
+                                },
+                                20
+                            );
+                        })
+                    )
+                    .prepend(' ')
+                ;
+            }
+            $item
+                .prepend($('<a href="#" class="btn btn-sm btn-success"><i class="fa fa-plus" aria-hidden="true"></i></a>')
+                    .on('click', function (e) {
+                        e.preventDefault();
+                        setTimeout(
+                            function () {
+                                selected.push([fixerSet, true]);
+                                updateView();
+                                refreshCards();
+                            },
+                            20
+                        );
+                    })
+                )
+            ;
         });
     }
     return {
-        initialize: function() {
+        initialize: function () {
             updateView();
             delete FixerSet.SelectedList.initialize;
         },
-        get: function () {
-            return [].concat(selected);
-        },
         containsFixer: function (fixer) {
-            for (var i = 0; i < selected.length; i++) {
-                if (selected[i].hasFixer(fixer)) {
-                    return true;
+            var result = false;
+            selected.forEach(function (item) {
+                if (item[0].hasFixer(fixer)) {
+                    result = item[1];
                 }
-            }
-            return false;
+            });
+            return result;
+        },
+        getSelected: function () {
+            var result = [];
+            selected.forEach(function (item) {
+                result.push([item[0].name, item[1]]);
+            });
+            return result;
         }
     };
 })();
 
+/**
+ * @class
+ * @constructor
+ * @param {Fixer} fixer
+ */
 function FixerView(fixer) {
     var me = this;
     me.fixer = fixer;
     me.selected = null;
     me.configuration = null;
-    me.$card = $(Template.build('fixer-card', fixer));
+    me.$card = $(Templater.build('fixer-card', fixer));
     me.$card.find('button, a').click(function (e) {
         e.stopPropagation();
     });
@@ -500,12 +591,60 @@ FixerView.prototype = {
     },
     configure: function () {
         window.alert('@todo');
+    },
+    /**
+     * @returns {(null|boolean|object)}
+     */
+    getState: function () {
+        if (FixerSet.SelectedList.containsFixer(this.fixer)) {
+            if (this.selected === false) {
+                return false;
+            }
+            if (this.configuration === null) {
+                return null;
+            }
+        } else {
+            if (this.selected !== true) {
+                return null;
+            }
+            if (this.configuration === null) {
+                var fixer = this.fixer;
+                fixer.configurationOptions.forEach(function (configurationOption) {
+                    if (!configurationOption.hasDefaultValue) {
+                        throw 'The option "' + configurationOption.name + '" of the fixer "' + fixer.name + '" must be configured';
+                    }
+                });
+            }
+        }
+        if (this.configuration === null) {
+            return true;
+        }
+        return this.configuration;
     }
 };
+
+var State = (function () {
+    return {
+        get: function () {
+            var result = FixerSet.SelectedList.getSelected();
+            Fixers.getAll().forEach(function (fixer) {
+                var state = fixer.view.getState();
+                if (state !== null) {
+                    result.push([fixer.name, state]);
+                }
+            });
+            return result;
+        }
+    };
+})();
 
 var SavePanel = (function () {
     var $btnShow = $('#pcs-btn-save'),
         $panel = $('#pcs-save'),
+        $saveFormat = $('#pcs-save-format'),
+        $saveIndent = $('#pcs-save-indent'),
+        $saveLineEnding = $('#pcs-save-line-ending'),
+        $out = $('#pcs-save-output'),
         originalRight = $panel.css('right'),
         $backdrop = null,
         shown = false;
@@ -521,14 +660,52 @@ var SavePanel = (function () {
             return;
         }
         shown = true;
+        refreshOutput();
         $(document.body).css('overflow', 'hidden').append($backdrop = $('<div class="modal-backdrop show" />'));
         $panel.addClass('open');
-        setTimeout(function() {
+        setTimeout(function () {
             $panel.css({'right': '0'});
             $backdrop.on('click', function () {
                 hide();
-            })
+            });
         }, 10);
+    }
+    function getSelectedExporter() {
+        return $saveFormat.find('option:selected').data('pcs-exporter') || null;
+    }
+    function getSelectedWhitespace() {
+        var result = {
+            indent: JSON.parse('"' + $saveIndent.find('>option:selected').val() + '"'),
+            lineEnding: JSON.parse('"' + $saveLineEnding.find('>option:selected').val() + '"')
+        };
+        if (result.indent === DefaultWhitespaceConfig.indent) {
+            delete result.indent;
+        }
+        if (result.lineEnding === DefaultWhitespaceConfig.lineEnding) {
+            delete result.lineEnding;
+        }
+        return result;
+    }
+    function refreshOutput() {
+        $out.empty();
+        try {
+            var state = State.get(),
+                whitespace = getSelectedWhitespace(),
+                exporter = getSelectedExporter();
+            if (exporter === null) {
+                throw 'Select an export format';
+            }
+            var $code = $('<code />').text(exporter.render(state, whitespace)),
+                $pre = $('<pre />').append($code),
+                language = exporter.getLanguage ? exporter.getLanguage() : null;
+            if (language) {
+                $code.attr('class', 'language-' + language);
+            }
+            Prism.highlightElement($code[0]);
+            $out.append($pre);
+        } catch (x) {
+            $out.append($('<div class="alert alert-danger" role="alert" />').text(x.message || x.toString()));
+        }
     }
     function hide() {
         if (shown !== true) {
@@ -536,7 +713,7 @@ var SavePanel = (function () {
         }
         shown = false;
         $panel.css({'right': originalRight});
-        setTimeout(function() {
+        setTimeout(function () {
             $panel.removeClass('open');
             $(document.body).css('overflow', '');
             $backdrop.remove();
@@ -551,11 +728,77 @@ var SavePanel = (function () {
     $panel.find('>.card-footer button').on('click', function () {
         hide();
     });
+    $saveFormat.add($saveIndent).add($saveLineEnding).on('change', function() {
+        if (shown === true) {
+            refreshOutput();
+        }
+    });
     return {
+        initialize: function () {
+            $saveIndent.find('option[value="' + JSON.stringify(DefaultWhitespaceConfig.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
+                .prop('selected', true)
+                .css('font-weight', 'bold')
+            ;
+            $saveLineEnding.find('option[value="' + JSON.stringify(DefaultWhitespaceConfig.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
+                .prop('selected', true)
+                .css('font-weight', 'bold')
+            ;
+        },
         show: show,
-        hide: hide
+        hide: hide,
+        registerExporter: function (exporter) {
+            $saveFormat.append($('<option />')
+                .text(exporter.getName ? exporter.getName() : exporter.toString())
+                .data('pcs-exporter', exporter)
+            );
+            if ($saveFormat.find('>options').length === 1) {
+                $saveFormat
+                    .prop('selectedIndex', 0)
+                    .trigger('change')
+                ;
+            }
+        }
     };
 })();
+
+function PhpCsExporter() {
+}
+PhpCsExporter.prototype = {
+    getName: function() {
+        return '.php_cs / .php_cs.dist file';
+    },
+    getLanguage: function () {
+        return 'php';
+    },
+    render: function (states, whitespace) {
+        var lines = ['<?php', ''];
+        lines.push('return PhpCsFixer\Config::create()');
+        if (whitespace.hasOwnProperty('indent')) {
+            lines.push('    ->setIndent(' + JSON.stringify(whitespace.indent) + ')');
+        }
+        if (whitespace.hasOwnProperty('lineEnding')) {
+            lines.push('    ->setLineEnding(' + JSON.stringify(whitespace.lineEnding) + ')');
+        }
+        lines.push('    ->setRules([');
+        states.forEach(function (state) {
+            var line = '        \'' + state[0] + '\' => ';
+            if (typeof state[1] === 'boolean') {
+                lines.push(line + JSON.stringify(state[1]) + ',');
+            } else {
+                lines.push(line + '[');
+                lines.push('],');
+            }
+        });
+        lines.push('    ])');
+        lines.push('    ->setFinder(PhpCsFixer\Finder::create()');
+        lines.push('        ->exclude(\'vendor\')');
+        lines.push('        ->in(__DIR__)');
+        lines.push('    )');
+        lines.push(';');
+        lines.push('');
+        return lines.join('\n');
+    }
+};
 
 $.ajax({
     dataType: 'json',
@@ -566,6 +809,10 @@ $.ajax({
 })
 .done(function (data) {
     PHPCsFixerVersion = data.version;
+    DefaultWhitespaceConfig = {
+        indent: data.indent,
+        lineEnding: data.lineEnding
+    };
     $('#pcs-version').text(PHPCsFixerVersion);
     for (var fixerName in data.fixers) {
         if (data.fixers.hasOwnProperty(fixerName)) {
@@ -585,6 +832,8 @@ $.ajax({
     Fixers.getAll().forEach(function (fixer) {
         fixer.initializeView();
     });
+    SavePanel.initialize();
+    SavePanel.registerExporter(new PhpCsExporter());
 });
 
 });
