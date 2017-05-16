@@ -816,6 +816,7 @@ var SavePanel = (function () {
     $outCopy.on('click', function (e) {
         var copied = !false;
         $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
+        $out.find('.token').removeClass('token').addClass('token-disabled-for-copy');
         try {
             if (window.getSelection && document.createRange) {
                 var range = document.createRange();
@@ -842,6 +843,7 @@ var SavePanel = (function () {
             }
         } catch (exception) {
         }
+        $out.find('.token-disabled-for-copy').removeClass('token-disabled-for-copy').addClass('token');
         if (copied) {
             $outCopy.removeClass('btn-info btn-danger').addClass('btn-success');
         } else {
