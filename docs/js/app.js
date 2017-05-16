@@ -191,6 +191,7 @@ var ModalManager = (function () {
                     show: true
                 })
             ;
+            return $dialog;
         }
     };
 })();
@@ -278,7 +279,7 @@ var Fixers = (function () {
         }
     };
 })();
-
+var X = 0;
 /**
  * @class
  * @constructor
@@ -646,7 +647,7 @@ FixerView.prototype = {
         }
     },
     configure: function () {
-        window.alert('@todo');
+        var $dialog = ModalManager.show(Templater.build('fixer-card-configure', this));
     },
     /**
      * @returns {(null|boolean|object)}
@@ -906,6 +907,7 @@ PhpCsExporter.prototype = {
                 lines.push(line + toPHP(state[1]) + ',');
             } else {
                 lines.push(line + '[');
+                lines.push(line + '    // @todo');
                 lines.push('],');
             }
         });
