@@ -98,7 +98,7 @@ function toPHP(v) {
     if (v instanceof Array) {
         chunks = [];
         v.forEach(function (chunk) {
-           chunks.push(toPHP(chunk)); 
+            chunks.push(toPHP(chunk)); 
         });
         return '[' + chunks.join(', ') + ']';
     }
@@ -714,6 +714,7 @@ var SavePanel = (function () {
         $saveIndent = $('#pcs-save-indent'),
         $saveLineEnding = $('#pcs-save-line-ending'),
         $out = $('#pcs-save-output'),
+        $outCopy = $('#pcs-save-output-copy'),
         originalRight = $panel.css('right'),
         $backdrop = null,
         shown = false;
@@ -780,8 +781,10 @@ var SavePanel = (function () {
                 $pre = $('<pre />').append($code);
             Prism.highlightElement($code[0]);
             $out.append($pre);
+            $outCopy.removeAttr('disabled');
         } catch (x) {
             $out.append($('<div class="alert alert-danger" role="alert" />').text(x.message || x.toString()));
+            $outCopy.attr('disabled', 'disabled');
         }
     }
     function hide() {
@@ -809,6 +812,44 @@ var SavePanel = (function () {
         if (shown === true) {
             refreshOutput();
         }
+    });
+    $outCopy.on('click', function (e) {
+        var copied = !false;
+        $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
+        try {
+            if (window.getSelection && document.createRange) {
+                var range = document.createRange();
+                range.selectNodeContents($out[0]);
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                if (document.execCommand('copy') === true) {
+                    copied = true;
+                }
+                selection.empty();
+            } else if (document.body.createTextRange) {
+                var textRange = document.body.createTextRange();
+                textRange.moveToElementText($out[0]);
+                textRange.select();
+                if (textRange.execCommand('copy') === true) {
+                    copied = true;
+                }
+                if (window.getSelection) {
+                    window.getSelection().removeAllRanges();
+                } else if (document.selection) {
+                    document.selection.empty();
+                }
+            }
+        } catch (exception) {
+        }
+        if (copied) {
+            $outCopy.removeClass('btn-info btn-danger').addClass('btn-success');
+        } else {
+            $outCopy.removeClass('btn-info btn-success').addClass('btn-danger');
+        }
+        setTimeout(function() {
+            $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
+        }, 500);
     });
     return {
         initialize: function () {
