@@ -1,20 +1,10 @@
 /* jshint unused:vars, undef:true, browser:true, jquery:true */
-/* global Handlebars, Prism */
+/* global Handlebars, Prism, YAML */
 $(function () {
 'use strict';
 
 Handlebars.registerHelper('toJSON', function (value) {
-    var string;
-    if (value instanceof Array) {
-        var chunks = [];
-        value.forEach(function (chunk) {
-            chunks.push(JSON.stringify(chunk));
-        });
-        string = '[' + chunks.join(', ') + ']';
-    } else {
-        string = JSON.stringify(value);
-    }
-    return string;
+    return JSON.stringify(value, null, 4);
 });
 Handlebars.registerHelper('add1', function (value) {
     return 1 + value;
@@ -526,7 +516,7 @@ FixerSet.SelectedList = (function () {
         getSelected: function () {
             var result = [];
             selected.forEach(function (item) {
-                result.push([item[0].name, item[1]]);
+                result.push([item[0], item[1]]);
             });
             return result;
         }
@@ -626,11 +616,24 @@ FixerView.prototype = {
 var State = (function () {
     return {
         get: function () {
-            var result = FixerSet.SelectedList.getSelected();
+            var result = {
+                risky: false,
+                fixerSets: [],
+                fixers: []
+            };
+            FixerSet.SelectedList.getSelected().forEach(function (item) {
+                if (item[1] === true && item[0].risky === true) {
+                    result.risky = true;
+                }
+                result.fixerSets.push([item[0].name, item[1]]);
+            });
             Fixers.getAll().forEach(function (fixer) {
                 var state = fixer.view.getState();
                 if (state !== null) {
-                    result.push([fixer.name, state]);
+                    if (state !== false && fixer.risky === true) {
+                        result.risky = true;
+                    }
+                    result.fixers.push([fixer.name, state]);
                 }
             });
             return result;
@@ -689,18 +692,26 @@ var SavePanel = (function () {
     function refreshOutput() {
         $out.empty();
         try {
-            var state = State.get(),
-                whitespace = getSelectedWhitespace(),
-                exporter = getSelectedExporter();
+            var exporter = getSelectedExporter();
             if (exporter === null) {
                 throw 'Select an export format';
             }
-            var $code = $('<code />').text(exporter.render(state, whitespace)),
-                $pre = $('<pre />').append($code),
-                language = exporter.getLanguage ? exporter.getLanguage() : null;
-            if (language) {
-                $code.attr('class', 'language-' + language);
+            if ('supportsIndent' in exporter && exporter.supportsIndent() === false) {
+                $saveIndent.attr('disabled', 'disabled');
+            } else {
+                $saveIndent.removeAttr('disabled');
             }
+            if ('supportsLineEnding' in exporter && exporter.supportsLineEnding() === false) {
+                $saveLineEnding.attr('disabled', 'disabled');
+            } else {
+                $saveLineEnding.removeAttr('disabled');
+            }
+            var state = State.get(),
+                whitespace = getSelectedWhitespace(),
+                $code = $('<code />')
+                    .attr('class', 'language-' + exporter.getLanguage())
+                    .text(exporter.render(state, whitespace)),
+                $pre = $('<pre />').append($code);
             Prism.highlightElement($code[0]);
             $out.append($pre);
         } catch (x) {
@@ -728,7 +739,7 @@ var SavePanel = (function () {
     $panel.find('>.card-footer button').on('click', function () {
         hide();
     });
-    $saveFormat.add($saveIndent).add($saveLineEnding).on('change', function() {
+    $saveFormat.add($saveIndent).add($saveLineEnding).on('change', function () {
         if (shown === true) {
             refreshOutput();
         }
@@ -764,7 +775,7 @@ var SavePanel = (function () {
 function PhpCsExporter() {
 }
 PhpCsExporter.prototype = {
-    getName: function() {
+    getName: function () {
         return '.php_cs / .php_cs.dist file';
     },
     getLanguage: function () {
@@ -780,7 +791,7 @@ PhpCsExporter.prototype = {
             lines.push('    ->setLineEnding(' + JSON.stringify(whitespace.lineEnding) + ')');
         }
         lines.push('    ->setRules([');
-        states.forEach(function (state) {
+        [].concat(states.fixerSets, states.fixers).forEach(function (state) {
             var line = '        \'' + state[0] + '\' => ';
             if (typeof state[1] === 'boolean') {
                 lines.push(line + JSON.stringify(state[1]) + ',');
@@ -797,6 +808,57 @@ PhpCsExporter.prototype = {
         lines.push(';');
         lines.push('');
         return lines.join('\n');
+    }
+};
+function StyleCILikeExporter() {
+}
+StyleCILikeExporter.prototype = {
+    getName: function () {
+        return 'StyleCI-like';
+    },
+    getLanguage: function () {
+        return 'yaml';
+    },
+    supportsIndent: function () {
+        return false;
+    },
+    supportsLineEnding: function () {
+        return false;
+    },
+    render: function (states, whitespace) {
+        var data = {};
+        var preset = null;
+        states.fixerSets.forEach(function (item) {
+            if (item[1] === true) {
+                if (preset !== null) {
+                    throw 'StyleCI supports up to 1 preset';
+                }
+                preset = item[0];
+            } else {
+                throw 'StyleCI does not support negated presets';
+            }
+        });
+        data.preset = (preset === null ? 'none' : preset.substr(1));
+        data.risky = states.risky;
+        states.fixers.forEach(function (item) {
+            if (item[1] === true) {
+                if (data.hasOwnProperty('enabled') === false) {
+                    data.enabled = [];
+                }
+                data.enabled.push(item[0]);
+            } else if(item[1] !== false) {
+                throw 'StyleCI does not support configured fixers';
+            }
+        });
+        states.fixers.forEach(function (item) {
+            if (item[1] === false) {
+                if (data.hasOwnProperty('disabled') === false) {
+                    data.disabled = [];
+                }
+                data.disabled.push(item[0]);
+            }
+        });
+        return YAML.stringify(data, null, 2, true);
     }
 };
 
@@ -834,6 +896,7 @@ $.ajax({
     });
     SavePanel.initialize();
     SavePanel.registerExporter(new PhpCsExporter());
+    SavePanel.registerExporter(new StyleCILikeExporter());
 });
 
 });
