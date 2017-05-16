@@ -46,6 +46,72 @@ function getSearchableArray(string) {
     ;
 }
 
+/**
+ * Convert a Javascript variable to PHP.
+ *
+ * @param v
+ *
+ * @returns {string}
+ */
+function toPHP(v) {
+    if (v === undefined || v === null) {
+        return null;
+    }
+    switch (typeof v) {
+        case 'boolean':
+            return JSON.stringify(v);
+        case 'number':
+            if (Number.isNaN(v) || Number.isFinite(v) === false) {
+                return 'null';
+            }
+            return JSON.stringify(v);
+        case 'string':
+            if (/[\x00-\x1f]/.test(v)) {
+                var out = '', map = {};
+                map[0x09] = '\\t';
+                map[0x0a] = '\\n';
+                map[0x0b] = '\\v';
+                map[0x0c] = '\\f';
+                map[0x0d] = '\\r';
+                map[0x1b] = '\\e';
+                map['"'.charCodeAt(0)] = '\\"';
+                map['\\'.charCodeAt(0)] = '\\\\';
+                map['$'.charCodeAt(0)] = '\\$';
+                for (var char, charCode, charIndex = 0; charIndex < v.length; charIndex++) {
+                    char = v.charAt(charIndex);
+                    charCode = char.charCodeAt(0);
+                    if (charCode in map) {
+                        out += map[charCode];
+                    } else if (charCode < 0x10) {
+                        out += '\\x0' + charCode.toString(16);
+                    } else if (charCode < 0x20) {
+                        out += '\\x' + charCode.toString(16);
+                    } else {
+                        out += char;
+                    }
+                }
+                return '"' + out + '"';
+            }
+            return "'" +  v.replace(/\\/g, '\\\\').replace("'", "\\'") + "'";
+    }
+    var chunks;
+    if (v instanceof Array) {
+        chunks = [];
+        v.forEach(function (chunk) {
+           chunks.push(toPHP(chunk)); 
+        });
+        return '[' + chunks.join(', ') + ']';
+    }
+    if ($.isPlainObject(v)) {
+        chunks = [];
+        for (var key in v) {
+            if (v.hasOwnProperty(key)) {
+                chunks.push(toPHP(key) + ' => ' + toPHP(v[key]));
+            }
+        }
+        return '[' + chunks.join(', ') + ']';
+    }
+}
 var Templater = (function () {
     var loadedTemplates = {};
     return {
@@ -785,16 +851,16 @@ PhpCsExporter.prototype = {
         var lines = ['<?php', ''];
         lines.push('return PhpCsFixer\Config::create()');
         if (whitespace.hasOwnProperty('indent')) {
-            lines.push('    ->setIndent(' + JSON.stringify(whitespace.indent) + ')');
+            lines.push('    ->setIndent(' + toPHP(whitespace.indent) + ')');
         }
         if (whitespace.hasOwnProperty('lineEnding')) {
-            lines.push('    ->setLineEnding(' + JSON.stringify(whitespace.lineEnding) + ')');
+            lines.push('    ->setLineEnding(' + toPHP(whitespace.lineEnding) + ')');
         }
         lines.push('    ->setRules([');
         [].concat(states.fixerSets, states.fixers).forEach(function (state) {
             var line = '        \'' + state[0] + '\' => ';
             if (typeof state[1] === 'boolean') {
-                lines.push(line + JSON.stringify(state[1]) + ',');
+                lines.push(line + toPHP(state[1]) + ',');
             } else {
                 lines.push(line + '[');
                 lines.push('],');
