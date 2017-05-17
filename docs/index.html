@@ -284,10 +284,10 @@
                                             </ul>
                                             <div class="tab-content">
                                                 <div class="tab-pane active" id="template-fixer-details-example-{{ codeSampleIndex }}-input" role="tabpanel">
-                                                    <pre class="prismify-me"><code class="language-php">{{ fromCode }}</code></pre>
+                                                    <pre class="prismify-me show-invisibles"><code class="language-php">{{ fromCode }}</code></pre>
                                                 </div>
                                                 <div class="tab-pane" id="template-fixer-details-example-{{ codeSampleIndex }}-output" role="tabpanel">
-                                                    <pre class="prismify-me"><code class="language-php">{{ toCode }}</code></pre>
+                                                    <pre class="prismify-me show-invisibles"><code class="language-php">{{ toCode }}</code></pre>
                                                 </div>
                                             </div>
                                         </div>
@@ -362,7 +362,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Configure <code>{{ fixer.name }}</code></h5>
+                            <h5 class="modal-title">Configure <code>{{ fixerView.fixer.name }}</code></h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -370,15 +370,48 @@
                         <div class="modal-body">
                             <div class="input-group">
                                 <div class="input-group-addon">Option</div>
-                                <select class="form-control">
-                                    {{#each fixer.configurationOptions}}
+                                <select class="form-control cgs-configuringoption">
+                                    {{#each fixerView.fixer.configurationOptions}}
                                         <option>{{name}}</option>
                                     {{/each}}
                                 </select>
                             </div>
-                            {{#each fixer.configurationOptions as |_ index|}}
-                                <div id="cgs-configuring-{{index}}">
-                                    @todo
+                            {{#each options as |optionConfigurator index|}}
+                                <div class="cgs-configuringoption cgs-configuringoption-{{index}}">
+                                    {{#if option.description }}
+                                        <div class="alert alert-info" role="alert">
+                                            {{ option.description }}
+                                        </div>
+                                    {{/if}}
+                                    <form>
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-secondary">
+                                                <input type="radio" name="cgs-configuringoption-configure" value="default" autocomplete="off" /> Use default value
+                                            </label>
+                                            <label class="btn btn-secondary">
+                                                <input type="radio" name="cgs-configuringoption-configure" value="custom" autocomplete="off"> Define custom value
+                                            </label>
+                                        </div>
+                                    </form>
+                                    <div class="cgs-configuringoption-value cgs-configuringoption-value-default">
+                                        {{#if ../inFixerSets}}
+                                            {{#if option.hasDefaultValue}}
+                                                <p>Use the preset default value (if no other option is configured) or the fixer default value (if other options are configured).</p>
+                                            {{else}}
+                                                <p>If no options are configured, the value set by the preset will be used. Otherwise you <strong>MUST</strong> specify a value for this option.</p>
+                                            {{/if}}
+                                        {{else}}
+                                            {{#if option.hasDefaultValue}}
+                                                <p>Use the default value:</p>
+                                                <code>{{toPHP option.defaultValue }}</code>
+                                            {{else}}
+                                                <div class="alert alert-danger" role="alert">
+                                                    This option does not have any configuration option: you <strong>MUST</strong> specify one.
+                                                </div>
+                                            {{/if}}
+                                        {{/if}}
+                                    </div>
+                                    <div class="cgs-configuringoption-value cgs-configuringoption-value-custom"></div>
                                 </div>
                             {{/each}}
                         </div>

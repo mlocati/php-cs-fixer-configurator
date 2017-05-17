@@ -6,6 +6,9 @@ $(function () {
 Handlebars.registerHelper('toJSON', function (value) {
     return JSON.stringify(value, null, 4);
 });
+Handlebars.registerHelper('toPHP', function (value) {
+    return toPHP(value);
+});
 Handlebars.registerHelper('add1', function (value) {
     return 1 + value;
 });
@@ -55,7 +58,7 @@ function getSearchableArray(string) {
  */
 function toPHP(v) {
     if (v === undefined || v === null) {
-        return null;
+        return 'null';
     }
     switch (typeof v) {
         case 'boolean':
@@ -279,7 +282,7 @@ var Fixers = (function () {
         }
     };
 })();
-var X = 0;
+
 /**
  * @class
  * @constructor
@@ -301,7 +304,11 @@ function Fixer(name, def) {
         });
     }
     configurationOptions.sort(function (a, b) {
-        return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+        if (a.hasDefaultValue !== b.hasDefaultValue) {
+            return a.hasDefaultValue ? 1 : -1;
+        } else {
+            return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+        }
     });
     this.configurationOptions = configurationOptions;
     var codeSamples = [];
@@ -369,23 +376,9 @@ Fixer.ConfigurationOption = function (co) {
     this.hasDefaultValue = co.hasOwnProperty('defaultValue');
     if (this.hasDefaultValue) {
         this.defaultValue = co.defaultValue;
-        if (this.defaultValue instanceof Array) {
-            var defaultValueAsJson = [];
-            this.defaultValue.forEach(function (value) {
-                defaultValueAsJson.push(JSON.stringify(value));
-            });
-            this.defaultValueAsJson = '[' + defaultValueAsJson.join(', ') + ']';
-        } else {
-            this.defaultValueAsJson = JSON.stringify(this.defaultValue);
-        }
     }
     this.allowedTypes = co.hasOwnProperty('allowedTypes') ? co.allowedTypes : [];
     this.allowedValues = co.hasOwnProperty('allowedValues') ? co.allowedValues : [];
-    var allowedValuesAsJson = [];
-    this.allowedValues.forEach(function (value) {
-        allowedValuesAsJson.push(JSON.stringify(value));
-    });
-    this.allowedValuesAsJson = allowedValuesAsJson;
 };
 
 /**
@@ -599,7 +592,6 @@ function FixerView(fixer) {
     var me = this;
     me.fixer = fixer;
     me.selected = null;
-    me.configuration = null;
     me.$card = $(Templater.build('fixer-card', fixer));
     me.$card.find('button, a').click(function (e) {
         e.stopPropagation();
@@ -611,6 +603,9 @@ function FixerView(fixer) {
         me.$card.find('.pcs-fixer-configure button').on('click', function () {
             me.configure();
         });
+        me.setConfiguration(null);
+    } else {
+        this.configuration = null;
     }
     $('#pcs-cards').append(me.$card);
     me.updateClasses();
@@ -647,7 +642,16 @@ FixerView.prototype = {
         }
     },
     configure: function () {
-        var $dialog = ModalManager.show(Templater.build('fixer-card-configure', this));
+        new FixerView.Configurator(this);
+    },
+    setConfiguration: function (configuration) {
+        this.configuration = (configuration === null) ? null : $.extend(true, {}, configuration);
+        var $btn = this.$card.find('.pcs-fixer-configure button').removeClass('btn-info btn-primary');
+        if (this.configuration === null) {
+            $btn.addClass('btn-info');
+        } else {
+            $btn.addClass('btn-primary');
+        }
     },
     /**
      * @returns {(null|boolean|object)}
@@ -680,6 +684,250 @@ FixerView.prototype = {
     }
 };
 
+/**
+ * @class
+ * @constructor
+ * @param {FixerView} fixerView
+ */
+FixerView.Configurator = function (fixerView) {
+    var me = this;
+    me.fixerView = fixerView;
+    me.inFixerSets = FixerSet.SelectedList.containsFixer(fixerView.fixer);
+    me.options = [];
+    me.fixerView.fixer.configurationOptions.forEach(function (option, index) {
+        me.options.push(new FixerView.Configurator.Option(me, option));
+    });
+    me.$dialog = ModalManager.show(Templater.build('fixer-card-configure', me));
+    me.$select = me.$dialog.find('select.cgs-configuringoption');
+    me.$panels = me.$dialog.find('div.cgs-configuringoption');
+    me.$select.on('change', function () {
+        me.showOption(this.selectedIndex);
+    });
+    try {
+        me.options.forEach(function (option, index) {
+            option.initialize($(me.$panels[index]));
+        });
+    } catch (e) {
+        me.$dialog.modal('hide');
+        window.alert(e.message || e.toString());
+    }
+    me.showOption(0);
+    me.$dialog.find('.modal-footer .btn-primary').on('click', function () {
+        var configuration;
+        try {
+            configuration = me.getConfiguration();
+        } catch (e) {
+            setTimeout(
+                function () {
+                    window.alert(e.message || e.toString());
+                },
+                10
+            );
+            return;
+        }
+        me.fixerView.setConfiguration(configuration);
+        me.$dialog.modal('hide');
+    });
+};
+FixerView.Configurator.prototype = {
+    showOption: function (index) {
+        if (this.$select.prop('selectedIndex') !== index) {
+            this.$select.prop('selectedIndex', index).trigger('change');
+        } else {
+            this.$panels.hide();
+            $(this.$panels[index]).show();
+        }
+    },
+    getConfiguration: function () {
+        var me = this, configuration = null;
+        me.options.forEach(function (option, index) {
+            var value;
+            try {
+                value = option.getValue();
+            } catch (e) {
+                me.showOption(index);
+                throw e;
+            }
+            if (value !== undefined) {
+                if (configuration === null) {
+                    configuration = {};
+                }
+                configuration[option.option.name] = value;
+            }
+        });
+        return configuration;
+    }
+};
+
+/**
+ * @class
+ * @constructor
+ * @param {FixerView.Configurator} configurator
+ * @param {Fixer.ConfigurationOption} option
+ */
+FixerView.Configurator.Option = function (configurator, option) {
+    this.configurator = configurator;
+    this.option = option;
+};
+FixerView.Configurator.Option.prototype = {
+    initialize: function ($container) {
+        var me = this;
+        me.$container = $container;
+        me.$configure = $container.find('input[type="radio"][name="cgs-configuringoption-configure"]');
+        me.$configure.on('change', function () {
+            var custom = me.hasCustomConfig();
+            me.$container
+                .find('div.cgs-configuringoption-value')
+                    .hide()
+                    .filter('.cgs-configuringoption-value-' + (custom ? 'custom' : 'default'))
+                        .show()
+            ;
+        });
+        me.$custom = me.$container.find('.cgs-configuringoption-value-custom');
+        var isConfigured = me.configurator.fixerView.configuration !== null && me.configurator.fixerView.configuration.hasOwnProperty(me.option.name);
+        me.$configure.filter('[value="' + (isConfigured ? 'custom' : 'default') + '"]').trigger('click');
+        var typeSupported = false;
+        if (me.option.allowedValues.length > 0) {
+            me.initialize_AllowedValues(me.option.allowedValues);
+            typeSupported = true;
+        } else {
+            var allowedTypes = [].concat(me.option.allowedTypes),
+                nullIndex = allowedTypes.length > 1 ? allowedTypes.indexOf('null') : -1,
+                nullable = nullIndex >= 0;
+            if (nullable === true) {
+                allowedTypes.splice(nullIndex, 1);
+            }
+            if (allowedTypes.length === 1) {
+                me['initializeType_' + me.option.allowedTypes[0]](nullable);
+                typeSupported = true;
+            }
+        }
+        if (typeSupported === false) {
+            throw 'Unsupported definition for option ' + me.option.name;
+        }
+    },
+    hasCustomConfig: function () {
+        return this.$container.find('input[name="cgs-configuringoption-configure"][value="custom"]').is(':checked');
+    },
+    getInitialValue: function () {
+        return this.configurator.fixerView.configuration !== null && this.configurator.fixerView.configuration.hasOwnProperty(this.option.name) ?
+            this.configurator.fixerView.configuration[this.option.name] :
+            undefined
+        ;
+    },
+    initialize_AllowedValues: function (allowedValues) {
+        var me = this, $form, initialValue = this.getInitialValue();
+        me.$custom.append($form = $('<form />'));
+        allowedValues.forEach(function (value) {
+            $form.append($('<div class="form-check" />')
+                .append($('<label class="form-check-label" />')
+                    .append($('<input class="form-check-input" type="radio" name="value"' + (value === initialValue ? ' checked="checked"' : '') + ' />')
+                        .data('pcf-value', value)
+                    )
+                    .append(' ')
+                    .append($('<code />')
+                        .text(toPHP(value))
+                    )
+                )
+            );
+        });
+        me.getCustomValue = function () {
+            var $checked = $form.find('input:checked');
+            if ($checked.length === 0) {
+                throw 'Please select one of the allowed values';
+            }
+            return $checked.data('pcf-value');
+        };
+    },
+    initializeType_bool: function (nullable) {
+        var allowedValues = [];
+        if (nullable === true) {
+            allowedValues.push(null);
+        }
+        allowedValues.push(false);
+        allowedValues.push(true);
+        this.initialize_AllowedValues(allowedValues);
+    },
+    initializeType_array: function (nullable) {
+        var me = this, type = null, typeName = 'Please specify an array or an object in JSON format';
+        if (me.option.hasDefaultValue) {
+            if (me.option.defaultValue instanceof Array) {
+                type = 'array';
+                typeName = 'Please specify an array in JSON format';
+            } else if ($.isPlainObject(me.option.defaultValue)) {
+                type = 'object';
+                typeName = 'Please specify an object in JSON format';
+            }
+        }
+        if (nullable === true) {
+            typeName += ' (or an empty string for NULL)';
+        }
+        me.$custom.html([
+            '<div class="form-group">',
+                '<label>' + typeName + ':</label>',
+                '<textarea class="form-control" style="font-family: Menlo,Monaco,Consolas,&quot;Liberation Mono&quot;,&quot;Courier New&quot;,monospace" rows="5"></textarea>',
+            '</div>',
+        ''].join(''));
+        var initialValue = me.getInitialValue();
+        if (initialValue) {
+            me.$custom.find('textarea').val(JSON.stringify(initialValue, null, 4));
+        }
+        me.getCustomValue = function () {
+            var json = $.trim(me.$custom.find('textarea').val());
+            if (json === '') {
+                if (nullable === true) {
+                    return null;
+                } else {
+                    throw 'Please enter the JSON code';
+                }
+            }
+            var value;
+            try {
+                value = JSON.parse(json);
+            } catch (e) {
+                throw 'The JSON is invalid';
+            }
+            switch (type) {
+                case 'array':
+                    if ((value instanceof Array) === false) {
+                        throw 'Please enter the JSON representation of an array';
+                    }
+                    break;
+                case 'object':
+                    if ($.isPlainObject(value) === false) {
+                        throw 'Please enter the JSON representation of an object';
+                    }
+                    break;
+                default:
+                    if ((value instanceof Array) === false && $.isPlainObject(value) === false) {
+                        throw 'Please enter the JSON representation of an array or of an object';
+                    }
+                    break;
+            }
+            return value;
+        };
+    },
+    initializeType_string: function () {
+        var me = this;
+        me.$custom.html([
+            '<div class="form-group">',
+                '<label>Please enter the value of the option:</label>',
+                '<textarea class="form-control" style="font-family: Menlo,Monaco,Consolas,&quot;Liberation Mono&quot;,&quot;Courier New&quot;,monospace" rows="5"></textarea>',
+            '</div>',
+        ''].join(''));
+        var initialValue = me.getInitialValue();
+        if (initialValue !== undefined) {
+            me.$custom.find('textarea').val(initialValue);
+        }
+        me.getCustomValue = function () {
+            return me.$custom.find('textarea').val();
+        };
+    },
+    getValue: function () {
+        return this.hasCustomConfig() ? this.getCustomValue() : undefined;
+    }
+};
+
 var State = (function () {
     return {
         get: function () {
@@ -697,6 +945,7 @@ var State = (function () {
             Fixers.getAll().forEach(function (fixer) {
                 var state = fixer.view.getState();
                 if (state !== null) {
+                    state = fixer.view.getState();
                     if (state !== false && fixer.risky === true) {
                         result.risky = true;
                     }
@@ -817,7 +1066,6 @@ var SavePanel = (function () {
     $outCopy.on('click', function (e) {
         var copied = !false;
         $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
-        $out.find('.token').removeClass('token').addClass('token-disabled-for-copy');
         try {
             if (window.getSelection && document.createRange) {
                 var range = document.createRange();
@@ -844,13 +1092,12 @@ var SavePanel = (function () {
             }
         } catch (exception) {
         }
-        $out.find('.token-disabled-for-copy').removeClass('token-disabled-for-copy').addClass('token');
         if (copied) {
             $outCopy.removeClass('btn-info btn-danger').addClass('btn-success');
         } else {
             $outCopy.removeClass('btn-info btn-success').addClass('btn-danger');
         }
-        setTimeout(function() {
+        setTimeout(function () {
             $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
         }, 500);
     });
@@ -893,7 +1140,10 @@ PhpCsExporter.prototype = {
     },
     render: function (states, whitespace) {
         var lines = ['<?php', ''];
-        lines.push('return PhpCsFixer\Config::create()');
+        lines.push('return PhpCsFixer\\Config::create()');
+        if (states.risky === true) {
+            lines.push('    ->setRiskyAllowed(true)');
+        }
         if (whitespace.hasOwnProperty('indent')) {
             lines.push('    ->setIndent(' + toPHP(whitespace.indent) + ')');
         }
@@ -902,17 +1152,10 @@ PhpCsExporter.prototype = {
         }
         lines.push('    ->setRules([');
         [].concat(states.fixerSets, states.fixers).forEach(function (state) {
-            var line = '        \'' + state[0] + '\' => ';
-            if (typeof state[1] === 'boolean') {
-                lines.push(line + toPHP(state[1]) + ',');
-            } else {
-                lines.push(line + '[');
-                lines.push(line + '    // @todo');
-                lines.push('],');
-            }
+            lines.push('        \'' + state[0] + '\' => ' + toPHP(state[1]) + ',');
         });
         lines.push('    ])');
-        lines.push('    ->setFinder(PhpCsFixer\Finder::create()');
+        lines.push('    ->setFinder(PhpCsFixer\\Finder::create()');
         lines.push('        ->exclude(\'vendor\')');
         lines.push('        ->in(__DIR__)');
         lines.push('    )');
