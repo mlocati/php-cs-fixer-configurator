@@ -134,7 +134,7 @@ var Templater = (function () {
             $node.find('[data-pcf-show-fixer]').each(function () {
                 var $a = $(this), fixerName = $a.data('pcf-show-fixer');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixer');
-                $a.click(function (e) {
+                $a.on('click', function (e) {
                     e.preventDefault();
                     Fixers.getByName(fixerName).showDetails();
                 });
@@ -142,7 +142,7 @@ var Templater = (function () {
             $node.find('[data-pcf-show-fixerset]').each(function () {
                 var $a = $(this), fixerSetName = $a.data('pcf-show-fixerset');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixerset');
-                $a.click(function (e) {
+                $a.on('click', function (e) {
                     e.preventDefault();
                     FixerSets.getByName(fixerSetName).showDetails();
                 });
@@ -247,7 +247,7 @@ var Search = (function () {
             $search.on('keydown keyup keypress change blur mousedown mouseup', function () {
                 performSearch();
             });
-            $fixerSetItems.click(function (e) {
+            $fixerSetItems.on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleFixerSet($(this).data('fixerset'));
@@ -579,6 +579,29 @@ FixerSet.SelectedList = (function () {
                 result.push([item[0], item[1]]);
             });
             return result;
+        },
+        reset: function() {
+            selected = [];
+            updateView();
+            refreshCards();
+        },
+        add: function (fixerSetName, substract) {
+            var fixerSet = FixerSets.getByName(fixerSetName);
+            if (fixerSet === null) {
+                throw 'Unable to find a preset named ' + fixerSetName;
+            }
+            selected.forEach(function (item) {
+                if (item[0] === fixerSet) {
+                    throw 'The preset ' + fixerSetName + ' is already selected';
+                }
+            });
+            var positive = !substract;
+            if (positive === false && selected.length === 0) {
+                throw 'The first selected preset can\'t be negated';
+            }
+            selected.push([fixerSet, positive]);
+            updateView();
+            refreshCards();
         }
     };
 })();
@@ -593,10 +616,10 @@ function FixerView(fixer) {
     me.fixer = fixer;
     me.selected = null;
     me.$card = $(Templater.build('fixer-card', fixer));
-    me.$card.find('button, a').click(function (e) {
+    me.$card.find('button, a').on('click', function (e) {
         e.stopPropagation();
     });
-    me.$card.find('>.card').click(function () {
+    me.$card.find('>.card').on('click', function () {
         me.toggleManualSelection();
     });
     if (me.fixer.configurationOptions.length > 0) {
@@ -611,6 +634,13 @@ function FixerView(fixer) {
     me.updateClasses();
 }
 FixerView.prototype = {
+    reset: function() {
+        this.selected = null;
+        if (this.fixer.configurationOptions.length > 0) {
+            this.setConfiguration(null);
+        }
+        this.updateClasses();
+    },
     toggleManualSelection: function () {
         if (FixerSet.SelectedList.containsFixer(this.fixer)) {
             if (this.selected === true || this.selected === null) {
@@ -930,6 +960,13 @@ FixerView.Configurator.Option.prototype = {
 
 var State = (function () {
     return {
+        reset: function() {
+            FixerSet.SelectedList.reset();
+            Fixers.getAll().forEach(function (fixer) {
+                fixer.view.reset();
+            });
+            SavePanel.resetOptions();
+        },
         get: function () {
             var result = {
                 risky: false,
@@ -1005,6 +1042,13 @@ var SavePanel = (function () {
             delete result.lineEnding;
         }
         return result;
+    }
+    function setSelectedWhitespace(whitespace) {
+        whitespace = $.extend({}, DefaultWhitespaceConfig, whitespace || {});
+        $saveIndent.find('option[value="' + JSON.stringify(whitespace.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
+            .prop('selected', true);
+        $saveLineEnding.find('option[value="' + JSON.stringify(whitespace.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
+            .prop('selected', true);
     }
     function refreshOutput() {
         $out.empty();
@@ -1103,14 +1147,8 @@ var SavePanel = (function () {
     });
     return {
         initialize: function () {
-            $saveIndent.find('option[value="' + JSON.stringify(DefaultWhitespaceConfig.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
-                .prop('selected', true)
-                .css('font-weight', 'bold')
-            ;
-            $saveLineEnding.find('option[value="' + JSON.stringify(DefaultWhitespaceConfig.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
-                .prop('selected', true)
-                .css('font-weight', 'bold')
-            ;
+            SavePanel.resetOptions();
+            delete SavePanel.initialize;
         },
         show: show,
         hide: hide,
@@ -1125,6 +1163,12 @@ var SavePanel = (function () {
                     .trigger('change')
                 ;
             }
+        },
+        resetOptions: function() {
+            setSelectedWhitespace(DefaultWhitespaceConfig);
+        },
+        setWhiteSpace: function (whitespace) {
+            setSelectedWhitespace(whitespace);
         }
     };
 })();
@@ -1248,8 +1292,61 @@ StyleCILikeExporter.prototype = {
 };
 
 var Loader = (function () {
+    var $input = $('#pcs-modal-load-from-json textarea');
     function load() {
-        window.alert('@todo');
+        var json = $.trim($input.val()), data;
+        if (json === '') {
+            data = {};
+        } else {
+            try {
+                data = JSON.parse(json);
+            } catch (e) {
+                window.alert('The JSON is invalid');
+                return;
+            }
+            if ($.isPlainObject(data) === false) {
+                window.alert('Please specify an object in JSON format');
+                return;
+            }
+        }
+        State.reset();
+        if ($.isPlainObject(data.whitespace)) {
+            SavePanel.setWhiteSpace(data.whitespace);
+            delete data.whitespace;
+        }
+        if (data.sets instanceof Array) {
+            data.sets.forEach(function (fixerSetName) {
+               var negated = fixerSetName.charAt(0) === '-';
+               if (negated) {
+                   fixerSetName = fixerSetName.substr(1);
+               }
+               FixerSet.SelectedList.add(fixerSetName, negated);
+            });
+            delete data.sets;
+        }
+        if ($.isPlainObject(data.fixers)) {
+            $.each(data.fixers, function (fixerName, fixerConfiguration) {
+                var fixer = Fixers.getByName(fixerName);
+                if (fixer === null) {
+                    throw 'Unable to find a fixer named ' + fixerName;    
+                }
+                if (FixerSet.SelectedList.containsFixer(fixer)) {
+                    if (fixerConfiguration === false) {
+                        window.alert('@todo Disable fixer included in selected presets');
+                    } else if (fixerConfiguration !== true) {
+                        window.alert('@todo Set custom configuration of a fixer selected in presets');
+                    }
+                } else {
+                    if (fixerConfiguration === true) {
+                        window.alert('@todo Enable fixer with default configuration');
+                    } else if (fixerConfiguration !== false) {
+                        window.alert('@todo Enable fixer with custom configuration');
+                    }
+                }
+            });
+            delete data.fixers;
+        }
+        $('#pcs-modal-load-from-json').modal('hide');
     }
     return {
         initialize: function () {
