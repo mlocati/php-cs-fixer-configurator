@@ -15,7 +15,7 @@
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#pcf-toolbar" aria-controls="pcf-toolbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <span class="navbar-brand">PHP-CS-Fixer configuration v<span id="pcs-version"></span></span>
+            <span class="navbar-brand"><span class="hidden-xs-down">PHP-CS-Fixer configuration v</span><span class="hidden-sm-up">P.C.F. config v</span><span id="pcs-version"></span></span>
             <div class="collapse navbar-collapse" id="pcf-toolbar">
                 <ul class="navbar-nav mr-auto">
                 </ul>
@@ -46,7 +46,11 @@
                         </div>
                     </div>
                     &nbsp;
-                    <button class="btn btn-default" id="pcs-btn-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                    <div class="input-group">
+                        <button class="btn btn-default" data-toggle="modal" data-target="#pcs-modal-load-from-json"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+                        &nbsp;
+                        <button class="btn btn-default" id="pcs-btn-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                    </div>
                 </form>
             </div>
         </nav>
@@ -103,6 +107,27 @@
             </div>
         </div>
 
+        <div class="modal" role="dialog" id="pcs-modal-load-from-json">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Load configuration from JSON</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Paste here a JSON code representing the whole configuration state</p>
+                        <textarea class="form-control code" rows="8"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Load</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script id="template-fixer-card" type="text/template">
             <div class="col-sm-6 col-lg-4 col-xl-3 pcs-fixercard" id="pcs-fixercard-{{ name }}">
                 <div class="card">
@@ -146,7 +171,7 @@
         </script>
 
         <script id="template-fixer-details" type="text/template">
-            <div class="modal">
+            <div class="modal" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -304,7 +329,7 @@
         </script>
 
         <script id="template-fixerset-details" type="text/template">
-            <div class="modal">
+            <div class="modal" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -358,7 +383,7 @@
         </script>
 
         <script id="template-fixer-card-configure" type="text/template">
-            <div class="modal">
+            <div class="modal" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">

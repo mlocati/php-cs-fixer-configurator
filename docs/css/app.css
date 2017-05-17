@@ -106,3 +106,7 @@ div.cgs-configuringoption {
 .show-invisibles .token.space:before {
 	content: '\00B7';
 }
+
+textarea.code {
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; 
+}

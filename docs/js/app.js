@@ -865,7 +865,7 @@ FixerView.Configurator.Option.prototype = {
         me.$custom.html([
             '<div class="form-group">',
                 '<label>' + typeName + ':</label>',
-                '<textarea class="form-control" style="font-family: Menlo,Monaco,Consolas,&quot;Liberation Mono&quot;,&quot;Courier New&quot;,monospace" rows="5"></textarea>',
+                '<textarea class="form-control code" rows="5"></textarea>',
             '</div>',
         ''].join(''));
         var initialValue = me.getInitialValue();
@@ -912,7 +912,7 @@ FixerView.Configurator.Option.prototype = {
         me.$custom.html([
             '<div class="form-group">',
                 '<label>Please enter the value of the option:</label>',
-                '<textarea class="form-control" style="font-family: Menlo,Monaco,Consolas,&quot;Liberation Mono&quot;,&quot;Courier New&quot;,monospace" rows="5"></textarea>',
+                '<textarea class="form-control code" rows="5"></textarea>',
             '</div>',
         ''].join(''));
         var initialValue = me.getInitialValue();
@@ -1164,6 +1164,37 @@ PhpCsExporter.prototype = {
         return lines.join('\n');
     }
 };
+
+function JsonExporter() {
+}
+JsonExporter.prototype = {
+    getName: function () {
+        return 'JSON';
+    },
+    getLanguage: function () {
+        return 'json';
+    },
+    render: function (states, whitespace) {
+        var data = {};
+        if ($.isEmptyObject(whitespace) !== true) {
+            data.whitespace = whitespace;
+        }
+        states.fixerSets.forEach(function (state) {
+            if (data.sets === undefined) {
+                data.sets = [];
+            }
+            data.sets.push((state[1] === false ? '-' : '') + state[0]);
+        });
+        states.fixers.forEach(function (state) {
+            if (data.fixers === undefined) {
+                data.fixers = {};
+            }
+            data.fixers[state[0]] = state[1];
+        });
+        return JSON.stringify(data, null, 4);
+    }
+};
+
 function StyleCILikeExporter() {
 }
 StyleCILikeExporter.prototype = {
@@ -1216,6 +1247,19 @@ StyleCILikeExporter.prototype = {
     }
 };
 
+var Loader = (function () {
+    function load() {
+        window.alert('@todo');
+    }
+    return {
+        initialize: function () {
+            $('#pcs-modal-load-from-json .btn-primary').on('click', function () {
+                load();
+            });
+            delete Loader.initialize;
+        }
+    };
+})();
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-data.min.json',
@@ -1250,7 +1294,9 @@ $.ajax({
     });
     SavePanel.initialize();
     SavePanel.registerExporter(new PhpCsExporter());
+    SavePanel.registerExporter(new JsonExporter());
     SavePanel.registerExporter(new StyleCILikeExporter());
+    Loader.initialize();
 });
 
 });
