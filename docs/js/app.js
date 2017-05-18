@@ -14,6 +14,48 @@ Handlebars.registerHelper('add1', function (value) {
 });
 
 /**
+ * @class
+ * @constructor
+ *
+ * @param {Error|ErrorList|string|null} error - The initial error to be added to the list
+ */
+function ErrorList(error) {
+    this.name = 'ErrorList';
+    this.message = '';
+    this.stack = (new Error()).stack;
+    this.list = [];
+    this.has = false;
+    if (error) {
+        this.add(error);
+    }
+}
+ErrorList.prototype = Object.create(Error.prototype);
+ErrorList.prototype.add = function (error) {
+    if (error instanceof ErrorList) {
+        var me = this;
+        error.list.forEach(function (error) {
+            me.add(error);
+        });
+        return;
+    }
+    var message = '';
+    if (error !== null || error !== undefined) {
+        if (error.hasOwnProperty('message') && error.message) {
+            message = $.trim(error.message.toString());
+        }
+        if (message === '') {
+            message = $.trim(error.toString());
+        }
+    }
+    if (message === '') {
+        message = '<Unspecified Error>';
+    }
+    this.message += (this.message === '' ? '' : '\n') + message;
+    this.list.push(error instanceof Error ? error : new Error(message));
+    this.has = true;
+};
+
+/**
  * The version of PHP-CS-Fixer.
  *
  * @type {string}
@@ -95,13 +137,13 @@ function toPHP(v) {
                 }
                 return '"' + out + '"';
             }
-            return "'" +  v.replace(/\\/g, '\\\\').replace("'", "\\'") + "'";
+            return "'" + v.replace(/\\/g, '\\\\').replace("'", "\\'") + "'";
     }
     var chunks;
     if (v instanceof Array) {
         chunks = [];
         v.forEach(function (chunk) {
-            chunks.push(toPHP(chunk)); 
+            chunks.push(toPHP(chunk));
         });
         return '[' + chunks.join(', ') + ']';
     }
@@ -437,7 +479,7 @@ function FixerSet(name, fixerDefs) {
             var fixerData = {};
             fixerData.fixer = Fixers.getByName(fixerName);
             if (fixerData.fixer === null) {
-                throw 'Unable to find a fixer with name ' + fixerName + ' for set ' + name;
+                throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName) + ' for set ' + name);
             }
             searchableStrings.push(fixerData.fixer.searchableString);
             if (fixerData.fixer.risky === true) {
@@ -588,20 +630,21 @@ FixerSet.SelectedList = (function () {
         add: function (fixerSetName, substract) {
             var fixerSet = FixerSets.getByName(fixerSetName);
             if (fixerSet === null) {
-                throw 'Unable to find a preset named ' + fixerSetName;
+                throw new Error('Unable to find a preset named ' + JSON.stringify(fixerSetName));
             }
             selected.forEach(function (item) {
                 if (item[0] === fixerSet) {
-                    throw 'The preset ' + fixerSetName + ' is already selected';
+                    throw new Error('The preset ' + fixerSetName + ' is already selected');
                 }
             });
             var positive = !substract;
             if (positive === false && selected.length === 0) {
-                throw 'The first selected preset can\'t be negated';
+                return false;
             }
             selected.push([fixerSet, positive]);
             updateView();
             refreshCards();
+            return true;
         }
     };
 })();
@@ -626,19 +669,15 @@ function FixerView(fixer) {
         me.$card.find('.pcs-fixer-configure button').on('click', function () {
             me.configure();
         });
-        me.setConfiguration(null);
-    } else {
-        this.configuration = null;
     }
+    me.setConfiguration(null);
     $('#pcs-cards').append(me.$card);
     me.updateClasses();
 }
 FixerView.prototype = {
     reset: function() {
         this.selected = null;
-        if (this.fixer.configurationOptions.length > 0) {
-            this.setConfiguration(null);
-        }
+        this.setConfiguration(null);
         this.updateClasses();
     },
     toggleManualSelection: function () {
@@ -675,16 +714,52 @@ FixerView.prototype = {
         new FixerView.Configurator(this);
     },
     setConfiguration: function (configuration) {
-        this.configuration = (configuration === null) ? null : $.extend(true, {}, configuration);
-        var $btn = this.$card.find('.pcs-fixer-configure button').removeClass('btn-info btn-primary');
-        if (this.configuration === null) {
-            $btn.addClass('btn-info');
+        var me = this;
+        if (configuration === null || $.isPlainObject(configuration) && $.isEmptyObject(configuration)) {
+            me.configuration = null;
         } else {
-            $btn.addClass('btn-primary');
+            if (me.fixer.configurationOptions.length === 0) {
+                throw new Error('The fixer "' + me.fixer.name + '" is not configurable');
+            }
+            if ($.isPlainObject(configuration) === false) {
+                throw new Error('The configuration for the fixer "' + me.fixer.name + '" must be an object');
+            }
+            configuration = $.extend(true, {}, configuration);
+            var errors = new ErrorList();
+            me.fixer.configurationOptions.forEach(function (configurationOption) {
+                if (configuration.hasOwnProperty(configurationOption.name)) {
+                    // Check value
+                } else if(configurationOption.hasDefaultValue === false) {
+                    errors.add(new Error('The configuration option "' + configurationOption.name + '" for the fixer "' + me.fixer.name + '" must be specified'));
+                }
+            });
+            $.each(configuration, function (configurationField) {
+                var found = false;
+                me.fixer.configurationOptions.forEach(function (configurationOption) {
+                    if (configurationField === configurationOption.name) {
+                        found = true;
+                    }
+                });
+                if (found === false) {
+                    errors.push(new Error('The fixer "' + me.fixer.name + '" does not defines the option "' + configurationField + '"'));
+                }
+            });
+            if (errors.has) {
+                throw errors;
+            }
+            me.configuration = configuration;
+        }
+        if (me.fixer.configurationOptions.length > 0) {
+            var $btn = me.$card.find('.pcs-fixer-configure button').removeClass('btn-info btn-primary');
+            if (me.configuration === null) {
+                $btn.addClass('btn-info');
+            } else {
+                $btn.addClass('btn-primary');
+            }
         }
     },
     /**
-     * @returns {(null|boolean|object)}
+     * @returns {(null|boolean|object)} - Returns null if the fixer is not selected, false if excluded from selected presets, true if added with the default options, an object if it's added with custom options
      */
     getState: function () {
         if (FixerSet.SelectedList.containsFixer(this.fixer)) {
@@ -702,7 +777,7 @@ FixerView.prototype = {
                 var fixer = this.fixer;
                 fixer.configurationOptions.forEach(function (configurationOption) {
                     if (!configurationOption.hasDefaultValue) {
-                        throw 'The option "' + configurationOption.name + '" of the fixer "' + fixer.name + '" must be configured';
+                        throw new Error('The option "' + configurationOption.name + '" of the fixer "' + fixer.name + '" must be configured');
                     }
                 });
             }
@@ -833,7 +908,7 @@ FixerView.Configurator.Option.prototype = {
             }
         }
         if (typeSupported === false) {
-            throw 'Unsupported definition for option ' + me.option.name;
+            throw new Error('Unsupported definition for option ' + me.option.name);
         }
     },
     hasCustomConfig: function () {
@@ -864,7 +939,7 @@ FixerView.Configurator.Option.prototype = {
         me.getCustomValue = function () {
             var $checked = $form.find('input:checked');
             if ($checked.length === 0) {
-                throw 'Please select one of the allowed values';
+                throw new Error('Please select one of the allowed values');
             }
             return $checked.data('pcf-value');
         };
@@ -908,29 +983,29 @@ FixerView.Configurator.Option.prototype = {
                 if (nullable === true) {
                     return null;
                 } else {
-                    throw 'Please enter the JSON code';
+                    throw new Error('Please enter the JSON code');
                 }
             }
             var value;
             try {
                 value = JSON.parse(json);
             } catch (e) {
-                throw 'The JSON is invalid';
+                throw new Error('The JSON is invalid');
             }
             switch (type) {
                 case 'array':
                     if ((value instanceof Array) === false) {
-                        throw 'Please enter the JSON representation of an array';
+                        throw new Error('Please enter the JSON representation of an array');
                     }
                     break;
                 case 'object':
                     if ($.isPlainObject(value) === false) {
-                        throw 'Please enter the JSON representation of an object';
+                        throw new Error('Please enter the JSON representation of an object');
                     }
                     break;
                 default:
                     if ((value instanceof Array) === false && $.isPlainObject(value) === false) {
-                        throw 'Please enter the JSON representation of an array or of an object';
+                        throw new Error('Please enter the JSON representation of an array or of an object');
                     }
                     break;
             }
@@ -1044,18 +1119,36 @@ var SavePanel = (function () {
         return result;
     }
     function setSelectedWhitespace(whitespace) {
+        var errors = new ErrorList();
         whitespace = $.extend({}, DefaultWhitespaceConfig, whitespace || {});
-        $saveIndent.find('option[value="' + JSON.stringify(whitespace.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
-            .prop('selected', true);
-        $saveLineEnding.find('option[value="' + JSON.stringify(whitespace.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]')
-            .prop('selected', true);
+        var $option;
+        $option = $saveIndent.find('option[value="' + JSON.stringify(whitespace.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
+        if ($option.length === 1) {
+            $option.prop('selected', true);
+        } else {
+            errors.add(new Error('Invalid indent value: ' + JSON.stringify(whitespace.indent)));
+        }
+        delete whitespace.indent;
+        $option = $saveLineEnding.find('option[value="' + JSON.stringify(whitespace.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
+        if ($option.length === 1) {
+            $option.prop('selected', true);
+        } else {
+            errors.add(new Error('Invalid line ending value: ' + JSON.stringify(whitespace.lineEnding)));
+        }
+        delete whitespace.lineEnding;
+        $.each(whitespace, function (unrecognized) {
+            errors.add(new Error('Unrecognized whitespace property: ' + unrecognized));
+        });
+        if (errors.has === true) {
+            throw errors;
+        }
     }
     function refreshOutput() {
         $out.empty();
         try {
             var exporter = getSelectedExporter();
             if (exporter === null) {
-                throw 'Select an export format';
+                throw new Error('Select an export format');
             }
             if ('supportsIndent' in exporter && exporter.supportsIndent() === false) {
                 $saveIndent.attr('disabled', 'disabled');
@@ -1260,11 +1353,11 @@ StyleCILikeExporter.prototype = {
         states.fixerSets.forEach(function (item) {
             if (item[1] === true) {
                 if (preset !== null) {
-                    throw 'StyleCI supports up to 1 preset';
+                    throw new Error('StyleCI supports up to 1 preset');
                 }
                 preset = item[0];
             } else {
-                throw 'StyleCI does not support negated presets';
+                throw new Error('StyleCI does not support negated presets');
             }
         });
         data.preset = (preset === null ? 'none' : preset.substr(1));
@@ -1276,7 +1369,7 @@ StyleCILikeExporter.prototype = {
                 }
                 data.enabled.push(item[0]);
             } else if(item[1] !== false) {
-                throw 'StyleCI does not support configured fixers';
+                throw new Error('StyleCI does not support configured fixers');
             }
         });
         states.fixers.forEach(function (item) {
@@ -1309,44 +1402,75 @@ var Loader = (function () {
                 return;
             }
         }
+        var errors = new ErrorList();
         State.reset();
         if ($.isPlainObject(data.whitespace)) {
-            SavePanel.setWhiteSpace(data.whitespace);
+            try {
+                SavePanel.setWhiteSpace(data.whitespace);
+            } catch (x) {
+                errors.add(x);
+            }
             delete data.whitespace;
         }
         if (data.sets instanceof Array) {
             data.sets.forEach(function (fixerSetName) {
-               var negated = fixerSetName.charAt(0) === '-';
-               if (negated) {
-                   fixerSetName = fixerSetName.substr(1);
-               }
-               FixerSet.SelectedList.add(fixerSetName, negated);
+                var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
+                if (negated) {
+                    fixerSetName = fixerSetName.substr(1);
+                }
+                try {
+                    FixerSet.SelectedList.add(fixerSetName, negated);
+                } catch (x) {
+                    errors.add(x);
+                }
             });
             delete data.sets;
         }
         if ($.isPlainObject(data.fixers)) {
             $.each(data.fixers, function (fixerName, fixerConfiguration) {
-                var fixer = Fixers.getByName(fixerName);
-                if (fixer === null) {
-                    throw 'Unable to find a fixer named ' + fixerName;    
-                }
-                if (FixerSet.SelectedList.containsFixer(fixer)) {
-                    if (fixerConfiguration === false) {
-                        window.alert('@todo Disable fixer included in selected presets');
-                    } else if (fixerConfiguration !== true) {
-                        window.alert('@todo Set custom configuration of a fixer selected in presets');
+                try {
+                    var fixer = Fixers.getByName(fixerName);
+                    if (fixer === null) {
+                        throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName));
                     }
-                } else {
-                    if (fixerConfiguration === true) {
-                        window.alert('@todo Enable fixer with default configuration');
-                    } else if (fixerConfiguration !== false) {
-                        window.alert('@todo Enable fixer with custom configuration');
+                    var addConfigured = false;
+                    if (FixerSet.SelectedList.containsFixer(fixer)) {
+                        if (fixerConfiguration === false) {
+                            fixer.view.toggleManualSelection();
+                        } else if (fixerConfiguration !== true) {
+                            addConfigured = true;
+                        }
+                    } else {
+                        if (fixerConfiguration !== false) {
+                            fixer.view.toggleManualSelection();
+                            if (fixerConfiguration !== true) {
+                                addConfigured = true;
+                            }
+                        }
                     }
+                    if (addConfigured === true) {
+                        fixer.view.setConfiguration(fixerConfiguration);
+                    }
+                } catch (x) {
+                    errors.add(x);
                 }
             });
             delete data.fixers;
         }
-        $('#pcs-modal-load-from-json').modal('hide');
+        delete data.risky;
+        $.each(data, function (unrecognized) {
+            errors.add(new Error('Unrecognized property: ' + unrecognized));
+        });
+        if (errors.has) {
+            setTimeout(
+                function () {
+                    window.alert(errors.message);
+                },
+                10
+            );
+        } else {
+            $('#pcs-modal-load-from-json').modal('hide');
+        }
     }
     return {
         initialize: function () {
