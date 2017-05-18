@@ -713,8 +713,9 @@ FixerView.prototype = {
     configure: function () {
         new FixerView.Configurator(this);
     },
-    setConfiguration: function (configuration) {
+    setConfiguration: function (configuration, allowWarnings) {
         var me = this;
+        var errors = new ErrorList();
         if (configuration === null || $.isPlainObject(configuration) && $.isEmptyObject(configuration)) {
             me.configuration = null;
         } else {
@@ -725,12 +726,13 @@ FixerView.prototype = {
                 throw new Error('The configuration for the fixer "' + me.fixer.name + '" must be an object');
             }
             configuration = $.extend(true, {}, configuration);
-            var errors = new ErrorList();
+            var fatalError = false;
             me.fixer.configurationOptions.forEach(function (configurationOption) {
                 if (configuration.hasOwnProperty(configurationOption.name)) {
                     // Check value
                 } else if(configurationOption.hasDefaultValue === false) {
                     errors.add(new Error('The configuration option "' + configurationOption.name + '" for the fixer "' + me.fixer.name + '" must be specified'));
+                    fatalError = true;
                 }
             });
             $.each(configuration, function (configurationField) {
@@ -742,12 +744,12 @@ FixerView.prototype = {
                 });
                 if (found === false) {
                     errors.push(new Error('The fixer "' + me.fixer.name + '" does not defines the option "' + configurationField + '"'));
+                    delete configuration[configurationField];
                 }
             });
-            if (errors.has) {
-                throw errors;
+            if (errors.has === false || (allowWarnings && fatalError === false)) {
+                me.configuration = configuration;                
             }
-            me.configuration = configuration;
         }
         if (me.fixer.configurationOptions.length > 0) {
             var $btn = me.$card.find('.pcs-fixer-configure button').removeClass('btn-info btn-primary');
@@ -756,6 +758,9 @@ FixerView.prototype = {
             } else {
                 $btn.addClass('btn-primary');
             }
+        }
+        if (errors.has) {
+            throw errors;
         }
     },
     /**
@@ -1449,7 +1454,7 @@ var Loader = (function () {
                         }
                     }
                     if (addConfigured === true) {
-                        fixer.view.setConfiguration(fixerConfiguration);
+                        fixer.view.setConfiguration(fixerConfiguration, true);
                     }
                 } catch (x) {
                     errors.add(x);
