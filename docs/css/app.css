@@ -110,3 +110,11 @@ div.cgs-configuringoption {
 textarea.code {
 	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; 
 }
+
+.pcf-onlyconfiguring-hidden {
+	display: none;
+}
+
+#pcs-btn-configure {
+	border-radius: .25rem;
+}

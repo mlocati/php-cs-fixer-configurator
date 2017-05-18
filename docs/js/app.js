@@ -71,6 +71,37 @@ var PHPCsFixerVersion;
  */
 var DefaultWhitespaceConfig;
 
+var Configurator = (function () {
+    var enabled = false,
+        $toggle = $('#pcs-btn-configure');
+    $toggle.on('click', function () {
+        Configurator.enabled = !Configurator.enabled;
+    });
+    return Object.defineProperties({}, {
+        enabled: {
+            get: function () {
+                return enabled;
+            },
+            set: function (value) {
+                value = !!value;
+                if (enabled === value) {
+                    return;
+                }
+                enabled = value;
+                if (enabled) {
+                    $('.pcf-onlyconfiguring-hidden').removeClass('pcf-onlyconfiguring-hidden').addClass('pcf-onlyconfiguring-visible');
+                } else {
+                    $('.pcf-onlyconfiguring-visible').removeClass('pcf-onlyconfiguring-visible').addClass('pcf-onlyconfiguring-hidden');
+                }
+                Fixers.getAll().forEach(function (fixer) {
+                    fixer.view.updateClasses();
+                });
+                $toggle.removeClass('btn-default btn-success').addClass(enabled ? 'btn-success' : 'btn-default');
+            }
+        }
+    });
+})();
+
 /**
  * Normalize a string, extracting normalized words contained in it.
  *
@@ -403,7 +434,7 @@ Fixer.prototype = {
         });
     },
     initializeView: function () {
-        this.view = new FixerView(this);
+        this.view = new Fixer.View(this);
     }
 };
 
@@ -645,6 +676,10 @@ FixerSet.SelectedList = (function () {
             updateView();
             refreshCards();
             return true;
+        },
+        updateVisibility: function () {
+            updateView();
+            refreshCards();
         }
     };
 })();
@@ -654,7 +689,7 @@ FixerSet.SelectedList = (function () {
  * @constructor
  * @param {Fixer} fixer
  */
-function FixerView(fixer) {
+Fixer.View = function (fixer) {
     var me = this;
     me.fixer = fixer;
     me.selected = null;
@@ -663,7 +698,9 @@ function FixerView(fixer) {
         e.stopPropagation();
     });
     me.$card.find('>.card').on('click', function () {
-        me.toggleManualSelection();
+        if (Configurator.enabled) {
+            me.toggleManualSelection();
+        }
     });
     if (me.fixer.configurationOptions.length > 0) {
         me.$card.find('.pcs-fixer-configure button').on('click', function () {
@@ -673,8 +710,8 @@ function FixerView(fixer) {
     me.setConfiguration(null);
     $('#pcs-cards').append(me.$card);
     me.updateClasses();
-}
-FixerView.prototype = {
+};
+Fixer.View.prototype = {
     reset: function() {
         this.selected = null;
         this.setConfiguration(null);
@@ -698,20 +735,22 @@ FixerView.prototype = {
     },
     updateClasses: function () {
         this.$card.removeClass('pcs-fixerselection-no pcs-fixerselection-byfixerset-excluded pcs-fixerselection-byfixerset-included pcs-fixerselection-yes');
-        if (FixerSet.SelectedList.containsFixer(this.fixer)) {
-            if (this.selected === false) {
-                this.$card.addClass('pcs-fixerselection-byfixerset-excluded');
-            } else {
-                this.$card.addClass('pcs-fixerselection-byfixerset-included');
+        var newClass = 'pcs-fixerselection-no';
+        if (Configurator.enabled) {
+            if (FixerSet.SelectedList.containsFixer(this.fixer)) {
+                if (this.selected === false) {
+                    newClass = 'pcs-fixerselection-byfixerset-excluded';
+                } else {
+                    newClass = 'pcs-fixerselection-byfixerset-included';
+                }
+            } else if (this.selected === true) {
+                newClass = 'pcs-fixerselection-yes';
             }
-        } else if (this.selected === true) {
-            this.$card.addClass('pcs-fixerselection-yes');
-        } else {
-            this.$card.addClass('pcs-fixerselection-no');
         }
+        this.$card.addClass(newClass);
     },
     configure: function () {
-        new FixerView.Configurator(this);
+        new Fixer.View.Configurator(this);
     },
     setConfiguration: function (configuration, allowWarnings) {
         var me = this;
@@ -748,7 +787,7 @@ FixerView.prototype = {
                 }
             });
             if (errors.has === false || (allowWarnings && fatalError === false)) {
-                me.configuration = configuration;                
+                me.configuration = configuration;
             }
         }
         if (me.fixer.configurationOptions.length > 0) {
@@ -797,15 +836,15 @@ FixerView.prototype = {
 /**
  * @class
  * @constructor
- * @param {FixerView} fixerView
+ * @param {Fixer.View} fixerView
  */
-FixerView.Configurator = function (fixerView) {
+Fixer.View.Configurator = function (fixerView) {
     var me = this;
     me.fixerView = fixerView;
     me.inFixerSets = FixerSet.SelectedList.containsFixer(fixerView.fixer);
     me.options = [];
     me.fixerView.fixer.configurationOptions.forEach(function (option, index) {
-        me.options.push(new FixerView.Configurator.Option(me, option));
+        me.options.push(new Fixer.View.Configurator.Option(me, option));
     });
     me.$dialog = ModalManager.show(Templater.build('fixer-card-configure', me));
     me.$select = me.$dialog.find('select.cgs-configuringoption');
@@ -839,7 +878,7 @@ FixerView.Configurator = function (fixerView) {
         me.$dialog.modal('hide');
     });
 };
-FixerView.Configurator.prototype = {
+Fixer.View.Configurator.prototype = {
     showOption: function (index) {
         if (this.$select.prop('selectedIndex') !== index) {
             this.$select.prop('selectedIndex', index).trigger('change');
@@ -872,14 +911,14 @@ FixerView.Configurator.prototype = {
 /**
  * @class
  * @constructor
- * @param {FixerView.Configurator} configurator
+ * @param {Fixer.View.Configurator} configurator
  * @param {Fixer.ConfigurationOption} option
  */
-FixerView.Configurator.Option = function (configurator, option) {
+Fixer.View.Configurator.Option = function (configurator, option) {
     this.configurator = configurator;
     this.option = option;
 };
-FixerView.Configurator.Option.prototype = {
+Fixer.View.Configurator.Option.prototype = {
     initialize: function ($container) {
         var me = this;
         me.$container = $container;
@@ -1267,7 +1306,7 @@ var SavePanel = (function () {
         },
         setWhiteSpace: function (whitespace) {
             setSelectedWhitespace(whitespace);
-        }
+        },
     };
 })();
 
@@ -1320,6 +1359,9 @@ JsonExporter.prototype = {
         var data = {};
         if ($.isEmptyObject(whitespace) !== true) {
             data.whitespace = whitespace;
+        }
+        if (states.risky === true) {
+            data.risky = true;
         }
         states.fixerSets.forEach(function (state) {
             if (data.sets === undefined) {
@@ -1523,6 +1565,9 @@ $.ajax({
     SavePanel.registerExporter(new JsonExporter());
     SavePanel.registerExporter(new StyleCILikeExporter());
     Loader.initialize();
+    if (window.location.hash === '#configurator') {
+        Configurator.enabled = true;
+    }
 });
 
 });

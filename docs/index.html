@@ -21,18 +21,6 @@
                 </ul>
                 <form class="form-inline" onsubmit="return false">
                     <div class="input-group">
-                        <span class="input-group-addon">Presets</span>
-                        <span class="form-control" id="pcs-selected-presets"></span>
-                        <div class="input-group-btn">
-                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" id="pcs-selected-presets-add">
-                            </div>
-                        </div>
-                    </div>
-                    &nbsp;
-                    <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
                         <input type="search" class="form-control" id="pcs-search" placeholder="Enter search text" />
                         <div class="input-group-btn">
@@ -45,11 +33,26 @@
                             </div>
                         </div>
                     </div>
-                    &nbsp;
-                    <div class="input-group">
-                        <button class="btn btn-default" data-toggle="modal" data-target="#pcs-modal-load-from-json"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+                    <div class="input-group pcf-onlyconfiguring-hidden">
                         &nbsp;
-                        <button class="btn btn-default" id="pcs-btn-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                        <span class="input-group-addon">Presets</span>
+                        <span class="form-control" id="pcs-selected-presets"></span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" id="pcs-selected-presets-add">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group" role="group">
+                        &nbsp;
+                        <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-load-from-json"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+                        <button class="btn btn-default pcf-onlyconfiguring-hidden" id="pcs-btn-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                        <button class="btn btn-default" id="pcs-btn-configure" data-toggle="tooltip" title="Enable/Disable configurator"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="input-group">
+                        
                     </div>
                 </form>
             </div>
