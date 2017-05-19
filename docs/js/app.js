@@ -1,5 +1,5 @@
 /* jshint unused:vars, undef:true, browser:true, jquery:true */
-/* global Handlebars, Prism, YAML */
+/* global Handlebars, Prism, jsyaml */
 $(function () {
 'use strict';
 
@@ -1285,7 +1285,7 @@ YamlImporter.prototype = {
     parse: function (serialized) {
         var state;
         try {
-            state = YAML.parse(serialized);
+            state = jsyaml.safeLoad(serialized);
         } catch (e) {
             throw new Error('The YAML is invalid');
         }
@@ -1553,7 +1553,7 @@ YamlExporter.prototype = {
         return 'yaml';
     },
     render: function (state) {
-        return YAML.stringify(state, null, 2, true);
+        return jsyaml.safeDump(state);
     }
 };
 
@@ -1599,7 +1599,7 @@ StyleCILikeExporter.prototype = {
                 }
             });
         }
-        return YAML.stringify(data, null, 2, true);
+        return jsyaml.safeDump(data);
     }
 };
 
