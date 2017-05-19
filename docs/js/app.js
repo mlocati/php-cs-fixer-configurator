@@ -599,6 +599,10 @@ FixerSet.SelectedList = (function () {
             var $item;
             $unselected
                 .append($item = $('<div class="dropdown-item" />')
+                    .on('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    })
                     .text(' ' + fixerSet.name)
                 );
             if (somePlus) {
