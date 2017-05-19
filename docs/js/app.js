@@ -1088,46 +1088,48 @@ var State = (function () {
             Saver.resetOptions();
         },
         get: function () {
-            var result = {
-                risky: false,
-                fixerSets: [],
-                fixers: []
-            };
+            var state = {};
+            var whitespace = Saver.whitespace;
+            if ($.isEmptyObject(whitespace) === false) {
+                state.whitespace = whitespace;
+            }
             FixerSet.SelectedList.getSelected().forEach(function (item) {
                 if (item[1] === true && item[0].risky === true) {
-                    result.risky = true;
+                    state.risky = true;
                 }
-                result.fixerSets.push([item[0].name, item[1]]);
+                if (state.fixerSets === undefined) {
+                    state.fixerSets = [];
+                }
+                state.fixerSets.push((item[1] ? '' : '-') + item[0].name);
             });
             Fixers.getAll().forEach(function (fixer) {
-                var state = fixer.view.getState();
-                if (state !== null) {
-                    state = fixer.view.getState();
-                    if (state !== false && fixer.risky === true) {
-                        result.risky = true;
+                var fixerState = fixer.view.getState();
+                if (fixerState !== null) {
+                    if (fixerState !== false && fixer.risky === true) {
+                        state.risky = true;
                     }
-                    result.fixers.push([fixer.name, state]);
+                    if (state.fixers === undefined) {
+                        state.fixers = {};
+                    }
+                    state.fixers[fixer.name] = fixerState;
                 }
             });
-            return result;
+            return state;
         },
         set: function (state) {
-            if ($.isPlainObject(state) !== true) {
-                throw new Error('The stete must be an object');
-            }
             state = $.extend(true, {}, state);
             var errors = new ErrorList();
             State.reset();
             if ($.isPlainObject(state.whitespace)) {
                 try {
-                    Saver.setWhiteSpace(state.whitespace);
+                    Saver.whitespace = state.whitespace;
                 } catch (x) {
                     errors.add(x);
                 }
                 delete state.whitespace;
             }
-            if (state.sets instanceof Array) {
-                state.sets.forEach(function (fixerSetName) {
+            if (state.fixerSets instanceof Array) {
+                state.fixerSets.forEach(function (fixerSetName) {
                     var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
                     if (negated) {
                         fixerSetName = fixerSetName.substr(1);
@@ -1138,7 +1140,7 @@ var State = (function () {
                         errors.add(x);
                     }
                 });
-                delete state.sets;
+                delete state.fixerSets;
             }
             if ($.isPlainObject(state.fixers)) {
                 $.each(state.fixers, function (fixerName, fixerConfiguration) {
@@ -1191,23 +1193,23 @@ var Loader = (function () {
     }
 
     function load() {
-        var serialized = $.trim($input.val()), data;
+        var serialized = $.trim($input.val()), state;
         if (serialized === '') {
-            data = {};
+            state = {};
         } else {
             var importer = getSelectedImporter();
             if (importer === null) {
                 window.alert('Please select an import format');
             }
             try {
-                data = importer.parse(serialized);
+                state = importer.parse(serialized);
             } catch (e) {
                 window.alert(e.message || e.toString());
                 return;
             }
         }
         try {
-            State.set(data);
+            State.set(state);
         } catch (errors) {
             setTimeout(
                 function () {
@@ -1220,9 +1222,16 @@ var Loader = (function () {
         $('#pcs-modal-load').modal('hide');
     }
 
-    $('#pcs-modal-load .btn-primary').on('click', function () {
-        load();
-    });
+    $('#pcs-modal-load')
+        .on('shown.bs.modal', function () {
+            if ($(window).height() > 600) {
+                $input.focus();
+            }
+        })
+        .find('.btn-primary').on('click', function () {
+            load();
+        })
+    ;
 
     return {
         initialize: function (importers) {
@@ -1255,16 +1264,16 @@ JsonImporter.prototype = {
         return 'JSON';
     },
     parse: function (serialized) {
-        var result;
+        var state;
         try {
-            result = JSON.parse(serialized);
+            state = JSON.parse(serialized);
         } catch (e) {
             throw new Error('The JSON is invalid');
         }
-        if ($.isPlainObject(result) === false) {
+        if ($.isPlainObject(state) !== true) {
             throw new Error('The JSON code does not represent an object');
         }
-        return result;
+        return state;
     }
 };
 function YamlImporter() {
@@ -1274,16 +1283,16 @@ YamlImporter.prototype = {
         return 'YAML';
     },
     parse: function (serialized) {
-        var result;
+        var state;
         try {
-            result = YAML.parse(serialized);
+            state = YAML.parse(serialized);
         } catch (e) {
             throw new Error('The YAML is invalid');
         }
-        if ($.isPlainObject(result) === false) {
+        if ($.isPlainObject(state) !== true) {
             throw new Error('The YAML code does not represent an object');
         }
-        return result;
+        return state;
     }
 };
 
@@ -1293,48 +1302,11 @@ var Saver = (function () {
         $saveLineEnding = $('#pcs-save-line-ending'),
         $out = $('#pcs-save-output'),
         $outCopy = $('#pcs-save-output-copy'),
+        $persist = $('#pcs-save-persist'),
         shown = false;
 
     function getSelectedExporter() {
         return $saveFormat.find('option:selected').data('pcs-exporter') || null;
-    }
-    function getSelectedWhitespace() {
-        var result = {
-            indent: JSON.parse('"' + $saveIndent.find('>option:selected').val() + '"'),
-            lineEnding: JSON.parse('"' + $saveLineEnding.find('>option:selected').val() + '"')
-        };
-        if (result.indent === DefaultWhitespaceConfig.indent) {
-            delete result.indent;
-        }
-        if (result.lineEnding === DefaultWhitespaceConfig.lineEnding) {
-            delete result.lineEnding;
-        }
-        return result;
-    }
-    function setSelectedWhitespace(whitespace) {
-        var errors = new ErrorList();
-        whitespace = $.extend({}, DefaultWhitespaceConfig, whitespace || {});
-        var $option;
-        $option = $saveIndent.find('option[value="' + JSON.stringify(whitespace.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
-        if ($option.length === 1) {
-            $option.prop('selected', true);
-        } else {
-            errors.add(new Error('Invalid indent value: ' + JSON.stringify(whitespace.indent)));
-        }
-        delete whitespace.indent;
-        $option = $saveLineEnding.find('option[value="' + JSON.stringify(whitespace.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
-        if ($option.length === 1) {
-            $option.prop('selected', true);
-        } else {
-            errors.add(new Error('Invalid line ending value: ' + JSON.stringify(whitespace.lineEnding)));
-        }
-        delete whitespace.lineEnding;
-        $.each(whitespace, function (unrecognized) {
-            errors.add(new Error('Unrecognized whitespace property: ' + unrecognized));
-        });
-        if (errors.has === true) {
-            throw errors;
-        }
     }
     function refreshOutput() {
         $out.empty();
@@ -1354,10 +1326,9 @@ var Saver = (function () {
                 $saveLineEnding.removeAttr('disabled');
             }
             var state = State.get(),
-                whitespace = getSelectedWhitespace(),
                 $code = $('<code />')
                     .attr('class', 'language-' + exporter.getLanguage())
-                    .text(exporter.render(state, whitespace)),
+                    .text(exporter.render(state)),
                 $pre = $('<pre />').append($code);
             Prism.highlightElement($code[0]);
             $out.append($pre);
@@ -1371,6 +1342,11 @@ var Saver = (function () {
         .on('show.bs.modal', function (e) {
             shown = true;
             refreshOutput();
+        })
+        .on('shown.bs.modal', function () {
+            if ($(window).height() > 600) {
+                $saveFormat.focus();
+            }
         })
         .on('hidden.bs.modal', function (e) {
             shown = false;
@@ -1419,36 +1395,89 @@ var Saver = (function () {
             $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
         }, 500);
     });
-    return {
-        initialize: function (exporters) {
-            Saver.resetOptions();
-            if (exporters) {
-                exporters.forEach(function (exporter) {
-                    Saver.registerExporter(exporter);
-                });
+    return Object.defineProperties(
+        {
+            initialize: function (exporters) {
+                Saver.resetOptions();
+                if (exporters) {
+                    exporters.forEach(function (exporter) {
+                        Saver.registerExporter(exporter);
+                    });
+                }
+                delete Saver.initialize;
+            },
+            registerExporter: function (exporter, selected) {
+                $saveFormat.append($('<option />')
+                    .text(exporter.getName ? exporter.getName() : exporter.toString())
+                    .data('pcs-exporter', exporter)
+                );
+                var numExporters = $saveFormat.find('>option').length;
+                if (numExporters === 1 || selected) {
+                    $saveFormat
+                        .prop('selectedIndex', numExporters - 1)
+                        .trigger('change')
+                    ;
+                }
+            },
+            resetOptions: function() {
+                Saver.whitespace = DefaultWhitespaceConfig;
+            },
+        },
+        {
+            whitespace: {
+                get: function () {
+                    var result = {
+                        indent: JSON.parse('"' + $saveIndent.find('>option:selected').val() + '"'),
+                        lineEnding: JSON.parse('"' + $saveLineEnding.find('>option:selected').val() + '"')
+                    };
+                    if (result.indent === DefaultWhitespaceConfig.indent) {
+                        delete result.indent;
+                    }
+                    if (result.lineEnding === DefaultWhitespaceConfig.lineEnding) {
+                        delete result.lineEnding;
+                    }
+                    return result;
+                },
+                set: function (value) {
+                    if (!$.isPlainObject(value)) {
+                        throw new Error('Whitespace configuration is not an object');
+                    }
+                    var errors = new ErrorList();
+                    value = $.extend({}, DefaultWhitespaceConfig, value || {});
+                    var $option;
+                    $option = $saveIndent.find('option[value="' + JSON.stringify(value.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
+                    if ($option.length === 1) {
+                        $option.prop('selected', true);
+                    } else {
+                        errors.add(new Error('Invalid indent value: ' + JSON.stringify(value.indent)));
+                    }
+                    delete value.indent;
+                    $option = $saveLineEnding.find('option[value="' + JSON.stringify(value.lineEnding).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
+                    if ($option.length === 1) {
+                        $option.prop('selected', true);
+                    } else {
+                        errors.add(new Error('Invalid line ending value: ' + JSON.stringify(value.lineEnding)));
+                    }
+                    delete value.lineEnding;
+                    $.each(value, function (unrecognized) {
+                        errors.add(new Error('Unrecognized whitespace property: ' + unrecognized));
+                    });
+                    if (errors.has === true) {
+                        throw errors;
+                    }
+                }
+            },
+            persist: {
+                get: function () {
+                    return $persist.is(':checked');
+                },
+                set: function (value) {
+                    $persist.prop('checked', !!value);
+                }
             }
-            delete Saver.initialize;
-        },
-        registerExporter: function (exporter, selected) {
-            $saveFormat.append($('<option />')
-                .text(exporter.getName ? exporter.getName() : exporter.toString())
-                .data('pcs-exporter', exporter)
-            );
-            var numExporters = $saveFormat.find('>option').length;
-            if (numExporters === 1 || selected) {
-                $saveFormat
-                    .prop('selectedIndex', numExporters - 1)
-                    .trigger('change')
-                ;
-            }
-        },
-        resetOptions: function() {
-            setSelectedWhitespace(DefaultWhitespaceConfig);
-        },
-        setWhiteSpace: function (whitespace) {
-            setSelectedWhitespace(whitespace);
         }
-    };
+    );
+
 })();
 
 function PhpCsExporter() {
@@ -1460,22 +1489,35 @@ PhpCsExporter.prototype = {
     getLanguage: function () {
         return 'php';
     },
-    render: function (states, whitespace) {
+    render: function (state) {
         var lines = ['<?php', ''];
         lines.push('return PhpCsFixer\\Config::create()');
-        if (states.risky === true) {
+        if (state.risky === true) {
             lines.push('    ->setRiskyAllowed(true)');
         }
-        if (whitespace.hasOwnProperty('indent')) {
-            lines.push('    ->setIndent(' + toPHP(whitespace.indent) + ')');
-        }
-        if (whitespace.hasOwnProperty('lineEnding')) {
-            lines.push('    ->setLineEnding(' + toPHP(whitespace.lineEnding) + ')');
+        if ('whitespace' in state) {
+            if (state.whitespace.hasOwnProperty('indent')) {
+                lines.push('    ->setIndent(' + toPHP(state.whitespace.indent) + ')');
+            }
+            if (state.whitespace.hasOwnProperty('lineEnding')) {
+                lines.push('    ->setLineEnding(' + toPHP(state.whitespace.lineEnding) + ')');
+            }
         }
         lines.push('    ->setRules([');
-        [].concat(states.fixerSets, states.fixers).forEach(function (state) {
-            lines.push('        \'' + state[0] + '\' => ' + toPHP(state[1]) + ',');
-        });
+        if ('fixerSets' in state) {
+            state.fixerSets.forEach(function (fixerSetName) {
+                if (fixerSetName.charAt(0) === '-') {
+                    lines.push('        ' + toPHP(fixerSetName.substr(1)) + ' => ' + toPHP(false) + ',');
+                } else {
+                    lines.push('        ' + toPHP(fixerSetName) + ' => ' + toPHP(true) + ',');
+                }
+            });
+        }
+        if ('fixers' in state) {
+            $.each(state.fixers, function (fixerName, fixerState) {
+                lines.push('        ' + toPHP(fixerName) + ' => ' + toPHP(fixerState) + ',');
+            });
+        }
         lines.push('    ])');
         lines.push('    ->setFinder(PhpCsFixer\\Finder::create()');
         lines.push('        ->exclude(\'vendor\')');
@@ -1496,36 +1538,12 @@ JsonExporter.prototype = {
     getLanguage: function () {
         return 'json';
     },
-    format: function (states, whitespace) {
-        var data = {};
-        if ($.isEmptyObject(whitespace) !== true) {
-            data.whitespace = whitespace;
-        }
-        if (states.risky === true) {
-            data.risky = true;
-        }
-        states.fixerSets.forEach(function (state) {
-            if (data.sets === undefined) {
-                data.sets = [];
-            }
-            data.sets.push((state[1] === false ? '-' : '') + state[0]);
-        });
-        states.fixers.forEach(function (state) {
-            if (data.fixers === undefined) {
-                data.fixers = {};
-            }
-            data.fixers[state[0]] = state[1];
-        });
-        return data;
-    },
-    render: function (states, whitespace) {
-        var data = this.format(states, whitespace);
-        return JSON.stringify(data, null, 4);
+    render: function (state) {
+        return JSON.stringify(state, null, 4);
     }
 };
 
 function YamlExporter() {
-    this.jsonExporter = new JsonExporter();
 }
 YamlExporter.prototype = {
     getName: function () {
@@ -1534,9 +1552,8 @@ YamlExporter.prototype = {
     getLanguage: function () {
         return 'yaml';
     },
-    render: function (states, whitespace) {
-        var data = this.jsonExporter.format(states, whitespace);
-        return YAML.stringify(data, null, 2, true);
+    render: function (state) {
+        return YAML.stringify(state, null, 2, true);
     }
 };
 
@@ -1555,42 +1572,66 @@ StyleCILikeExporter.prototype = {
     supportsLineEnding: function () {
         return false;
     },
-    render: function (states, whitespace) {
+    render: function (state) {
         var data = {};
         var preset = null;
-        states.fixerSets.forEach(function (item) {
-            if (item[1] === true) {
-                if (preset !== null) {
+        if ('fixerSets' in state) {
+            if (state.fixerSets.length > 0) {
+                if (state.fixerSets.length > 1) {
                     throw new Error('StyleCI supports up to 1 preset');
                 }
-                preset = item[0];
-            } else {
-                throw new Error('StyleCI does not support negated presets');
+                preset = state.fixerSets[0];
             }
-        });
+        }
         data.preset = (preset === null ? 'none' : preset.substr(1));
-        data.risky = states.risky;
-        states.fixers.forEach(function (item) {
-            if (item[1] === true) {
-                if (data.hasOwnProperty('enabled') === false) {
-                    data.enabled = [];
+        if (state.risky === true) {
+            data.risky = state.risky;
+        }
+        if ('fixers' in state) {
+            $.each(state.fixers, function (fixerName, fixerState) {
+                if (fixerState === true) {
+                    if (data.enabled === undefined) {
+                        data.enabled = [];
+                    }
+                    data.enabled.push(fixerName);
+                } else if(fixerState !== false) {
+                    throw new Error('StyleCI does not support configured fixers');
                 }
-                data.enabled.push(item[0]);
-            } else if(item[1] !== false) {
-                throw new Error('StyleCI does not support configured fixers');
-            }
-        });
-        states.fixers.forEach(function (item) {
-            if (item[1] === false) {
-                if (data.hasOwnProperty('disabled') === false) {
-                    data.disabled = [];
-                }
-                data.disabled.push(item[0]);
-            }
-        });
+            });
+        }
         return YAML.stringify(data, null, 2, true);
     }
 };
+
+var Persister = (function () {
+    var KEY = 'php-cs-fixer-configuration.persist.v1';
+    $(window).on('beforeunload', function () {
+        try {
+            if (Saver.persist) {
+                window.localStorage.setItem(KEY, JSON.stringify(State.get()));
+            } else {
+                window.localStorage.removeItem(KEY);
+            }
+        } catch (e) {
+        }
+    });
+    return {
+        initialize: function () {
+            try {
+                var json = window.localStorage.getItem(KEY);
+                if (json) {
+                    var state = JSON.parse(json);
+                    if ($.isPlainObject(state)) {
+                        Saver.persist = true;
+                        State.set(state);
+                    }
+                }
+            } catch (e) {
+            }
+            delete Persister.initialize;
+        }
+    };
+})();
 
 $.ajax({
     dataType: 'json',
@@ -1634,6 +1675,7 @@ $.ajax({
         new YamlExporter(),
         new StyleCILikeExporter()
     ]);
+    Persister.initialize();
     if (window.location.hash === '#configurator') {
         Configurator.enabled = true;
     }
