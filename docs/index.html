@@ -47,6 +47,7 @@
                     </div>
                     <div class="btn-group" role="group">
                         &nbsp;
+                        <button class="btn btn-default" id="pcs-btn-toggleview" data-toggle="tooltip" title="Change view"><i class="fa fa-bars" aria-hidden="true"></i></button>
                         <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-load"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
                         <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
                         <button class="btn btn-default" id="pcs-btn-configure" data-toggle="tooltip" title="Enable/Disable configurator"><i class="fa fa-cog" aria-hidden="true"></i></button>
@@ -58,6 +59,12 @@
         <div class="container-fluid">
             <div class="row" id="pcs-cards">
             </div>
+            <table id="pcs-rows" class="table table-sm table-bordered">
+                <colgroup>
+                    <col width="1" />
+                </colgroup>
+                <tbody></tbody>
+            </table>
         </div>
 
         <div class="modal" role="dialog" id="pcs-modal-load">
@@ -153,8 +160,8 @@
             </div>
         </div>
 
-        <script id="template-fixer-card" type="text/template">
-            <div class="col-sm-6 col-lg-4 col-xl-3 pcs-fixercard" id="pcs-fixercard-{{ name }}">
+        <script id="template-fixerview-card" type="text/template">
+            <div class="col-sm-6 col-lg-4 col-xl-3 pcs-fixerview-card">
                 <div class="card">
                     <div class="card-block">
                         <h5 class="card-title">
@@ -175,7 +182,7 @@
                             {{/if}}
                         </p>
                         <footer>
-                            <div class="pcs-fixer-configure">
+                            <div class="pcs-fixerview-configure">
                                 {{#if configurationOptions.length}}
                                     <button class="btn btn-info btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
                                 {{else}}
@@ -193,6 +200,40 @@
                     </div>
                 </div>
             </div>
+        </script>
+
+        <script id="template-fixerview-row" type="text/template">
+            <tr>
+                <td class="pcs-fixerview-configure">
+                    {{#if configurationOptions.length}}
+                        <button class="btn btn-info btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                    {{else}}
+                        <button class="btn btn-secondary btn-sm disabled" data-toggle="tooltip" title="This fixer is not configurable"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                    {{/if}}
+                </td>
+                <td>
+                    <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
+                    {{#if risky }}
+                        {{#if riskyDescription}}
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
+                        {{else}}
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        {{/if}}
+                    {{/if}}
+                </td>
+                <td>
+                    {{#if summary }}
+                        {{ summary }}
+                    {{else}}
+                        {{ description }}
+                    {{/if}}
+                </td>
+                <td>
+                    {{#each sets}}
+                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+                    {{/each}}
+                </td>
+            </tr>
         </script>
 
         <script id="template-fixer-details" type="text/template">
@@ -305,28 +346,28 @@
                                     </div>
                                     {{#each codeSamples as |codeSample codeSampleIndex|}}
                                         <div class="tab-pane" id="template-fixer-details-example-{{ codeSampleIndex }}" role="tabpanel">
-											{{#if ../configurationOptions.length}}
-	                                            <br />
-	                                            <div class="card">
-    	                                            <div class="card-header">
-        	                                            Configuration
-            	                                    </div>
-                	                                <div class="card-block">
-                    	                                {{#if isConfigured}}
-															<ul style="margin-bottom: 0">
-                            	                                {{#each configuration as |configurationValue configurationKey|}}
-																	<li>
-																		<strong><code>{{ configurationKey }}</code></strong><br />
-																		<code>{{toJSON configurationValue }}</code>
-																	</li>
-                                        	                    {{/each}}
-                                            	            </ul>
-                                                	    {{else}}
-                                                    	    <i>Default configuration</i>
-	                                                    {{/if}}
-    	                                            </div>
-        	                                    </div>
-											{{/if}}
+                                            {{#if ../configurationOptions.length}}
+                                                <br />
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        Configuration
+                                                    </div>
+                                                    <div class="card-block">
+                                                        {{#if isConfigured}}
+                                                            <ul style="margin-bottom: 0">
+                                                                {{#each configuration as |configurationValue configurationKey|}}
+                                                                    <li>
+                                                                        <strong><code>{{ configurationKey }}</code></strong><br />
+                                                                        <code>{{toJSON configurationValue }}</code>
+                                                                    </li>
+                                                                {{/each}}
+                                                            </ul>
+                                                        {{else}}
+                                                            <i>Default configuration</i>
+                                                        {{/if}}
+                                                    </div>
+                                                </div>
+                                            {{/if}}
                                             <br />
                                             <ul class="nav nav-tabs" role="tablist">
                                                 <li class="nav-item">
@@ -411,7 +452,7 @@
             </div>
         </script>
 
-        <script id="template-fixer-card-configure" type="text/template">
+        <script id="template-fixer-configure" type="text/template">
             <div class="modal" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">

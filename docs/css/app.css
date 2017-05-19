@@ -1,59 +1,71 @@
-html, body {
-	min-height: 100%;
+/* Toolbar */
+#pcs-search {
+	border: 0;
 }
 #pcs-selected-presets {
 	border: 0;
 	min-width: 5em;
 	display: inline-block;
 }
-#pcs-search {
-	border: 0;
+
+/* Fixer list - Common */
+.pcs-search-failed {
+	display: none;
+}
+.pcs-fixerview-selection-byfixerset-excluded>.card,
+tr.pcs-fixerview-selection-byfixerset-excluded {
+	background-color: #eca6a4;
+	border-color: #eca6a4;
+}
+.pcs-fixerview-selection-byfixerset-included>.card,
+tr.pcs-fixerview-selection-byfixerset-included {
+	background-color: #ace8b7;
+	border-color: #ace8b7;
+}
+.pcs-fixerview-selection-yes>.card,
+tr.pcs-fixerview-selection-yes {
+	background-color: #5cb85c;
+	border-color: #5cb85c;
+}
+.pcs-fixerview-selection-no>.card .pcs-fixerview-configure,
+tr.pcs-fixerview-selection-no .pcs-fixerview-configure button,
+.pcs-fixerview-selection-byfixerset-excluded>.card .pcs-fixerview-configure,
+tr.pcs-fixerview-selection-byfixerset-excluded .pcs-fixerview-configure button {
+	visibility: hidden;
 }
 
-div.pcs-fixercard {
+/* Fixer list - Cards */
+div.pcs-fixerview-card {
 	margin-bottom: 20px;
 }
-div.pcs-fixercard .card-title {
+div.pcs-fixerview-card .card-title {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-div.pcs-fixercard>.card>.card-block>.card-title>.fa-exclamation-triangle {
+div.pcs-fixerview-card>.card>.card-block>.card-title>.fa-exclamation-triangle {
 	float: right;
 }
-div.pcs-fixercard>.card>.card-block>footer {
+div.pcs-fixerview-card>.card>.card-block>footer {
 	margin-bottom: -1em;
 }
-div.pcs-fixercard>.card>.card-block>footer>.pcs-fixer-configure {
+div.pcs-fixerview-card .pcs-fixerview-configure {
 	float: left;
 }
-div.pcs-fixercard>.card>.card-block>footer>.pcs-fixer-sets {
+div.pcs-fixerview-card>.card>.card-block>footer>.pcs-fixer-sets {
 	float: right;
 }
-div.pcs-search-failed {
+
+/* Fixer list - Rows */
+tr.pcs-fixerview-selection-no .pcs-fixerview-configure {
 	display: none;
 }
-
-
-.pcs-fixerselection-no>.card {
-}
-.pcs-fixerselection-byfixerset-excluded>.card {
-	background-color: #eca6a4;
-	border-color: #eca6a4;
-}
-.pcs-fixerselection-byfixerset-included>.card {
-	background-color: #ace8b7;
-	border-color: #ace8b7;
-}
-.pcs-fixerselection-yes>.card {
-	background-color: #5cb85c;
-	border-color: #5cb85c;
+body.pcf-configuring tr.pcs-fixerview-selection-no .pcs-fixerview-configure {
+	display: table-cell;
 }
 
-.pcs-fixerselection-no .pcs-fixer-configure,
-	.pcs-fixerselection-byfixerset-excluded .pcs-fixer-configure {
-	visibility: hidden;
-}
+
+
 
 div.cgs-configuringoption {
 	margin-top: 20px;
@@ -90,8 +102,4 @@ textarea.code {
 
 .pcf-onlyconfiguring-hidden {
 	display: none;
-}
-
-#pcs-btn-configure {
-	border-radius: .25rem;
 }

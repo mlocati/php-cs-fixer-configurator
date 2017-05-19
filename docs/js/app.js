@@ -93,8 +93,10 @@ var Configurator = (function () {
                 enabled = value;
                 if (enabled) {
                     $('.pcf-onlyconfiguring-hidden').removeClass('pcf-onlyconfiguring-hidden').addClass('pcf-onlyconfiguring-visible');
+                    $(document.body).addClass('pcf-configuring');
                 } else {
                     $('.pcf-onlyconfiguring-visible').removeClass('pcf-onlyconfiguring-visible').addClass('pcf-onlyconfiguring-hidden');
+                    $(document.body).removeClass('pcf-configuring');
                 }
                 Fixers.getAll().forEach(function (fixer) {
                     fixer.view.updateClasses();
@@ -301,11 +303,10 @@ var Search = (function () {
         lastFixerSets = filterSets;
         var searchArray = getSearchableArray(searchText);
         Fixers.getAll().forEach(function (fixer) {
-            var $card = $('#pcs-fixercard-' + fixer.name);
             if (fixer.satisfySearch(searchArray, filterSets) === true) {
-                $card.removeClass('pcs-search-failed');
+                fixer.view.$views.removeClass('pcs-search-failed');
             } else {
-                $card.addClass('pcs-search-failed');
+                fixer.view.$views.addClass('pcs-search-failed');
             }
         });
     }
@@ -701,22 +702,25 @@ Fixer.View = function (fixer) {
     var me = this;
     me.fixer = fixer;
     me.selected = null;
-    me.$card = $(Templater.build('fixer-card', fixer));
-    me.$card.find('button, a').on('click', function (e) {
+    me.$card = $(Templater.build('fixerview-card', fixer));
+    me.$row = $(Templater.build('fixerview-row', fixer));
+    me.$views = me.$card.add(me.$row);
+    me.$views.find('button, a').on('click', function (e) {
         e.stopPropagation();
     });
-    me.$card.find('>.card').on('click', function () {
+    me.$card.find('>.card').add(me.$row).on('click', function () {
         if (Configurator.enabled) {
             me.toggleManualSelection();
         }
     });
     if (me.fixer.configurationOptions.length > 0) {
-        me.$card.find('.pcs-fixer-configure button').on('click', function () {
+        me.$views.find('.pcs-fixerview-configure button').on('click', function () {
             me.configure();
         });
     }
     me.setConfiguration(null);
     $('#pcs-cards').append(me.$card);
+    $('#pcs-rows>tbody').append(me.$row);
     me.updateClasses();
 };
 Fixer.View.prototype = {
@@ -742,20 +746,20 @@ Fixer.View.prototype = {
         this.updateClasses();
     },
     updateClasses: function () {
-        this.$card.removeClass('pcs-fixerselection-no pcs-fixerselection-byfixerset-excluded pcs-fixerselection-byfixerset-included pcs-fixerselection-yes');
-        var newClass = 'pcs-fixerselection-no';
+        this.$views.removeClass('pcs-fixerview-selection-no pcs-fixerview-selection-byfixerset-excluded pcs-fixerview-selection-byfixerset-included pcs-fixerview-selection-yes');
+        var newClass = 'pcs-fixerview-selection-no';
         if (Configurator.enabled) {
             if (FixerSet.SelectedList.containsFixer(this.fixer)) {
                 if (this.selected === false) {
-                    newClass = 'pcs-fixerselection-byfixerset-excluded';
+                    newClass = 'pcs-fixerview-selection-byfixerset-excluded';
                 } else {
-                    newClass = 'pcs-fixerselection-byfixerset-included';
+                    newClass = 'pcs-fixerview-selection-byfixerset-included';
                 }
             } else if (this.selected === true) {
-                newClass = 'pcs-fixerselection-yes';
+                newClass = 'pcs-fixerview-selection-yes';
             }
         }
-        this.$card.addClass(newClass);
+        this.$views.addClass(newClass);
     },
     configure: function () {
         new Fixer.View.Configurator(this);
@@ -799,7 +803,7 @@ Fixer.View.prototype = {
             }
         }
         if (me.fixer.configurationOptions.length > 0) {
-            var $btn = me.$card.find('.pcs-fixer-configure button').removeClass('btn-info btn-primary');
+            var $btn = me.$views.find('.pcs-fixerview-configure button').removeClass('btn-info btn-primary');
             if (me.configuration === null) {
                 $btn.addClass('btn-info');
             } else {
@@ -854,7 +858,7 @@ Fixer.View.Configurator = function (fixerView) {
     me.fixerView.fixer.configurationOptions.forEach(function (option, index) {
         me.options.push(new Fixer.View.Configurator.Option(me, option));
     });
-    me.$dialog = ModalManager.show(Templater.build('fixer-card-configure', me));
+    me.$dialog = ModalManager.show(Templater.build('fixer-configure', me));
     me.$select = me.$dialog.find('select.cgs-configuringoption');
     me.$panels = me.$dialog.find('div.cgs-configuringoption');
     me.$select.on('change', function () {
@@ -1689,6 +1693,72 @@ var Persister = (function () {
     };
 })();
 
+var View = (function () {
+    var current = 'cards',
+        $layers = {
+            cards: $('#pcs-cards'),
+            rows: $('#pcs-rows').hide(),
+        },
+        icons = {
+            cards: 'fa-bars',
+            rows: 'fa-table',
+        },
+        allViewKeys = [],
+        allIcons = '',
+        $button = $('#pcs-btn-toggleview');
+    $.each($layers, function (k) {
+        allViewKeys.push(k);
+        allIcons += (allIcons === '' ? '' : ' ') + icons[k];
+    });
+    function nextView() {
+        var index = $.inArray(current, allViewKeys);
+        index = (index + 1) % allViewKeys.length;
+        View.current = allViewKeys[index];
+        $button.find('>i').removeClass(allIcons).addClass(icons[allViewKeys[index]]);
+    }
+    return Object.defineProperties(
+        {
+            initialize: function () {
+                $button.on('click', function () {
+                    nextView();
+                });
+                delete View.initialize;
+            }
+        },
+        {
+            CARDS: {
+                get: function () {
+                    return 'cards';
+                }
+            },
+            ROWS: {
+                get: function () {
+                    return 'rows';
+                }
+            },
+            current: {
+                get: function () {
+                    return current;
+                },
+                set: function (value) {
+                    if (current === null || current === value) {
+                        return;
+                    }
+                    var c = current;
+                    current = null;
+                    $layers[c].hide(
+                        'fast',
+                        function () {
+                            current = value;
+                            $layers[current].show('fast');
+                        }
+                    );
+                }
+            }
+        }
+    );
+})();
+
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-data.min.json',
@@ -1732,6 +1802,7 @@ $.ajax({
         new StyleCILikeExporter()
     ]);
     Persister.initialize();
+    View.initialize();
     if (window.location.hash === '#configurator') {
         Configurator.enabled = true;
     }
