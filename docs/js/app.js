@@ -1094,7 +1094,7 @@ var State = (function () {
             });
             Saver.resetOptions();
         },
-        get: function () {
+        get: function (full) {
             var state = {};
             var whitespace = Saver.whitespace;
             if ($.isEmptyObject(whitespace) === false) {
@@ -1121,6 +1121,16 @@ var State = (function () {
                     state.fixers[fixer.name] = fixerState;
                 }
             });
+            if (full === true) {
+                var importer = Loader.currentImporter;
+                if (importer !== null) {
+                    state._importer = importer.getName();
+                }
+                var exporter = Saver.currentExporter;
+                if (exporter !== null) {
+                    state._exporter = exporter.getName();
+                }
+            }
             return state;
         },
         set: function (state) {
@@ -1181,6 +1191,14 @@ var State = (function () {
                 delete state.fixers;
             }
             delete state.risky;
+            if (typeof state._importer === 'string') {
+                Loader.currentImporter = state._importer;
+                delete state._importer;
+            }
+            if (typeof state._exporter === 'string') {
+                Saver.currentExporter = state._exporter;
+                delete state._exporter;
+            }
             $.each(state, function (unrecognized) {
                 errors.add(new Error('Unrecognized property: ' + unrecognized));
             });
@@ -1195,16 +1213,12 @@ var Loader = (function () {
     var $loadFormat = $('#pcs-load-format'),
         $input = $('#pcs-modal-load textarea');
 
-    function getSelectedImporter() {
-        return $loadFormat.find('option:selected').data('pcs-importer') || null;
-    }
-
     function load() {
         var serialized = $.trim($input.val()), state;
         if (serialized === '') {
             state = {};
         } else {
-            var importer = getSelectedImporter();
+            var importer = Loader.currentImporter;
             if (importer === null) {
                 window.alert('Please select an import format');
             }
@@ -1240,29 +1254,50 @@ var Loader = (function () {
         })
     ;
 
-    return {
-        initialize: function (importers) {
-            if (importers) {
-                importers.forEach(function (importer) {
-                    Loader.registerImporter(importer);
-                });
+    return Object.defineProperties(
+        {
+            initialize: function (importers) {
+                if (importers) {
+                    importers.forEach(function (importer) {
+                        Loader.registerImporter(importer);
+                    });
+                }
+                delete Loader.initialize;
+            },
+            registerImporter: function (importer, selected) {
+                $loadFormat.append($('<option />')
+                    .text(importer.getName())
+                    .data('pcs-importer', importer)
+                );
+                var numImporters = $loadFormat.find('>option').length;
+                if (numImporters === 1 || selected) {
+                    $loadFormat
+                        .prop('selectedIndex', numImporters - 1)
+                        .trigger('change')
+                    ;
+                }
             }
-            delete Loader.initialize;
         },
-        registerImporter: function (importer, selected) {
-            $loadFormat.append($('<option />')
-                .text(importer.getName ? importer.getName() : importer.toString())
-                .data('pcs-importer', importer)
-            );
-            var numImporters = $loadFormat.find('>option').length;
-            if (numImporters === 1 || selected) {
-                $loadFormat
-                    .prop('selectedIndex', numImporters - 1)
-                    .trigger('change')
-                ;
+        {
+            currentImporter: {
+                get: function () {
+                    return $loadFormat.find('>option:selected').data('pcs-importer') || null;
+                },
+                set: function (value) {
+                    $loadFormat.find('>option').each(function (index) {
+                        var importer = $(this).data('pcs-importer');
+                        if (importer === value || importer.getName() === value) {
+                            $loadFormat
+                                .prop('selectedIndex', index)
+                                .trigger('change')
+                            ;
+                            return false;
+                        }
+                    });
+                }
             }
         }
-    };
+    );
 })();
 function JsonImporter() {
 }
@@ -1312,13 +1347,10 @@ var Saver = (function () {
         $persist = $('#pcs-save-persist'),
         shown = false;
 
-    function getSelectedExporter() {
-        return $saveFormat.find('option:selected').data('pcs-exporter') || null;
-    }
     function refreshOutput() {
         $out.empty();
         try {
-            var exporter = getSelectedExporter();
+            var exporter = Saver.currentExporter;
             if (exporter === null) {
                 throw new Error('Select an export format');
             }
@@ -1415,7 +1447,7 @@ var Saver = (function () {
             },
             registerExporter: function (exporter, selected) {
                 $saveFormat.append($('<option />')
-                    .text(exporter.getName ? exporter.getName() : exporter.toString())
+                    .text(exporter.getName())
                     .data('pcs-exporter', exporter)
                 );
                 var numExporters = $saveFormat.find('>option').length;
@@ -1472,6 +1504,23 @@ var Saver = (function () {
                     if (errors.has === true) {
                         throw errors;
                     }
+                }
+            },
+            currentExporter: {
+                get: function () {
+                    return $saveFormat.find('>option:selected').data('pcs-exporter') || null;
+                },
+                set: function (value) {
+                    $saveFormat.find('>option').each(function (index) {
+                        var exporter = $(this).data('pcs-exporter');
+                        if (exporter === value || exporter.getName() === value) {
+                            $saveFormat
+                                .prop('selectedIndex', index)
+                                .trigger('change')
+                            ;
+                            return false;
+                        }
+                    });
                 }
             },
             persist: {
@@ -1615,7 +1664,7 @@ var Persister = (function () {
     $(window).on('beforeunload', function () {
         try {
             if (Saver.persist) {
-                window.localStorage.setItem(KEY, JSON.stringify(State.get()));
+                window.localStorage.setItem(KEY, JSON.stringify(State.get(true)));
             } else {
                 window.localStorage.removeItem(KEY);
             }
