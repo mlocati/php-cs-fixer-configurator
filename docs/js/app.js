@@ -1697,7 +1697,7 @@ var View = (function () {
     var current = 'cards',
         $layers = {
             cards: $('#pcs-cards'),
-            rows: $('#pcs-rows').hide(),
+            rows: $('#pcs-rows'),
         },
         icons = {
             cards: 'fa-bars',

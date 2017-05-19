@@ -103,3 +103,7 @@ textarea.code {
 .pcf-onlyconfiguring-hidden {
 	display: none;
 }
+
+#pcs-rows {
+	display: none;
+}
