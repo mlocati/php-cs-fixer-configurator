@@ -305,24 +305,28 @@
                                     </div>
                                     {{#each codeSamples as |codeSample codeSampleIndex|}}
                                         <div class="tab-pane" id="template-fixer-details-example-{{ codeSampleIndex }}" role="tabpanel">
-                                            <br />
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    Configuration
-                                                </div>
-                                                <div class="card-block">
-                                                    {{#if isConfigured}}
-                                                        <dl class="row" style="margin-bottom:0">
-                                                            {{#each configuration as |configurationValue configurationKey|}}
-                                                                <dt class="col-sm-3"><code>{{ configurationKey }}</code></dt>
-                                                                <dd class="col-sm-9"><code>{{toJSON configurationValue }}</code></dd>
-                                                            {{/each}}
-                                                        </dl>
-                                                    {{else}}
-                                                        <i>Default configuration</i>
-                                                    {{/if}}
-                                                </div>
-                                            </div>
+											{{#if ../configurationOptions.length}}
+	                                            <br />
+	                                            <div class="card">
+    	                                            <div class="card-header">
+        	                                            Configuration
+            	                                    </div>
+                	                                <div class="card-block">
+                    	                                {{#if isConfigured}}
+															<ul>
+                            	                                {{#each configuration as |configurationValue configurationKey|}}
+																	<li>
+																		<strong><code>{{ configurationKey }}</code></strong><br />
+																		<code>{{toJSON configurationValue }}</code>
+																	</li>
+                                        	                    {{/each}}
+                                            	            </ul>
+                                                	    {{else}}
+                                                    	    <i>Default configuration</i>
+	                                                    {{/if}}
+    	                                            </div>
+        	                                    </div>
+											{{/if}}
                                             <br />
                                             <ul class="nav nav-tabs" role="tablist">
                                                 <li class="nav-item">
@@ -477,7 +481,7 @@
         <script src="js/jquery.min.js"></script>
         <script src="js/tether.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
-        <script src="js/handlebars.min.js"></script>
+        <script src="js/handlebars.js"></script>
         <script src="js/prism.min.js"></script>
         <script src="js/js-yaml.min.js"></script>
         <script src="js/app.js"></script>

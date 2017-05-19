@@ -12,6 +12,9 @@ Handlebars.registerHelper('toPHP', function (value) {
 Handlebars.registerHelper('add1', function (value) {
     return 1 + value;
 });
+Handlebars.registerHelper('debug', function (value) {
+    window.console.debug('Context', this, 'Value', value);
+});
 
 /**
  * @class
