@@ -188,6 +188,7 @@ function toPHP(v) {
         return '[' + chunks.join(', ') + ']';
     }
 }
+
 var Templater = (function () {
     var loadedTemplates = {};
     return {
@@ -1084,7 +1085,7 @@ var State = (function () {
             Fixers.getAll().forEach(function (fixer) {
                 fixer.view.reset();
             });
-            SavePanel.resetOptions();
+            Saver.resetOptions();
         },
         get: function () {
             var result = {
@@ -1109,43 +1110,191 @@ var State = (function () {
                 }
             });
             return result;
+        },
+        set: function (state) {
+            if ($.isPlainObject(state) !== true) {
+                throw new Error('The stete must be an object');
+            }
+            state = $.extend(true, {}, state);
+            var errors = new ErrorList();
+            State.reset();
+            if ($.isPlainObject(state.whitespace)) {
+                try {
+                    Saver.setWhiteSpace(state.whitespace);
+                } catch (x) {
+                    errors.add(x);
+                }
+                delete state.whitespace;
+            }
+            if (state.sets instanceof Array) {
+                state.sets.forEach(function (fixerSetName) {
+                    var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
+                    if (negated) {
+                        fixerSetName = fixerSetName.substr(1);
+                    }
+                    try {
+                        FixerSet.SelectedList.add(fixerSetName, negated);
+                    } catch (x) {
+                        errors.add(x);
+                    }
+                });
+                delete state.sets;
+            }
+            if ($.isPlainObject(state.fixers)) {
+                $.each(state.fixers, function (fixerName, fixerConfiguration) {
+                    try {
+                        var fixer = Fixers.getByName(fixerName);
+                        if (fixer === null) {
+                            throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName));
+                        }
+                        var addConfigured = false;
+                        if (FixerSet.SelectedList.containsFixer(fixer)) {
+                            if (fixerConfiguration === false) {
+                                fixer.view.toggleManualSelection();
+                            } else if (fixerConfiguration !== true) {
+                                addConfigured = true;
+                            }
+                        } else {
+                            if (fixerConfiguration !== false) {
+                                fixer.view.toggleManualSelection();
+                                if (fixerConfiguration !== true) {
+                                    addConfigured = true;
+                                }
+                            }
+                        }
+                        if (addConfigured === true) {
+                            fixer.view.setConfiguration(fixerConfiguration, true);
+                        }
+                    } catch (x) {
+                        errors.add(x);
+                    }
+                });
+                delete state.fixers;
+            }
+            delete state.risky;
+            $.each(state, function (unrecognized) {
+                errors.add(new Error('Unrecognized property: ' + unrecognized));
+            });
+            if (errors.has) {
+                throw errors;
+            }
         }
     };
 })();
 
-var SavePanel = (function () {
-    var $btnShow = $('#pcs-btn-save'),
-        $panel = $('#pcs-save'),
-        $saveFormat = $('#pcs-save-format'),
+var Loader = (function () {
+    var $loadFormat = $('#pcs-load-format'),
+        $input = $('#pcs-modal-load textarea');
+
+    function getSelectedImporter() {
+        return $loadFormat.find('option:selected').data('pcs-importer') || null;
+    }
+
+    function load() {
+        var serialized = $.trim($input.val()), data;
+        if (serialized === '') {
+            data = {};
+        } else {
+            var importer = getSelectedImporter();
+            if (importer === null) {
+                window.alert('Please select an import format');
+            }
+            try {
+                data = importer.parse(serialized);
+            } catch (e) {
+                window.alert(e.message || e.toString());
+                return;
+            }
+        }
+        try {
+            State.set(data);
+        } catch (errors) {
+            setTimeout(
+                function () {
+                    window.alert(errors.message);
+                },
+                10
+            );
+            return;
+        }
+        $('#pcs-modal-load').modal('hide');
+    }
+
+    $('#pcs-modal-load .btn-primary').on('click', function () {
+        load();
+    });
+
+    return {
+        initialize: function (importers) {
+            if (importers) {
+                importers.forEach(function (importer) {
+                    Loader.registerImporter(importer);
+                });
+            }
+            delete Loader.initialize;
+        },
+        registerImporter: function (importer, selected) {
+            $loadFormat.append($('<option />')
+                .text(importer.getName ? importer.getName() : importer.toString())
+                .data('pcs-importer', importer)
+            );
+            var numImporters = $loadFormat.find('>option').length;
+            if (numImporters === 1 || selected) {
+                $loadFormat
+                    .prop('selectedIndex', numImporters - 1)
+                    .trigger('change')
+                ;
+            }
+        }
+    };
+})();
+function JsonImporter() {
+}
+JsonImporter.prototype = {
+    getName: function () {
+        return 'JSON';
+    },
+    parse: function (serialized) {
+        var result;
+        try {
+            result = JSON.parse(serialized);
+        } catch (e) {
+            throw new Error('The JSON is invalid');
+        }
+        if ($.isPlainObject(result) === false) {
+            throw new Error('The JSON code does not represent an object');
+        }
+        return result;
+    }
+};
+function YamlImporter() {
+}
+YamlImporter.prototype = {
+    getName: function () {
+        return 'YAML';
+    },
+    parse: function (serialized) {
+        var result;
+        try {
+            result = YAML.parse(serialized);
+        } catch (e) {
+            throw new Error('The YAML is invalid');
+        }
+        if ($.isPlainObject(result) === false) {
+            throw new Error('The YAML code does not represent an object');
+        }
+        return result;
+    }
+};
+
+var Saver = (function () {
+    var $saveFormat = $('#pcs-save-format'),
         $saveIndent = $('#pcs-save-indent'),
         $saveLineEnding = $('#pcs-save-line-ending'),
         $out = $('#pcs-save-output'),
         $outCopy = $('#pcs-save-output-copy'),
-        originalRight = $panel.css('right'),
-        $backdrop = null,
         shown = false;
-    function toggleVisibility() {
-        if (shown) {
-            hide();
-        } else {
-            show();
-        }
-    }
-    function show() {
-        if (shown !== false) {
-            return;
-        }
-        shown = true;
-        refreshOutput();
-        $(document.body).css('overflow', 'hidden').append($backdrop = $('<div class="modal-backdrop show" />'));
-        $panel.addClass('open');
-        setTimeout(function () {
-            $panel.css({'right': '0'});
-            $backdrop.on('click', function () {
-                hide();
-            });
-        }, 10);
-    }
+
     function getSelectedExporter() {
         return $saveFormat.find('option:selected').data('pcs-exporter') || null;
     }
@@ -1218,27 +1367,15 @@ var SavePanel = (function () {
             $outCopy.attr('disabled', 'disabled');
         }
     }
-    function hide() {
-        if (shown !== true) {
-            return;
-        }
-        shown = false;
-        $panel.css({'right': originalRight});
-        setTimeout(function () {
-            $panel.removeClass('open');
-            $(document.body).css('overflow', '');
-            $backdrop.remove();
-            $backdrop = null;
-        }, 300);
-    }
-    $btnShow.on('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleVisibility();
-    });
-    $panel.find('>.card-footer button').on('click', function () {
-        hide();
-    });
+    $('#pcs-modal-save')
+        .on('show.bs.modal', function (e) {
+            shown = true;
+            refreshOutput();
+        })
+        .on('hidden.bs.modal', function (e) {
+            shown = false;
+        })
+    ;
     $saveFormat.add($saveIndent).add($saveLineEnding).on('change', function () {
         if (shown === true) {
             refreshOutput();
@@ -1283,20 +1420,24 @@ var SavePanel = (function () {
         }, 500);
     });
     return {
-        initialize: function () {
-            SavePanel.resetOptions();
-            delete SavePanel.initialize;
+        initialize: function (exporters) {
+            Saver.resetOptions();
+            if (exporters) {
+                exporters.forEach(function (exporter) {
+                    Saver.registerExporter(exporter);
+                });
+            }
+            delete Saver.initialize;
         },
-        show: show,
-        hide: hide,
-        registerExporter: function (exporter) {
+        registerExporter: function (exporter, selected) {
             $saveFormat.append($('<option />')
                 .text(exporter.getName ? exporter.getName() : exporter.toString())
                 .data('pcs-exporter', exporter)
             );
-            if ($saveFormat.find('>options').length === 1) {
+            var numExporters = $saveFormat.find('>option').length;
+            if (numExporters === 1 || selected) {
                 $saveFormat
-                    .prop('selectedIndex', 0)
+                    .prop('selectedIndex', numExporters - 1)
                     .trigger('change')
                 ;
             }
@@ -1306,7 +1447,7 @@ var SavePanel = (function () {
         },
         setWhiteSpace: function (whitespace) {
             setSelectedWhitespace(whitespace);
-        },
+        }
     };
 })();
 
@@ -1355,7 +1496,7 @@ JsonExporter.prototype = {
     getLanguage: function () {
         return 'json';
     },
-    render: function (states, whitespace) {
+    format: function (states, whitespace) {
         var data = {};
         if ($.isEmptyObject(whitespace) !== true) {
             data.whitespace = whitespace;
@@ -1375,7 +1516,27 @@ JsonExporter.prototype = {
             }
             data.fixers[state[0]] = state[1];
         });
+        return data;
+    },
+    render: function (states, whitespace) {
+        var data = this.format(states, whitespace);
         return JSON.stringify(data, null, 4);
+    }
+};
+
+function YamlExporter() {
+    this.jsonExporter = new JsonExporter();
+}
+YamlExporter.prototype = {
+    getName: function () {
+        return 'YAML';
+    },
+    getLanguage: function () {
+        return 'yaml';
+    },
+    render: function (states, whitespace) {
+        var data = this.jsonExporter.format(states, whitespace);
+        return YAML.stringify(data, null, 2, true);
     }
 };
 
@@ -1431,103 +1592,6 @@ StyleCILikeExporter.prototype = {
     }
 };
 
-var Loader = (function () {
-    var $input = $('#pcs-modal-load-from-json textarea');
-    function load() {
-        var json = $.trim($input.val()), data;
-        if (json === '') {
-            data = {};
-        } else {
-            try {
-                data = JSON.parse(json);
-            } catch (e) {
-                window.alert('The JSON is invalid');
-                return;
-            }
-            if ($.isPlainObject(data) === false) {
-                window.alert('Please specify an object in JSON format');
-                return;
-            }
-        }
-        var errors = new ErrorList();
-        State.reset();
-        if ($.isPlainObject(data.whitespace)) {
-            try {
-                SavePanel.setWhiteSpace(data.whitespace);
-            } catch (x) {
-                errors.add(x);
-            }
-            delete data.whitespace;
-        }
-        if (data.sets instanceof Array) {
-            data.sets.forEach(function (fixerSetName) {
-                var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
-                if (negated) {
-                    fixerSetName = fixerSetName.substr(1);
-                }
-                try {
-                    FixerSet.SelectedList.add(fixerSetName, negated);
-                } catch (x) {
-                    errors.add(x);
-                }
-            });
-            delete data.sets;
-        }
-        if ($.isPlainObject(data.fixers)) {
-            $.each(data.fixers, function (fixerName, fixerConfiguration) {
-                try {
-                    var fixer = Fixers.getByName(fixerName);
-                    if (fixer === null) {
-                        throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName));
-                    }
-                    var addConfigured = false;
-                    if (FixerSet.SelectedList.containsFixer(fixer)) {
-                        if (fixerConfiguration === false) {
-                            fixer.view.toggleManualSelection();
-                        } else if (fixerConfiguration !== true) {
-                            addConfigured = true;
-                        }
-                    } else {
-                        if (fixerConfiguration !== false) {
-                            fixer.view.toggleManualSelection();
-                            if (fixerConfiguration !== true) {
-                                addConfigured = true;
-                            }
-                        }
-                    }
-                    if (addConfigured === true) {
-                        fixer.view.setConfiguration(fixerConfiguration, true);
-                    }
-                } catch (x) {
-                    errors.add(x);
-                }
-            });
-            delete data.fixers;
-        }
-        delete data.risky;
-        $.each(data, function (unrecognized) {
-            errors.add(new Error('Unrecognized property: ' + unrecognized));
-        });
-        if (errors.has) {
-            setTimeout(
-                function () {
-                    window.alert(errors.message);
-                },
-                10
-            );
-        } else {
-            $('#pcs-modal-load-from-json').modal('hide');
-        }
-    }
-    return {
-        initialize: function () {
-            $('#pcs-modal-load-from-json .btn-primary').on('click', function () {
-                load();
-            });
-            delete Loader.initialize;
-        }
-    };
-})();
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-data.min.json',
@@ -1560,11 +1624,16 @@ $.ajax({
     Fixers.getAll().forEach(function (fixer) {
         fixer.initializeView();
     });
-    SavePanel.initialize();
-    SavePanel.registerExporter(new PhpCsExporter());
-    SavePanel.registerExporter(new JsonExporter());
-    SavePanel.registerExporter(new StyleCILikeExporter());
-    Loader.initialize();
+    Loader.initialize([
+        new JsonImporter(),
+        new YamlImporter()
+    ]);
+    Saver.initialize([
+        new PhpCsExporter(),
+        new JsonExporter(),
+        new YamlExporter(),
+        new StyleCILikeExporter()
+    ]);
     if (window.location.hash === '#configurator') {
         Configurator.enabled = true;
     }

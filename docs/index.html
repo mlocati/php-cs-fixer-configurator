@@ -47,12 +47,9 @@
                     </div>
                     <div class="btn-group" role="group">
                         &nbsp;
-                        <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-load-from-json"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
-                        <button class="btn btn-default pcf-onlyconfiguring-hidden" id="pcs-btn-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                        <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-load"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+                        <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
                         <button class="btn btn-default" id="pcs-btn-configure" data-toggle="tooltip" title="Enable/Disable configurator"><i class="fa fa-cog" aria-hidden="true"></i></button>
-                    </div>
-                    <div class="input-group">
-                        
                     </div>
                 </form>
             </div>
@@ -63,70 +60,83 @@
             </div>
         </div>
 
-        <div id="pcs-save" class="card">
-            <div class="card-header text-center">
-                <h4>Save</h4>
-            </div>
-            <div class="card-block">
-                <div class="form-group row">
-                    <label for="pcs-save-format" class="col-4 col-form-label">Format</label>
-                    <div class="col-8">
-                        <select id="pcs-save-format" class="form-control"></select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="pcs-save-indent" class="col-4 col-form-label">Indent</label>
-                    <div class="col-8">
-                        <select id="pcs-save-indent" class="form-control">
-                            <option value=" ">1 space</option>
-                            <option value="  ">2 spaces</option>
-                            <option value="   ">3 spaces</option>
-                            <option value="    ">4 spaces</option>
-                            <option value="     ">5 spaces</option>
-                            <option value="      ">6 spaces</option>
-                            <option value="       ">7 spaces</option>
-                            <option value="        ">8 spaces</option>
-                            <option value="\t">tab</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="pcs-save-line-ending" class="col-4 col-form-label">Line ending</label>
-                    <div class="col-8">
-                        <select id="pcs-save-line-ending" class="form-control">
-                            <option value="\n">*nix (\n)</option>
-                            <option value="\r\n">Windows (\r\n)</option>
-                            <option value="\r">Old Mac (\r)</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="pcs-save-output"></div>
-                <div class="pull-right">
-                    <button id="pcs-save-output-copy" class="btn btn-info btn-sm" disabled="disabled"><i class="fa fa-clipboard" aria-hidden="true"></i> Copy</button>
-                </div>
-            </div>
-            <div class="card-footer text-center">
-                <button class="btn btn-primary">Close</button>
-            </div>
-        </div>
-
-        <div class="modal" role="dialog" id="pcs-modal-load-from-json">
+        <div class="modal" role="dialog" id="pcs-modal-load">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Load configuration from JSON</h5>
+                        <h5 class="modal-title">Load</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>Paste here a JSON code representing the whole configuration state</p>
+                        <p>Enter here your code representing the whole configuration state in the format specified by the following format</p>
+                        <div class="form-group row">
+                            <label for="pcs-save-format" class="col-3 col-form-label">Format</label>
+                            <div class="col-9">
+                                <select id="pcs-load-format" class="form-control"></select>
+                            </div>
+                        </div>
                         <textarea class="form-control code" rows="8"></textarea>
-                        <p class="text-muted">By leaving the text empty (or by entering an empty JSON object), the state will be reset.</p>
+                        <p class="text-muted">By leaving the text empty (or by entering the representation of an empty object), the state will be reset.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary">Load</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" role="dialog" id="pcs-modal-save">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Save</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="pcs-save-format" class="col-3 col-form-label">Format</label>
+                            <div class="col-9">
+                                <select id="pcs-save-format" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="pcs-save-indent" class="col-3 col-form-label">Indent</label>
+                            <div class="col-9">
+                                <select id="pcs-save-indent" class="form-control">
+                                    <option value=" ">1 space</option>
+                                    <option value="  ">2 spaces</option>
+                                    <option value="   ">3 spaces</option>
+                                    <option value="    ">4 spaces</option>
+                                    <option value="     ">5 spaces</option>
+                                    <option value="      ">6 spaces</option>
+                                    <option value="       ">7 spaces</option>
+                                    <option value="        ">8 spaces</option>
+                                    <option value="\t">tab</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="pcs-save-line-ending" class="col-3 col-form-label">Line ending</label>
+                            <div class="col-9">
+                                <select id="pcs-save-line-ending" class="form-control">
+                                    <option value="\n">*nix (\n)</option>
+                                    <option value="\r\n">Windows (\r\n)</option>
+                                    <option value="\r">Old Mac (\r)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="pcs-save-output"></div>
+                        <div class="pull-right">
+                            <button id="pcs-save-output-copy" class="btn btn-info btn-sm" disabled="disabled"><i class="fa fa-clipboard" aria-hidden="true"></i> Copy</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
