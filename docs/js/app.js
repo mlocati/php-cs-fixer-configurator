@@ -1654,7 +1654,12 @@ StyleCILikeExporter.prototype = {
                         data.enabled = [];
                     }
                     data.enabled.push(fixerName);
-                } else if(fixerState !== false) {
+                } else if(fixerState === false) {
+                    if (data.disabled === undefined) {
+                        data.disabled = [];
+                    }
+                    data.disabled.push(fixerName);
+                } else {
                     throw new Error('StyleCI does not support configured fixers');
                 }
             });
