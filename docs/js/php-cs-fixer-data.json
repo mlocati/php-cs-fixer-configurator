@@ -1,5 +1,5 @@
 {
-    "version": "2.3.1",
+    "version": "2.3.2",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -228,7 +228,7 @@
             "configuration": [
                 {
                     "name": "annotations",
-                    "description": "List of annotations to remove, e.g. `[\"@author\"]`.",
+                    "description": "List of annotations to remove, e.g. `[\"author\"]`.",
                     "defaultValue": [],
                     "allowedTypes": [
                         "array"
@@ -968,19 +968,19 @@
         "header_comment": {
             "configuration": [
                 {
+                    "name": "header",
+                    "description": "Proper header content.",
+                    "allowedTypes": [
+                        "string"
+                    ]
+                },
+                {
                     "name": "commentType",
                     "description": "Comment syntax type.",
                     "defaultValue": "comment",
                     "allowedValues": [
                         "PHPDoc",
                         "comment"
-                    ]
-                },
-                {
-                    "name": "header",
-                    "description": "Proper header content.",
-                    "allowedTypes": [
-                        "string"
                     ]
                 },
                 {
@@ -2432,15 +2432,6 @@
                     "configuration": {
                         "tokens": [
                             "square_brace_block"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nfunction foo($bar)\n{\n    throw new \\Exception(\"Hello!\");\n\n}",
-                    "to": "<?php\n\nfunction foo($bar)\n{\n    throw new \\Exception(\"Hello!\");\n}",
-                    "configuration": {
-                        "tokens": [
-                            "throw"
                         ]
                     }
                 },
