@@ -1585,6 +1585,14 @@ PhpCsExporter.prototype = {
         lines.push('    )');
         lines.push(';');
         lines.push('');
+        lines.push('/*');
+        lines.push('This document has been generated with');
+        lines.push('https://mlocati.github.io/php-cs-fixer-configurator/')
+        lines.push('you can change this configuration by importing this YAML code:')
+        lines.push('');
+        var yamlExporter = new YamlExporter();
+        lines = lines.concat(yamlExporter.render(state).split('\n'));
+        lines.push('*/');
         return lines.join('\n');
     }
 };
