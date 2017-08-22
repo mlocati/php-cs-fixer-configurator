@@ -111,3 +111,16 @@ textarea.code {
 #pcs-rows {
 	display: none;
 }
+
+.pcs-modal-help-configurator {
+	display: none;
+}
+body.pcf-configuring .pcs-modal-help-configurator {
+	display: block;
+}
+body.pcf-configuring .pcs-modal-help-normal {
+	display: none;
+}
+#pcs-modal-help .card {
+	min-height: 20px;
+}

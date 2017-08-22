@@ -61,6 +61,7 @@
                         <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-load"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
                         <button class="btn btn-default pcf-onlyconfiguring-hidden" data-toggle="modal" data-target="#pcs-modal-save"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
                         <button class="btn btn-default" id="pcs-btn-configure" data-toggle="tooltip" title="Enable/Disable configurator"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                        <button class="btn btn-default" data-toggle="modal" data-target="#pcs-modal-help"><i class="fa fa-question-circle" aria-hidden="true"></i></button>
                     </div>
                 </form>
             </div>
@@ -75,6 +76,98 @@
                 </colgroup>
                 <tbody></tbody>
             </table>
+        </div>
+
+        <div class="modal" role="dialog" id="pcs-modal-help">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Help</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset>
+                            <legend>Toolbar</legend>
+                            <dl class="row">
+                                <dt class="col-sm-3">
+                                    <span class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
+                                        <input type="search" class="form-control">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Sets
+                                            </button>
+                                        </span>
+                                    </span>
+                                </dt>
+                                <dd class="col-sm-9">
+                                    Show only the fixers corresponding to the search text or to the selected fixer sets
+                                </dd>
+
+                                <dt class="col-sm-3 pcs-modal-help-configurator">
+                                    <span class="input-group">
+                                        <span class="input-group-addon">Presets</span>
+                                        <span class="form-control"></span>
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                        </span>
+                                    </span>
+                                </dt>
+                                <dd class="col-sm-9 pcs-modal-help-configurator">
+                                    Select the presets with <a href="javascript:void(0)" class="btn btn-sm btn-success"><i class="fa fa-plus" aria-hidden="true"></i></a><br />
+                                    Substract the fixers defined in other presets with <a href="javascript:void(0)" class="btn btn-sm btn-danger"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                                </dd>
+
+                                <dt class="col-sm-3"><button class="btn btn-default" ><i class="fa fa-bars" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9">Switch to list view</dd>
+                                <dt class="col-sm-3"><button class="btn btn-default" ><i class="fa fa-table" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9">Switch to table view</dd>
+
+                                <dt class="col-sm-3 pcs-modal-help-configurator"><button class="btn btn-default" ><i class="fa fa-folder-open-o" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9 pcs-modal-help-configurator">Show load / erase dialog</dd>
+
+                                <dt class="col-sm-3 pcs-modal-help-configurator"><button class="btn btn-default" ><i class="fa fa-floppy-o" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9 pcs-modal-help-configurator">Show save / export dialog</dd>
+
+                                <dt class="col-sm-3 pcs-modal-help-normal"><button class="btn btn-default" ><i class="fa fa-cog" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9 pcs-modal-help-normal">Turn on configurator</dd>
+
+                                <dt class="col-sm-3 pcs-modal-help-configurator"><button class="btn btn-success" ><i class="fa fa-cog" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9 pcs-modal-help-configurator">Turn off configurator</dd>
+                            </dl>
+                        </fieldset>
+                        <fieldset class="pcs-modal-help-configurator">
+                            <legend>Fixer selection</legend>
+                            <dl class="row">
+                                <dt class="col-sm-3"><span class="pcs-fixerview-selection-no"><span class="card"></span></span></dt>
+                                <dd class="col-sm-9">Unselected fixers</dd>
+                                <dt class="col-sm-3"><span class="pcs-fixerview-selection-yes"><span class="card"></span></span></dt>
+                                <dd class="col-sm-9">Selected fixers (manually)</dd>
+                                <dt class="col-sm-3"><span class="pcs-fixerview-selection-byfixerset-included"><span class="card"></span></span></dt>
+                                <dd class="col-sm-9">Selected fixers (included in selected presets)</dd>
+                                <dt class="col-sm-3"><span class="pcs-fixerview-selection-byfixerset-excluded"><span class="card"></span></span></dt>
+                                <dd class="col-sm-9">Fixers included in selected presets but explicitly excluded</dd>
+                            </dl>
+                        </fieldset>
+                        <fieldset class="pcs-modal-help-configurator">
+                            <legend>Selected fixers configuration</legend>
+                            <dl class="row">
+                                <dt class="col-sm-3"><button class="btn btn-secondary btn-sm disabled" data-toggle="tooltip" title="" data-original-title="This fixer is not configurable"><i class="fa fa-cog" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9">Not configurable fixers</dd>
+                                <dt class="col-sm-3"><button class="btn btn-sm btn-info"><i class="fa fa-cog" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9">Configurable fixers using default values</dd>
+                                <dt class="col-sm-3"><button class="btn btn-sm btn-primary"><i class="fa fa-cog" aria-hidden="true"></i></button></dt>
+                                <dd class="col-sm-9">Configurable fixers using custom values</dd>
+                            </dl>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="modal" role="dialog" id="pcs-modal-load">
