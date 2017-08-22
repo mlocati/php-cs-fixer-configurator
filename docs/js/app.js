@@ -61,6 +61,13 @@ ErrorList.prototype.add = function (error) {
 /**
  * The version of PHP-CS-Fixer.
  *
+ * @type {string[]}
+ */
+var PHPCsFixerAvailableVersions;
+
+/**
+ * The version of PHP-CS-Fixer.
+ *
  * @type {string}
  */
 var PHPCsFixerVersion;
@@ -1587,8 +1594,8 @@ PhpCsExporter.prototype = {
         lines.push('');
         lines.push('/*');
         lines.push('This document has been generated with');
-        lines.push('https://mlocati.github.io/php-cs-fixer-configurator/')
-        lines.push('you can change this configuration by importing this YAML code:')
+        lines.push('https://mlocati.github.io/php-cs-fixer-configurator/');
+        lines.push('you can change this configuration by importing this YAML code:');
         lines.push('');
         var yamlExporter = new YamlExporter();
         lines = lines.concat(yamlExporter.render(state).split('\n'));
@@ -1772,53 +1779,90 @@ var View = (function () {
     );
 })();
 
+function getSelectedVersion()
+{
+    var matches = /(\?|&)version=([^&]+)/.exec(window.location.search);
+    if (matches !== null) {
+        var version = window.decodeURIComponent(matches[2]);
+        if (PHPCsFixerAvailableVersions.indexOf(version) >= 0) {
+            return version;
+        }
+        window.console.warn('Version non available: ' + version);
+    }
+    return PHPCsFixerAvailableVersions[0];
+}
+
 $.ajax({
     dataType: 'json',
-    url: 'js/php-cs-fixer-data.min.json',
+    url: 'js/php-cs-fixer-versions.json',
 })
 .fail(function (xhr, testStatus, errorThrown) {
     window.alert(errorThrown);
 })
 .done(function (data) {
-    PHPCsFixerVersion = data.version;
-    DefaultWhitespaceConfig = {
-        indent: data.indent,
-        lineEnding: data.lineEnding
-    };
-    $('#pcs-version').text(PHPCsFixerVersion);
-    for (var fixerName in data.fixers) {
-        if (data.fixers.hasOwnProperty(fixerName)) {
-            Fixers.add(new Fixer(fixerName, data.fixers[fixerName]));
+    PHPCsFixerAvailableVersions = data;
+    PHPCsFixerVersion = getSelectedVersion();
+    $.ajax({
+        dataType: 'json',
+        url: 'js/php-cs-fixer-data-' + PHPCsFixerVersion + '.min.json',
+    })
+    .fail(function (xhr, testStatus, errorThrown) {
+        window.alert(errorThrown);
+    })
+    .done(function (data) {
+        DefaultWhitespaceConfig = {
+            indent: data.indent,
+            lineEnding: data.lineEnding
+        };
+        $('#pcs-version').text(PHPCsFixerVersion);
+        PHPCsFixerAvailableVersions.forEach(function (version) {
+            if (version === PHPCsFixerVersion) {
+                $('#pcs-versions').append(
+                    $('<span class="dropdown-item active" />')
+                        .text(version)
+                );
+            } else {
+                $('#pcs-versions').append(
+                    $('<a class="dropdown-item" />')
+                        .text(version)
+                        .attr('href', '?version=' + window.encodeURIComponent(version))
+                );
+            }
+        });
+        for (var fixerName in data.fixers) {
+            if (data.fixers.hasOwnProperty(fixerName)) {
+                Fixers.add(new Fixer(fixerName, data.fixers[fixerName]));
+            }
         }
-    }
-    for (var setName in data.sets) {
-        if (data.sets.hasOwnProperty(setName)) {
-            FixerSets.add(new FixerSet(setName, data.sets[setName]));
+        for (var setName in data.sets) {
+            if (data.sets.hasOwnProperty(setName)) {
+                FixerSets.add(new FixerSet(setName, data.sets[setName]));
+            }
         }
-    }
-    Fixers.getAll().forEach(function (fixer) {
-        fixer.resolveSets();
+        Fixers.getAll().forEach(function (fixer) {
+            fixer.resolveSets();
+        });
+        Search.initialize();
+        FixerSet.SelectedList.initialize();
+        Fixers.getAll().forEach(function (fixer) {
+            fixer.initializeView();
+        });
+        Loader.initialize([
+            new JsonImporter(),
+            new YamlImporter()
+        ]);
+        Saver.initialize([
+            new PhpCsExporter(),
+            new JsonExporter(),
+            new YamlExporter(),
+            new StyleCILikeExporter()
+        ]);
+        Persister.initialize();
+        View.initialize();
+        if (window.location.hash === '#configurator') {
+            Configurator.enabled = true;
+        }
     });
-    Search.initialize();
-    FixerSet.SelectedList.initialize();
-    Fixers.getAll().forEach(function (fixer) {
-        fixer.initializeView();
-    });
-    Loader.initialize([
-        new JsonImporter(),
-        new YamlImporter()
-    ]);
-    Saver.initialize([
-        new PhpCsExporter(),
-        new JsonExporter(),
-        new YamlExporter(),
-        new StyleCILikeExporter()
-    ]);
-    Persister.initialize();
-    View.initialize();
-    if (window.location.hash === '#configurator') {
-        Configurator.enabled = true;
-    }
 });
 
 });
