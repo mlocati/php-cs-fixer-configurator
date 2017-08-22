@@ -5,6 +5,11 @@ use MLocati\PhpCsFixerConfigurator\DataExtractor;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
+if (PHP_VERSION_ID < 70100) {
+    fprintf(STDERR, "This script must be run with PHP 7.1+.\n");
+    exit(1);
+}
+
 fprintf(STDOUT, 'Extracting data... ');
 $dataExtractor = new DataExtractor();
 $version = $dataExtractor->getVersion();

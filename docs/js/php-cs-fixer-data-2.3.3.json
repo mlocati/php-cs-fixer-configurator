@@ -367,11 +367,11 @@
             "codeSamples": [
                 {
                     "from": "<?php\n[$sample] = $array;",
-                    "to": "*** Tokens::fromCode() failed with ParseError: syntax error, unexpected '=' *** "
+                    "to": "<?php\nlist($sample) = $array;"
                 },
                 {
                     "from": "<?php\nlist($sample) = $array;",
-                    "to": "<?php\nlist($sample) = $array;",
+                    "to": "<?php\n[$sample] = $array;",
                     "configuration": {
                         "syntax": "short"
                     }
@@ -1096,7 +1096,7 @@
                 },
                 {
                     "from": "<?php\nclass Sample\n{\n    const SAMPLE = 1;\n}\n",
-                    "to": "*** FixerInterface::configure() failed with PhpCsFixer\\ConfigurationException\\InvalidForEnvFixerConfigurationException: [visibility_required] Invalid configuration for env: \"const\" option can only be enabled with PHP 7.1+. *** ",
+                    "to": "<?php\nclass Sample\n{\n    public const SAMPLE = 1;\n}\n",
                     "configuration": {
                         "elements": [
                             "const"
