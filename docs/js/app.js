@@ -58,19 +58,52 @@ ErrorList.prototype.add = function (error) {
     this.has = true;
 };
 
-/**
- * The version of PHP-CS-Fixer.
- *
- * @type {string[]}
- */
-var PHPCsFixerAvailableVersions;
-
-/**
- * The version of PHP-CS-Fixer.
- *
- * @type {string}
- */
-var PHPCsFixerVersion;
+var Version = (function() {
+    var available, current, displayNames;
+    return {
+        initialize: function (availableVersions) {
+            available = availableVersions;
+            displayNames = {};
+            available.forEach(function (v) {
+                var matches = /^(\d+\.\d+)\.\d+$/.exec(v);
+                displayNames[v] = matches === null ? v : matches[1];
+            });
+            current = null;
+            var matches = /(\?|&)version=([^&]+)/.exec(window.location.search);
+            if (matches !== null) {
+                var displayName = window.decodeURIComponent(matches[2]);
+                for (var v in displayNames) {
+                    if (displayNames[v] === displayName) {
+                        current = v;
+                        break;
+                    }
+                }
+                if (current === null) {
+                    window.console.warn('Version non available: ' + displayName);
+                }
+            }
+            if (current === null) {
+                current = available[0];
+            }
+            Object.defineProperties(Version, {
+                available: {
+                    get: function () {
+                        return available.splice(0);
+                    },
+                },
+                current: {
+                    get: function() {
+                        return current;
+                    }
+                }
+            });
+            Version.getDisplayName = function (version) {
+                return displayNames.hasOwnProperty(version) ? displayNames[version] : null;
+            };
+            delete Version.initialize;
+        },
+    };
+})();
 
 /**
  * The default white space definitions (indentation, new lines).
@@ -1779,19 +1812,6 @@ var View = (function () {
     );
 })();
 
-function getSelectedVersion()
-{
-    var matches = /(\?|&)version=([^&]+)/.exec(window.location.search);
-    if (matches !== null) {
-        var version = window.decodeURIComponent(matches[2]);
-        if (PHPCsFixerAvailableVersions.indexOf(version) >= 0) {
-            return version;
-        }
-        window.console.warn('Version non available: ' + version);
-    }
-    return PHPCsFixerAvailableVersions[0];
-}
-
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-versions.json',
@@ -1801,11 +1821,10 @@ $.ajax({
     window.alert(errorThrown);
 })
 .done(function (data) {
-    PHPCsFixerAvailableVersions = data;
-    PHPCsFixerVersion = getSelectedVersion();
+    Version.initialize(data);
     $.ajax({
         dataType: 'json',
-        url: 'js/php-cs-fixer-data-' + PHPCsFixerVersion + '.min.json',
+        url: 'js/php-cs-fixer-data-' + Version.current + '.min.json',
         cache: true,
     })
     .fail(function (xhr, testStatus, errorThrown) {
@@ -1816,18 +1835,19 @@ $.ajax({
             indent: data.indent,
             lineEnding: data.lineEnding
         };
-        $('#pcs-version').text(PHPCsFixerVersion);
-        PHPCsFixerAvailableVersions.forEach(function (version) {
-            if (version === PHPCsFixerVersion) {
+        $('#pcs-version').text(Version.current);
+        Version.available.forEach(function (version) {
+            var displayName = Version.getDisplayName(version);
+            if (version === Version.current) {
                 $('#pcs-versions').append(
                     $('<span class="dropdown-item active" />')
-                        .text(version)
+                        .text(displayName)
                 );
             } else {
                 $('#pcs-versions').append(
                     $('<a class="dropdown-item" />')
-                        .text(version)
-                        .attr('href', '?version=' + window.encodeURIComponent(version))
+                        .text(displayName)
+                        .attr('href', '?version=' + window.encodeURIComponent(displayName))
                 );
             }
         });
