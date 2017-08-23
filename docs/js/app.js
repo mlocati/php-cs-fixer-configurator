@@ -1837,16 +1837,16 @@ $.ajax({
         };
         $('#pcs-version').text(Version.current);
         Version.available.forEach(function (version) {
-            var displayName = Version.getDisplayName(version);
             if (version === Version.current) {
                 $('#pcs-versions').append(
                     $('<span class="dropdown-item active" />')
-                        .text(displayName)
+                        .text(version)
                 );
             } else {
+                var displayName = Version.getDisplayName(version);
                 $('#pcs-versions').append(
                     $('<a class="dropdown-item" />')
-                        .text(displayName)
+                        .text(version)
                         .attr('href', '?version=' + window.encodeURIComponent(displayName))
                 );
             }
