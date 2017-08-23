@@ -91,6 +91,9 @@ class DataExtractor
                     }
                     $fixerData['configuration'][] = $o;
                 }
+                usort($fixerData['configuration'], function (array $option1, array $option2) {
+                    return strcasecmp($option1['name'], $option2['name']);
+                });
             }
             if ($fixer instanceof DefinedFixerInterface) {
                 $definition = $fixer->getDefinition();
@@ -148,6 +151,7 @@ class DataExtractor
             }
             $result[$fixer->getName()] = $fixerData;
         }
+        ksort($result, SORT_FLAG_CASE);
 
         return $result;
     }
