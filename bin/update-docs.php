@@ -10,6 +10,28 @@ if (PHP_VERSION_ID < 70100) {
     exit(1);
 }
 
+if (isset($argv[1])) {
+    fprintf(STDOUT, "Installing PHP-CS-Fixer version {$argv[1]}... ");
+    $cmd = ['composer'];
+    $cmd[] = '--no-progress';
+    $cmd[] = '--no-suggest';
+    $cmd[] = '--optimize-autoloader';
+    $cmd[] = '--quiet';
+    $cmd[] = '--no-ansi';
+    $cmd[] = '--no-interaction';
+    $cmd[] = '--working-dir=' . escapeshellarg(dirname(__DIR__));
+    $cmd[] = 'require';
+    $cmd[] = escapeshellarg("friendsofphp/php-cs-fixer:{$argv[1]}");
+    $cmd[] = '2>&1';
+    $output = [];
+    $rc = -1;
+    @exec(implode(' ', $cmd), $output, $rc);
+    if ($rc !== 0) {
+        fprintf(STDERR, 'composer failed: ' . trim(implode("\n", $output)) . "\n");
+        exit($rc);
+    }
+    fprintf(STDOUT, "done.\n");
+}
 fprintf(STDOUT, 'Extracting data... ');
 $dataExtractor = new DataExtractor();
 $version = $dataExtractor->getVersion();
