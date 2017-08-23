@@ -13,7 +13,7 @@
 	"license" : "MIT",
 	"require" : {
 		"php" : ">=7.1",
-		"friendsofphp/php-cs-fixer" : "~2.3"
+		"friendsofphp/php-cs-fixer" : "~2.2"
 	},
 	"homepage" : "https://github.com/mlocati/php-cs-fixer-configurator",
 	"authors" : [{
