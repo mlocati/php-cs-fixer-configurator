@@ -1795,6 +1795,7 @@ function getSelectedVersion()
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-versions.json',
+    cache: false,
 })
 .fail(function (xhr, testStatus, errorThrown) {
     window.alert(errorThrown);
@@ -1805,6 +1806,7 @@ $.ajax({
     $.ajax({
         dataType: 'json',
         url: 'js/php-cs-fixer-data-' + PHPCsFixerVersion + '.min.json',
+        cache: true,
     })
     .fail(function (xhr, testStatus, errorThrown) {
         window.alert(errorThrown);
