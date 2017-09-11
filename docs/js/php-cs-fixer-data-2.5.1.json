@@ -1,5 +1,5 @@
 {
-    "version": "2.5.0",
+    "version": "2.5.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -3441,10 +3441,15 @@
                 "before_array_assignments_colon": false
             }
         },
-        "@PHP56Migration": {
+        "@PHP56Migration": [],
+        "@PHP56Migration:risky": {
             "pow_to_exponentiation": null
         },
         "@PHP70Migration": {
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP70Migration:risky": {
+            "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
@@ -3454,11 +3459,7 @@
                     "rand": "random_int"
                 }
             },
-            "ternary_to_null_coalescing": null,
             "pow_to_exponentiation": null
-        },
-        "@PHP70Migration:risky": {
-            "declare_strict_types": null
         },
         "@PHP71Migration": {
             "visibility_required": {
@@ -3468,6 +3469,11 @@
                     "property"
                 ]
             },
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP71Migration:risky": {
+            "void_return": null,
+            "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
@@ -3477,12 +3483,7 @@
                     "rand": "random_int"
                 }
             },
-            "ternary_to_null_coalescing": null,
             "pow_to_exponentiation": null
-        },
-        "@PHP71Migration:risky": {
-            "void_return": null,
-            "declare_strict_types": null
         }
     }
 }
