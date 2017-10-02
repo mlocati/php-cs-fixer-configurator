@@ -1,5 +1,5 @@
 {
-    "version": "2.6.0",
+    "version": "2.6.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -159,7 +159,7 @@
             "configuration": [
                 {
                     "name": "statements",
-                    "description": "List of statements which must be must be preceded by an empty line.",
+                    "description": "List of statements which must be preceded by an empty line.",
                     "defaultValue": [
                         "break",
                         "continue",
@@ -2875,7 +2875,7 @@
         "psr4": {
             "risky": true,
             "summary": "Class names should match the file name.",
-            "riskyDescription": "This fixer may change you class name, which will break the code that is depended on old name.",
+            "riskyDescription": "This fixer may change your class name, which will break the code that is depended on old name.",
             "codeSamples": [
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
@@ -3284,7 +3284,7 @@
             "configuration": [
                 {
                     "name": "equal",
-                    "description": "Change equal (`==`, `!=`) statements.",
+                    "description": "Style for equal (`==`, `!=`) statements.",
                     "defaultValue": true,
                     "allowedTypes": [
                         "bool",
@@ -3293,7 +3293,7 @@
                 },
                 {
                     "name": "identical",
-                    "description": "Change identical (`===`, `!==`) statements.",
+                    "description": "Style for identical (`===`, `!==`) statements.",
                     "defaultValue": true,
                     "allowedTypes": [
                         "bool",
@@ -3302,7 +3302,7 @@
                 },
                 {
                     "name": "less_and_greater",
-                    "description": "Change less and greater than (`<`, `<=`, `>`, `>=`) statements.",
+                    "description": "Style for less and greater than (`<`, `<=`, `>`, `>=`) statements.",
                     "defaultValue": null,
                     "allowedTypes": [
                         "bool",
@@ -3310,7 +3310,7 @@
                     ]
                 }
             ],
-            "summary": "Write conditions in Yoda style or not based on configuration.",
+            "summary": "Write conditions in Yoda style (`true`), non-Yoda style (`false`) or ignore those conditions (`null`) based on configuration.",
             "codeSamples": [
                 {
                     "from": "<?php\n    if ($a === null) {\n        echo \"null\";\n    }\n",

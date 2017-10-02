@@ -1,5 +1,5 @@
 {
-    "version": "2.2.7",
+    "version": "2.2.8",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -2230,7 +2230,7 @@
         "psr4": {
             "risky": true,
             "summary": "Class names should match the file name.",
-            "riskyDescription": "This fixer may change you class name, which will break the code that is depended on old name.",
+            "riskyDescription": "This fixer may change your class name, which will break the code that is depended on old name.",
             "codeSamples": [
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
