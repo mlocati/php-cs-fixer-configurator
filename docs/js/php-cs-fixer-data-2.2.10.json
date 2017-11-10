@@ -1,43 +1,8 @@
 {
-    "version": "2.7.3",
+    "version": "2.2.10",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
-        "align_multiline_comment": {
-            "configuration": [
-                {
-                    "name": "comment_type",
-                    "description": "Whether to fix PHPDoc comments only (`phpdocs_only`), any multi-line comment whose lines all start with an asterisk (`phpdocs_like`) or any multi-line comment (`all_multiline`).",
-                    "defaultValue": "phpdocs_only",
-                    "allowedValues": [
-                        "phpdocs_only",
-                        "phpdocs_like",
-                        "all_multiline"
-                    ]
-                }
-            ],
-            "summary": "Each line of multi-line DocComments must have an asterisk [PSR-5] and must be aligned with the first one.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n    \/**\n            * This is a DOC Comment\nwith a line not prefixed with asterisk\n\n   *\/",
-                    "to": "<?php\n    \/**\n     * This is a DOC Comment\n     * with a line not prefixed with asterisk\n     *\n     *\/"
-                },
-                {
-                    "from": "<?php\n    \/*\n            * This is a doc-like multiline comment\n*\/",
-                    "to": "<?php\n    \/*\n     * This is a doc-like multiline comment\n     *\/",
-                    "configuration": {
-                        "comment_type": "phpdocs_like"
-                    }
-                },
-                {
-                    "from": "<?php\n    \/*\n            * This is a doc-like multiline comment\nwith a line not prefixed with asterisk\n\n   *\/",
-                    "to": "<?php\n    \/*\n     * This is a doc-like multiline comment\nwith a line not prefixed with asterisk\n\n     *\/",
-                    "configuration": {
-                        "comment_type": "all_multiline"
-                    }
-                }
-            ]
-        },
         "array_syntax": {
             "configuration": [
                 {
@@ -50,7 +15,7 @@
                     ]
                 }
             ],
-            "summary": "PHP arrays should be declared using the configured syntax.",
+            "summary": "PHP arrays should be declared using the configured syntax (requires PHP >= 5.4 for short syntax).",
             "codeSamples": [
                 {
                     "from": "<?php\n[1,2];",
@@ -69,7 +34,7 @@
             "configuration": [
                 {
                     "name": "align_double_arrow",
-                    "description": "(deprecated) Whether to apply, remove or ignore double arrows alignment.",
+                    "description": "Whether to apply, remove or ignore double arrows alignment.",
                     "defaultValue": false,
                     "allowedValues": [
                         true,
@@ -79,67 +44,47 @@
                 },
                 {
                     "name": "align_equals",
-                    "description": "(deprecated) Whether to apply, remove or ignore equals alignment.",
+                    "description": "Whether to apply, remove or ignore equals alignment.",
                     "defaultValue": false,
                     "allowedValues": [
                         true,
                         false,
                         null
                     ]
-                },
-                {
-                    "name": "default",
-                    "description": "Default fix strategy.",
-                    "defaultValue": "single_space",
-                    "allowedValues": [
-                        "align",
-                        "align_single_space",
-                        "align_single_space_minimal",
-                        "single_space",
-                        null
-                    ]
-                },
-                {
-                    "name": "operators",
-                    "description": "Dictionary of `binary operator` => `fix strategy` values that differ from the default strategy.",
-                    "defaultValue": [],
-                    "allowedTypes": [
-                        "array"
-                    ]
                 }
             ],
-            "summary": "Binary operators should be surrounded by space as configured.",
+            "summary": "Binary operators should be surrounded by at least one space.",
             "codeSamples": [
                 {
-                    "from": "<?php\n$a= 1  + $b^ $d !==  $e or   $f;\n",
-                    "to": "<?php\n$a = 1 + $b ^ $d !== $e or $f;\n"
+                    "from": "<?php\n\n$a   = 9000;\n$abc = 90001;\n\n$foo = array(\n    \"a\"   => 9000,\n    \"abc\" => 9001,\n);\n",
+                    "to": "<?php\n\n$a = 9000;\n$abc = 90001;\n\n$foo = array(\n    \"a\" => 9000,\n    \"abc\" => 9001,\n);\n"
                 },
                 {
-                    "from": "<?php\n$aa=  1;\n$b=2;\n\n$c = $d    xor    $e;\n$f    -=  1;\n",
-                    "to": "<?php\n$aa=  1;\n$b =2;\n\n$c = $d    xor    $e;\n$f -= 1;\n",
+                    "from": "<?php\n\n$a   = 9000;\n$abc = 90001;\n",
+                    "to": "<?php\n\n$a = 9000;\n$abc = 90001;\n",
                     "configuration": {
-                        "operators": {
-                            "=": "align",
-                            "xor": null
-                        }
+                        "align_equals": false
                     }
                 },
                 {
-                    "from": "<?php\n$a = $b +=$c;\n$d = $ee+=$f;\n\n$g = $b     +=$c;\n$h = $ee+=$f;\n",
-                    "to": "<?php\n$a = $b  += $c;\n$d = $ee += $f;\n\n$g = $b     += $c;\n$h = $ee    += $f;\n",
+                    "from": "<?php\n\n$a = 9000;\n$abc = 90001;\n",
+                    "to": "<?php\n\n$a   = 9000;\n$abc = 90001;\n",
                     "configuration": {
-                        "operators": {
-                            "+=": "align_single_space"
-                        }
+                        "align_equals": true
                     }
                 },
                 {
-                    "from": "<?php\n$a = $b===$c;\n$d = $f   ===  $g;\n$h = $i===  $j;\n",
-                    "to": "<?php\n$a = $b === $c;\n$d = $f === $g;\n$h = $i === $j;\n",
+                    "from": "<?php\n\n$foo = array(\n    \"a\"   => 9000,\n    \"abc\" => 9001,\n);\n",
+                    "to": "<?php\n\n$foo = array(\n    \"a\" => 9000,\n    \"abc\" => 9001,\n);\n",
                     "configuration": {
-                        "operators": {
-                            "===": "align_single_space_minimal"
-                        }
+                        "align_double_arrow": false
+                    }
+                },
+                {
+                    "from": "<?php\n\n$foo = array(\n    \"a\" => 9000,\n    \"abc\" => 9001,\n);\n",
+                    "to": "<?php\n\n$foo = array(\n    \"a\"   => 9000,\n    \"abc\" => 9001,\n);\n",
+                    "configuration": {
+                        "align_double_arrow": true
                     }
                 }
             ]
@@ -167,145 +112,11 @@
             ]
         },
         "blank_line_before_return": {
-            "summary": "An empty line feed should precede a return statement. DEPRECATED: use `blank_line_before_statement` instead.",
+            "summary": "An empty line feed should precede a return statement.",
             "codeSamples": [
                 {
                     "from": "<?php\nfunction A()\n{\n    echo 1;\n    return 1;\n}",
                     "to": "<?php\nfunction A()\n{\n    echo 1;\n\n    return 1;\n}"
-                }
-            ]
-        },
-        "blank_line_before_statement": {
-            "configuration": [
-                {
-                    "name": "statements",
-                    "description": "List of statements which must be preceded by an empty line.",
-                    "defaultValue": [
-                        "break",
-                        "continue",
-                        "declare",
-                        "return",
-                        "throw",
-                        "try"
-                    ],
-                    "allowedTypes": [
-                        "array"
-                    ]
-                }
-            ],
-            "summary": "An empty line feed must precede any configured statement.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfunction A() {\n    echo 1;\n    return 1;\n}",
-                    "to": "<?php\nfunction A() {\n    echo 1;\n\n    return 1;\n}"
-                },
-                {
-                    "from": "<?php\nswitch ($foo) {\n    case 42:\n        $bar->process();\n        break;\n    case 44:\n        break;\n}",
-                    "to": "<?php\nswitch ($foo) {\n    case 42:\n        $bar->process();\n\n        break;\n    case 44:\n        break;\n}",
-                    "configuration": {
-                        "statements": [
-                            "break"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\nforeach ($foo as $bar) {\n    if ($bar->isTired()) {\n        $bar->sleep();\n        continue;\n    }\n}",
-                    "to": "<?php\nforeach ($foo as $bar) {\n    if ($bar->isTired()) {\n        $bar->sleep();\n\n        continue;\n    }\n}",
-                    "configuration": {
-                        "statements": [
-                            "continue"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\nif ($foo === false) {\n    die(0);\n} else {\n    $bar = 9000;\n    die(1);\n}",
-                    "to": "<?php\nif ($foo === false) {\n    die(0);\n} else {\n    $bar = 9000;\n\n    die(1);\n}",
-                    "configuration": {
-                        "statements": [
-                            "die"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n$i = 0;\ndo {\n    echo $i;\n} while ($i > 0);\n",
-                    "to": "<?php\n$i = 0;\n\ndo {\n    echo $i;\n} while ($i > 0);\n",
-                    "configuration": {
-                        "statements": [
-                            "do"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\nif ($foo === false) {\n    exit(0);\n} else {\n    $bar = 9000;\n    exit(1);\n}",
-                    "to": "<?php\nif ($foo === false) {\n    exit(0);\n} else {\n    $bar = 9000;\n\n    exit(1);\n}",
-                    "configuration": {
-                        "statements": [
-                            "exit"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\na:\n\nif ($foo === false) {\n    goto a;\n} else {\n    $bar = 9000;\n    goto b;\n}",
-                    "to": "<?php\na:\n\nif ($foo === false) {\n    goto a;\n} else {\n    $bar = 9000;\n\n    goto b;\n}",
-                    "configuration": {
-                        "statements": [
-                            "goto"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n$a = 9000;\nif (true) {\n    $foo = $bar;\n}",
-                    "to": "<?php\n$a = 9000;\n\nif (true) {\n    $foo = $bar;\n}",
-                    "configuration": {
-                        "statements": [
-                            "if"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nif (true) {\n    $foo = $bar;\n    return;\n}",
-                    "to": "<?php\n\nif (true) {\n    $foo = $bar;\n\n    return;\n}",
-                    "configuration": {
-                        "statements": [
-                            "return"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n$a = 9000;\nswitch ($a) {\n    case 42:\n        break;\n}",
-                    "to": "<?php\n$a = 9000;\n\nswitch ($a) {\n    case 42:\n        break;\n}",
-                    "configuration": {
-                        "statements": [
-                            "switch"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\nif (null === $a) {\n    $foo->bar();\n    throw new \\UnexpectedValueException(\"A cannot be null\");\n}",
-                    "to": "<?php\nif (null === $a) {\n    $foo->bar();\n\n    throw new \\UnexpectedValueException(\"A cannot be null\");\n}",
-                    "configuration": {
-                        "statements": [
-                            "throw"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n$a = 9000;\ntry {\n    $foo->bar();\n} catch (\\Exception $exception) {\n    $a = -1;\n}",
-                    "to": "<?php\n$a = 9000;\n\ntry {\n    $foo->bar();\n} catch (\\Exception $exception) {\n    $a = -1;\n}",
-                    "configuration": {
-                        "statements": [
-                            "try"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nif (true) {\n    $foo = $bar;\n    yield $foo;\n}",
-                    "to": "<?php\n\nif (true) {\n    $foo = $bar;\n\n    yield $foo;\n}",
-                    "configuration": {
-                        "statements": [
-                            "yield"
-                        ]
-                    }
                 }
             ]
         },
@@ -317,24 +128,6 @@
                     "defaultValue": false,
                     "allowedTypes": [
                         "bool"
-                    ]
-                },
-                {
-                    "name": "position_after_anonymous_constructs",
-                    "description": "whether the opening brace should be placed on \"next\" or \"same\" line after anonymous constructs (anonymous classes and lambda functions).",
-                    "defaultValue": "same",
-                    "allowedValues": [
-                        "next",
-                        "same"
-                    ]
-                },
-                {
-                    "name": "position_after_control_structures",
-                    "description": "whether the opening brace should be placed on \"next\" or \"same\" line after control structures.",
-                    "defaultValue": "same",
-                    "allowedValues": [
-                        "next",
-                        "same"
                     ]
                 },
                 {
@@ -370,36 +163,11 @@
             ]
         },
         "cast_spaces": {
-            "configuration": [
-                {
-                    "name": "space",
-                    "description": "spacing to apply between cast and variable.",
-                    "defaultValue": "single",
-                    "allowedValues": [
-                        "none",
-                        "single"
-                    ]
-                }
-            ],
-            "summary": "A single space or none should be between cast and variable.",
+            "summary": "A single space should be between cast and variable.",
             "codeSamples": [
                 {
                     "from": "<?php\n$bar = ( string )  $a;\n$foo = (int)$b;",
                     "to": "<?php\n$bar = (string) $a;\n$foo = (int) $b;"
-                },
-                {
-                    "from": "<?php\n$bar = ( string )  $a;\n$foo = (int)$b;",
-                    "to": "<?php\n$bar = (string) $a;\n$foo = (int) $b;",
-                    "configuration": {
-                        "space": "single"
-                    }
-                },
-                {
-                    "from": "<?php\n$bar = ( string )  $a;\n$foo = (int) $b;",
-                    "to": "<?php\n$bar = (string)$a;\n$foo = (int)$b;",
-                    "configuration": {
-                        "space": "none"
-                    }
                 }
             ]
         },
@@ -433,8 +201,16 @@
             "summary": "Whitespace around the keywords of a class, trait or interfaces definition should be one space.",
             "codeSamples": [
                 {
-                    "from": "<?php\n\nclass  Foo  extends  Bar  implements  Baz,  BarBaz\n{\n}\n\nfinal  class  Foo  extends  Bar  implements  Baz,  BarBaz\n{\n}\n\ntrait  Foo\n{\n}\n",
-                    "to": "<?php\n\nclass Foo extends Bar implements Baz, BarBaz\n{\n}\n\nfinal class Foo extends Bar implements Baz, BarBaz\n{\n}\n\ntrait Foo\n{\n}\n"
+                    "from": "<?php\n\nclass  Foo  extends  Bar  implements  Baz,  BarBaz\n{\n}",
+                    "to": "<?php\n\nclass Foo extends Bar implements Baz, BarBaz\n{\n}"
+                },
+                {
+                    "from": "<?php\n\ntrait  Foo\n{\n}",
+                    "to": "<?php\n\ntrait Foo\n{\n}"
+                },
+                {
+                    "from": "<?php\n\nfinal  class  Foo  extends  Bar  implements  Baz,  BarBaz\n{\n}",
+                    "to": "<?php\n\nfinal class Foo extends Bar implements Baz, BarBaz\n{\n}"
                 },
                 {
                     "from": "<?php\n\n$foo = new  class  extends  Bar  implements  Baz,  BarBaz {};\n",
@@ -464,20 +240,11 @@
             ]
         },
         "class_keyword_remove": {
-            "summary": "Converts `::class` keywords to FQCN strings.",
+            "summary": "Converts `::class` keywords to FQCN strings. Requires PHP >= 5.5.",
             "codeSamples": [
                 {
                     "from": "<?php\n\nuse Foo\\Bar\\Baz;\n\n$className = Baz::class;\n",
                     "to": "<?php\n\nuse Foo\\Bar\\Baz;\n\n$className = 'Foo\\Bar\\Baz';\n"
-                }
-            ]
-        },
-        "combine_consecutive_issets": {
-            "summary": "Using `isset(X) &&` multiple times should be done in one call.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n$a = isset($a) && isset($b);",
-                    "to": "<?php\n$a = isset($a, $b)  ;"
                 }
             ]
         },
@@ -570,130 +337,6 @@
                 {
                     "from": "<?php\n$a = dirname(__FILE__);",
                     "to": "<?php\n$a = __DIR__;"
-                }
-            ]
-        },
-        "doctrine_annotation_array_assignment": {
-            "configuration": [
-                {
-                    "name": "ignored_tags",
-                    "description": "List of tags that must not be treated as Doctrine Annotations.",
-                    "defaultValue": [
-                        "abstract",
-                        "access",
-                        "code",
-                        "deprec",
-                        "encode",
-                        "exception",
-                        "final",
-                        "ingroup",
-                        "inheritdoc",
-                        "inheritDoc",
-                        "magic",
-                        "name",
-                        "toc",
-                        "tutorial",
-                        "private",
-                        "static",
-                        "staticvar",
-                        "staticVar",
-                        "throw",
-                        "api",
-                        "author",
-                        "category",
-                        "copyright",
-                        "deprecated",
-                        "example",
-                        "filesource",
-                        "global",
-                        "ignore",
-                        "internal",
-                        "license",
-                        "link",
-                        "method",
-                        "package",
-                        "param",
-                        "property",
-                        "property-read",
-                        "property-write",
-                        "return",
-                        "see",
-                        "since",
-                        "source",
-                        "subpackage",
-                        "throws",
-                        "todo",
-                        "TODO",
-                        "usedBy",
-                        "uses",
-                        "var",
-                        "version",
-                        "after",
-                        "afterClass",
-                        "backupGlobals",
-                        "backupStaticAttributes",
-                        "before",
-                        "beforeClass",
-                        "codeCoverageIgnore",
-                        "codeCoverageIgnoreStart",
-                        "codeCoverageIgnoreEnd",
-                        "covers",
-                        "coversDefaultClass",
-                        "coversNothing",
-                        "dataProvider",
-                        "depends",
-                        "expectedException",
-                        "expectedExceptionCode",
-                        "expectedExceptionMessage",
-                        "expectedExceptionMessageRegExp",
-                        "group",
-                        "large",
-                        "medium",
-                        "preserveGlobalState",
-                        "requires",
-                        "runTestsInSeparateProcesses",
-                        "runInSeparateProcess",
-                        "small",
-                        "test",
-                        "testdox",
-                        "ticket",
-                        "uses",
-                        "SuppressWarnings",
-                        "noinspection",
-                        "package_version",
-                        "enduml",
-                        "startuml",
-                        "fix",
-                        "FIXME",
-                        "fixme",
-                        "override"
-                    ],
-                    "allowedTypes": [
-                        "array"
-                    ]
-                },
-                {
-                    "name": "operator",
-                    "description": "The operator to use.",
-                    "defaultValue": "=",
-                    "allowedValues": [
-                        "=",
-                        ":"
-                    ]
-                }
-            ],
-            "summary": "Doctrine annotations must use configured operator for assignment in arrays.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\/**\n * @Foo({bar : \"baz\"})\n *\/\nclass Bar {}",
-                    "to": "<?php\n\/**\n * @Foo({bar = \"baz\"})\n *\/\nclass Bar {}"
-                },
-                {
-                    "from": "<?php\n\/**\n * @Foo({bar = \"baz\"})\n *\/\nclass Bar {}",
-                    "to": "<?php\n\/**\n * @Foo({bar : \"baz\"})\n *\/\nclass Bar {}",
-                    "configuration": {
-                        "operator": ":"
-                    }
                 }
             ]
         },
@@ -919,14 +562,6 @@
                     "allowedTypes": [
                         "array"
                     ]
-                },
-                {
-                    "name": "indent_mixed_lines",
-                    "description": "Whether to indent lines that have content before closing parenthesis.",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
                 }
             ],
             "summary": "Doctrine annotations must be indented with four spaces.",
@@ -934,48 +569,14 @@
                 {
                     "from": "<?php\n\/**\n *  @Foo(\n *   foo=\"foo\"\n *  )\n *\/\nclass Bar {}",
                     "to": "<?php\n\/**\n * @Foo(\n *     foo=\"foo\"\n * )\n *\/\nclass Bar {}"
-                },
-                {
-                    "from": "<?php\n\/**\n *  @Foo({@Bar,\n *   @Baz})\n *\/\nclass Bar {}",
-                    "to": "<?php\n\/**\n * @Foo({@Bar,\n *     @Baz})\n *\/\nclass Bar {}",
-                    "configuration": {
-                        "indent_mixed_lines": true
-                    }
                 }
             ]
         },
         "doctrine_annotation_spaces": {
             "configuration": [
                 {
-                    "name": "after_argument_assignments",
-                    "description": "Whether to add, remove or ignore spaces after argument assignment operator.",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "null",
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "after_array_assignments_colon",
-                    "description": "Whether to add, remove or ignore spaces after array assignment `:` operator.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "null",
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "after_array_assignments_equals",
-                    "description": "Whether to add, remove or ignore spaces after array assignment `=` operator.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "null",
-                        "bool"
-                    ]
-                },
-                {
                     "name": "around_argument_assignments",
-                    "description": "Whether to fix spaces around argument assignment operator (deprecated, use `before_argument_assignments` and `after_argument_assignments` options instead).",
+                    "description": "Whether to fix spaces around argument assignment operator.",
                     "defaultValue": true,
                     "allowedTypes": [
                         "bool"
@@ -983,7 +584,7 @@
                 },
                 {
                     "name": "around_array_assignments",
-                    "description": "Whether to fix spaces around array assignment operators (deprecated, use `before_array_assignments_*` and `after_array_assignments_*` options instead).",
+                    "description": "Whether to fix spaces around array assignment operators.",
                     "defaultValue": true,
                     "allowedTypes": [
                         "bool"
@@ -1002,33 +603,6 @@
                     "description": "Whether to fix spaces around parentheses.",
                     "defaultValue": true,
                     "allowedTypes": [
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "before_argument_assignments",
-                    "description": "Whether to add, remove or ignore spaces before argument assignment operator.",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "null",
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "before_array_assignments_colon",
-                    "description": "Whether to add, remove or ignore spaces before array `:` assignment operator.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "null",
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "before_array_assignments_equals",
-                    "description": "Whether to add, remove or ignore spaces before array `=` assignment operator.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "null",
                         "bool"
                     ]
                 },
@@ -1160,7 +734,7 @@
         "ereg_to_preg": {
             "risky": true,
             "summary": "Replace deprecated `ereg` regular expression functions with preg.",
-            "riskyDescription": "Risky if the `ereg` funcion is overridden.",
+            "riskyDescription": "Risky if the `ereg` function is overridden.",
             "codeSamples": [
                 {
                     "from": "<?php $x = ereg('[A-Z]');",
@@ -1211,9 +785,8 @@
                     "name": "functions",
                     "description": "List of function names to fix.",
                     "defaultValue": [
-                        "get_class",
-                        "php_sapi_name",
                         "phpversion",
+                        "php_sapi_name",
                         "pi"
                     ],
                     "allowedTypes": [
@@ -1273,7 +846,7 @@
             ]
         },
         "hash_to_slash_comment": {
-            "summary": "Single line comments should use double slashes `\/\/` and not hash `#`. DEPRECATED: use `single_line_comment_style` instead.",
+            "summary": "Single line comments should use double slashes `\/\/` and not hash `#`.",
             "codeSamples": [
                 {
                     "from": "<?php # comment",
@@ -1423,33 +996,6 @@
                 }
             ]
         },
-        "list_syntax": {
-            "configuration": [
-                {
-                    "name": "syntax",
-                    "description": "Whether to use the `long` or `short` `list` syntax.",
-                    "defaultValue": "long",
-                    "allowedValues": [
-                        "long",
-                        "short"
-                    ]
-                }
-            ],
-            "summary": "List (`array` destructuring) assignment should be declared using the configured syntax. Requires PHP >= 7.1.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n[$sample] = $array;",
-                    "to": "<?php\nlist($sample) = $array;"
-                },
-                {
-                    "from": "<?php\nlist($sample) = $array;",
-                    "to": "<?php\n[$sample] = $array;",
-                    "configuration": {
-                        "syntax": "short"
-                    }
-                }
-            ]
-        },
         "lowercase_cast": {
             "summary": "Cast should be written in lower case.",
             "codeSamples": [
@@ -1500,14 +1046,6 @@
         "method_argument_space": {
             "configuration": [
                 {
-                    "name": "ensure_fully_multiline",
-                    "description": "Ensure every argument of a multiline argument list is on its own line",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                },
-                {
                     "name": "keep_multiple_spaces_after_comma",
                     "description": "Whether keep multiple spaces after comma.",
                     "defaultValue": false,
@@ -1516,7 +1054,7 @@
                     ]
                 }
             ],
-            "summary": "In method arguments and method call, there MUST NOT be a space before each comma and there MUST be one space after each comma. Argument lists MAY be split across multiple lines, where each subsequent line is indented once. When doing so, the first item in the list MUST be on the next line, and there MUST be only one argument per line.",
+            "summary": "In method arguments and method call, there MUST NOT be a space before each comma and there MUST be one space after each comma.",
             "codeSamples": [
                 {
                     "from": "<?php\nfunction sample($a=10,$b=20,$c=30) {}\nsample(1,  2);",
@@ -1534,29 +1072,6 @@
                     "to": "<?php\nfunction sample($a=10, $b=20, $c=30) {}\nsample(1,  2);",
                     "configuration": {
                         "keep_multiple_spaces_after_comma": true
-                    }
-                },
-                {
-                    "from": "<?php\nfunction sample($a=10,\n    $b=20,$c=30) {}\nsample(1,\n    2);",
-                    "to": "<?php\nfunction sample(\n    $a=10,\n    $b=20,\n    $c=30\n) {}\nsample(\n    1,\n    2\n);",
-                    "configuration": {
-                        "ensure_fully_multiline": true
-                    }
-                },
-                {
-                    "from": "<?php\nfunction sample($a=10,\n    $b=20,$c=30) {}\nsample(1,  \n    2);\nsample('foo',    'foobarbaz', 'baz');\nsample('foobar', 'bar',       'baz');",
-                    "to": "<?php\nfunction sample(\n    $a=10,\n    $b=20,\n    $c=30\n) {}\nsample(\n    1,\n    2\n);\nsample('foo',    'foobarbaz', 'baz');\nsample('foobar', 'bar',       'baz');",
-                    "configuration": {
-                        "ensure_fully_multiline": true,
-                        "keep_multiple_spaces_after_comma": true
-                    }
-                },
-                {
-                    "from": "<?php\nfunction sample($a=10,\n    $b=20,$c=30) {}\nsample(1,  \n    2);\nsample('foo',    'foobarbaz', 'baz');\nsample('foobar', 'bar',       'baz');",
-                    "to": "<?php\nfunction sample(\n    $a=10,\n    $b=20,\n    $c=30\n) {}\nsample(\n    1,\n    2\n);\nsample('foo', 'foobarbaz', 'baz');\nsample('foobar', 'bar', 'baz');",
-                    "configuration": {
-                        "ensure_fully_multiline": true,
-                        "keep_multiple_spaces_after_comma": false
                     }
                 }
             ]
@@ -1664,26 +1179,6 @@
                 {
                     "from": "<?php\n\n\n\nnamespace Example;",
                     "to": "<?php\nnamespace Example;"
-                }
-            ]
-        },
-        "no_break_comment": {
-            "configuration": [
-                {
-                    "name": "comment_text",
-                    "description": "The text to use in the added comment and to detect it.",
-                    "defaultValue": "no break",
-                    "allowedTypes": [
-                        "string"
-                    ]
-                }
-            ],
-            "summary": "There must be a comment when fall-through is intentional in a non-empty case body.",
-            "description": "Adds a \"no break\" comment before fall-through cases, and removes it if there is no fall-through.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    case 2:\n        bar();\n        \/\/ no break\n        break;\n    case 3:\n        baz();\n}",
-                    "to": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        \/\/ no break\n    case 2:\n        bar();\n        break;\n    case 3:\n        baz();\n}"
                 }
             ]
         },
@@ -1831,28 +1326,6 @@
                             "use_trait"
                         ]
                     }
-                },
-                {
-                    "from": "<?php\nswitch($a) {\n\n    case 1:\n\n    default:\n\n        echo 3;\n}",
-                    "to": "<?php\nswitch($a) {\n    case 1:\n    default:\n        echo 3;\n}",
-                    "configuration": {
-                        "tokens": [
-                            "switch",
-                            "case",
-                            "default"
-                        ]
-                    }
-                }
-            ]
-        },
-        "no_homoglyph_names": {
-            "risky": true,
-            "summary": "Replace accidental usage of homoglyphs (non ascii characters) in names.",
-            "riskyDescription": "Renames classes and cannot rename the files. You might have string references to renamed code (`$$name`).",
-            "codeSamples": [
-                {
-                    "from": "<?php $n\u0430m\u0435 = 'wrong \"a\" character';",
-                    "to": "<?php $name = 'wrong \"a\" character';"
                 }
             ]
         },
@@ -1916,15 +1389,6 @@
                 {
                     "from": "<?php\nfunction foo () {\n    return 1 + 2\n        ;\n}\n",
                     "to": "<?php\nfunction foo () {\n    return 1 + 2;\n}\n"
-                }
-            ]
-        },
-        "no_null_property_initialization": {
-            "summary": "Properties MUST not be explicitly initialized with `null`.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nclass Foo {\n    public $foo = null;\n}",
-                    "to": "<?php\nclass Foo {\n    public $foo;\n}"
                 }
             ]
         },
@@ -2028,15 +1492,6 @@
                 }
             ]
         },
-        "no_superfluous_elseif": {
-            "summary": "Replaces superfluous `elseif` with `if`.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nif ($a) {\n    return 1;\n} elseif ($b) {\n    return 2;\n}",
-                    "to": "<?php\nif ($a) {\n    return 1;\n}\nif ($b) {\n    return 2;\n}"
-                }
-            ]
-        },
         "no_trailing_comma_in_list_call": {
             "summary": "Remove trailing commas in list function calls.",
             "codeSamples": [
@@ -2110,28 +1565,6 @@
                 }
             ]
         },
-        "no_unneeded_curly_braces": {
-            "summary": "Removes unneeded curly braces that are superfluous and aren't part of a control structure's body.",
-            "codeSamples": [
-                {
-                    "from": "<?php {\n    echo 1;\n}\n\nswitch ($b) {\n    case 1: {\n        break;\n    }\n}\n",
-                    "to": "<?php \n    echo 1;\n\n\nswitch ($b) {\n    case 1: \n        break;\n    \n}\n"
-                }
-            ]
-        },
-        "no_unneeded_final_method": {
-            "summary": "A final class must not have final methods.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfinal class Foo {\n    final public function foo() {}\n    final protected function bar() {}\n    final private function baz() {}\n}",
-                    "to": "<?php\nfinal class Foo {\n    public function foo() {}\n    protected function bar() {}\n    private function baz() {}\n}"
-                },
-                {
-                    "from": "<?php\nclass Foo {\n    final private function bar() {}\n}",
-                    "to": "<?php\nclass Foo {\n    private function bar() {}\n}"
-                }
-            ]
-        },
         "no_unreachable_default_argument_value": {
             "risky": true,
             "summary": "In function arguments there must not be arguments with default values before non-default ones.",
@@ -2190,29 +1623,12 @@
         },
         "non_printable_character": {
             "risky": true,
-            "configuration": [
-                {
-                    "name": "use_escape_sequences_in_strings",
-                    "description": "Whether characters should be replaced with escape sequences in strings.",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                }
-            ],
             "summary": "Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols.",
             "riskyDescription": "Risky when strings contain intended invisible characters.",
             "codeSamples": [
                 {
-                    "from": "<?php echo \"\u200bHello\u2007World\u00a0!\";",
-                    "to": "<?php echo \"Hello World !\";"
-                },
-                {
-                    "from": "<?php echo \"\u200bHello\u2007World\u00a0!\";",
-                    "to": "<?php echo \"\\u{200b}Hello\\u{2007}World\\u{a0}!\";",
-                    "configuration": {
-                        "use_escape_sequences_in_strings": true
-                    }
+                    "from": "<?php\n\necho \"\u200bHello\u2007World\u00a0!\";\n",
+                    "to": "<?php\n\necho \"Hello World !\";\n"
                 }
             ]
         },
@@ -2406,18 +1822,18 @@
                         "array_key_exists",
                         "empty",
                         "file_exists",
+                        "is_infinite",
+                        "is_nan",
+                        "is_null",
                         "is_array",
                         "is_bool",
                         "is_boolean",
                         "is_callable",
                         "is_double",
                         "is_float",
-                        "is_infinite",
                         "is_int",
                         "is_integer",
                         "is_long",
-                        "is_nan",
-                        "is_null",
                         "is_numeric",
                         "is_object",
                         "is_real",
@@ -2492,15 +1908,6 @@
                 }
             ]
         },
-        "php_unit_test_class_requires_covers": {
-            "summary": "Adds a default `@coversNothing` annotation to PHPUnit test classes that have no `@covers*` annotation.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertSame(a(), b());\n    }\n}\n",
-                    "to": "<?php\n\n\/**\n * @coversNothing\n *\/\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertSame(a(), b());\n    }\n}\n"
-                }
-            ]
-        },
         "phpdoc_add_missing_param_annotation": {
             "configuration": [
                 {
@@ -2535,23 +1942,7 @@
             ]
         },
         "phpdoc_align": {
-            "configuration": [
-                {
-                    "name": "tags",
-                    "description": "The tags that should be aligned.",
-                    "defaultValue": [
-                        "param",
-                        "return",
-                        "throws",
-                        "type",
-                        "var"
-                    ],
-                    "allowedTypes": [
-                        "array"
-                    ]
-                }
-            ],
-            "summary": "All items of the given phpdoc tags must be aligned vertically.",
+            "summary": "All items of the @param, @throws, @return, @var, and @type phpdoc tags must be aligned vertically.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @param  EngineInterface $templating\n * @param string      $format\n * @param  int  $code       an HTTP response status code\n * @param    bool         $debug\n * @param  mixed    &$reference     a parameter passed by reference\n *\/\n",
@@ -2770,66 +2161,6 @@
                 }
             ]
         },
-        "phpdoc_types_order": {
-            "configuration": [
-                {
-                    "name": "null_adjustment",
-                    "description": "Forces the position of `null` (overrides `sort_algorithm`).",
-                    "defaultValue": "always_first",
-                    "allowedValues": [
-                        "always_first",
-                        "always_last",
-                        "none"
-                    ]
-                },
-                {
-                    "name": "sort_algorithm",
-                    "description": "The sorting algorithm to apply.",
-                    "defaultValue": "alpha",
-                    "allowedValues": [
-                        "alpha",
-                        "none"
-                    ]
-                }
-            ],
-            "summary": "Sorts PHPDoc types.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\/**\n * @param string|null $bar\n *\/",
-                    "to": "<?php\n\/**\n * @param null|string $bar\n *\/"
-                },
-                {
-                    "from": "<?php\n\/**\n * @param null|string $bar\n *\/",
-                    "to": "<?php\n\/**\n * @param string|null $bar\n *\/",
-                    "configuration": {
-                        "null_adjustment": "always_last"
-                    }
-                },
-                {
-                    "from": "<?php\n\/**\n * @param null|string|int|\\Foo $bar\n *\/",
-                    "to": "<?php\n\/**\n * @param null|\\Foo|int|string $bar\n *\/",
-                    "configuration": {
-                        "sort_algorithm": "alpha"
-                    }
-                },
-                {
-                    "from": "<?php\n\/**\n * @param null|string|int|\\Foo $bar\n *\/",
-                    "to": "<?php\n\/**\n * @param \\Foo|int|string|null $bar\n *\/",
-                    "configuration": {
-                        "sort_algorithm": "alpha",
-                        "null_adjustment": "always_last"
-                    }
-                },
-                {
-                    "from": "<?php\n\/**\n * @param null|string|int|\\Foo $bar\n *\/",
-                    "to": "<?php\n\/**\n * @param \\Foo|int|null|string $bar\n *\/",
-                    "configuration": {
-                        "sort_algorithm": "alpha",
-                        "null_adjustment": "none"
-                    }
-                }
-            ]
-        },
         "phpdoc_var_without_name": {
             "summary": "@var and @type annotations should not contain the variable name.",
             "codeSamples": [
@@ -2841,7 +2172,7 @@
         },
         "pow_to_exponentiation": {
             "risky": true,
-            "summary": "Converts `pow()` to the `**` operator.",
+            "summary": "Converts `pow()` to the `**` operator. Requires PHP >= 5.6.",
             "riskyDescription": "Risky when the function `pow()` is overridden.",
             "codeSamples": [
                 {
@@ -3100,46 +2431,6 @@
                 }
             ]
         },
-        "single_line_comment_style": {
-            "configuration": [
-                {
-                    "name": "comment_types",
-                    "description": "List of comment types to fix",
-                    "defaultValue": [
-                        "asterisk",
-                        "hash"
-                    ],
-                    "allowedTypes": [
-                        "array"
-                    ]
-                }
-            ],
-            "summary": "Single-line comments and multi-line comments with only one line of actual content should use the `\/\/` syntax.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\/* asterisk comment *\/\n$a = 1;\n\n# hash comment\n$b = 2;\n\n\/*\n * multi-line\n * comment\n *\/\n$c = 3;",
-                    "to": "<?php\n\/\/ asterisk comment\n$a = 1;\n\n\/\/ hash comment\n$b = 2;\n\n\/*\n * multi-line\n * comment\n *\/\n$c = 3;"
-                },
-                {
-                    "from": "<?php\n\/* first comment *\/\n$a = 1;\n\n\/*\n * second comment\n *\/\n$b = 2;\n\n\/*\n * third\n * comment\n *\/\n$c = 3;",
-                    "to": "<?php\n\/\/ first comment\n$a = 1;\n\n\/\/ second comment\n$b = 2;\n\n\/*\n * third\n * comment\n *\/\n$c = 3;",
-                    "configuration": {
-                        "comment_types": [
-                            "asterisk"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php # comment",
-                    "to": "<?php \/\/ comment",
-                    "configuration": {
-                        "comment_types": [
-                            "hash"
-                        ]
-                    }
-                }
-            ]
-        },
         "single_quote": {
             "summary": "Convert double quotes to single quotes for simple strings.",
             "codeSamples": [
@@ -3150,28 +2441,11 @@
             ]
         },
         "space_after_semicolon": {
-            "configuration": [
-                {
-                    "name": "remove_in_empty_for_expressions",
-                    "description": "Whether spaces should be removed for empty `for` expressions.",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                }
-            ],
             "summary": "Fix whitespace after a semicolon.",
             "codeSamples": [
                 {
-                    "from": "<?php\n                        sample();     $test = 1;\n                        sample();$test = 2;\n                        for ( ;;++$sample) {\n                        }\n                    ",
-                    "to": "<?php\n                        sample(); $test = 1;\n                        sample(); $test = 2;\n                        for ( ; ; ++$sample) {\n                        }\n                    "
-                },
-                {
-                    "from": "<?php\nfor ($i = 0; ; ++$i) {\n}",
-                    "to": "<?php\nfor ($i = 0;; ++$i) {\n}",
-                    "configuration": {
-                        "remove_in_empty_for_expressions": true
-                    }
+                    "from": "<?php\n                    sample();     $test = 1;\n                    sample();$test = 2;\n                    for ( ;;++$sample) {\n                    }\n                ",
+                    "to": "<?php\n                    sample(); $test = 1;\n                    sample(); $test = 2;\n                    for ( ; ; ++$sample) {\n                    }\n                "
                 }
             ]
         },
@@ -3301,70 +2575,12 @@
                 }
             ]
         },
-        "void_return": {
-            "risky": true,
-            "summary": "Add void return type to functions with missing or empty return statements, but priority is given to `@return` annotations. Requires PHP >= 7.1.",
-            "riskyDescription": "Modifies the signature of functions.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfunction foo($a) {};",
-                    "to": "<?php\nfunction foo($a): void {};"
-                }
-            ]
-        },
         "whitespace_after_comma_in_array": {
             "summary": "In array declaration, there MUST be a whitespace after each comma.",
             "codeSamples": [
                 {
                     "from": "<?php\n$sample = array(1,'a',$b,);",
                     "to": "<?php\n$sample = array(1, 'a', $b, );"
-                }
-            ]
-        },
-        "yoda_style": {
-            "configuration": [
-                {
-                    "name": "equal",
-                    "description": "Style for equal (`==`, `!=`) statements.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool",
-                        "null"
-                    ]
-                },
-                {
-                    "name": "identical",
-                    "description": "Style for identical (`===`, `!==`) statements.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool",
-                        "null"
-                    ]
-                },
-                {
-                    "name": "less_and_greater",
-                    "description": "Style for less and greater than (`<`, `<=`, `>`, `>=`) statements.",
-                    "defaultValue": null,
-                    "allowedTypes": [
-                        "bool",
-                        "null"
-                    ]
-                }
-            ],
-            "summary": "Write conditions in Yoda style (`true`), non-Yoda style (`false`) or ignore those conditions (`null`) based on configuration.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n    if ($a === null) {\n        echo \"null\";\n    }\n",
-                    "to": "<?php\n    if (null === $a) {\n        echo \"null\";\n    }\n"
-                },
-                {
-                    "from": "<?php\n    $b = $c != 1;  \/\/ equal\n    $a = 1 === $b; \/\/ identical\n    $c = $c > 3;   \/\/ less than\n",
-                    "to": "<?php\n    $b = 1 != $c;  \/\/ equal\n    $a = $b === 1; \/\/ identical\n    $c = $c > 3;   \/\/ less than\n",
-                    "configuration": {
-                        "equal": true,
-                        "identical": false,
-                        "less_and_greater": null
-                    }
                 }
             ]
         }
@@ -3384,10 +2600,7 @@
             "line_ending": null,
             "lowercase_constants": null,
             "lowercase_keywords": null,
-            "method_argument_space": {
-                "ensure_fully_multiline": true
-            },
-            "no_break_comment": null,
+            "method_argument_space": null,
             "no_closing_tag": null,
             "no_spaces_after_function_name": null,
             "no_spaces_inside_parenthesis": null,
@@ -3408,13 +2621,12 @@
             "full_opening_tag": null
         },
         "@Symfony": {
-            "binary_operator_spaces": null,
-            "blank_line_after_opening_tag": null,
-            "blank_line_before_statement": {
-                "statements": [
-                    "return"
-                ]
+            "binary_operator_spaces": {
+                "align_double_arrow": false,
+                "align_equals": false
             },
+            "blank_line_after_opening_tag": null,
+            "blank_line_before_return": null,
             "braces": {
                 "allow_single_line_closure": true
             },
@@ -3431,7 +2643,6 @@
             "include": null,
             "lowercase_cast": null,
             "magic_constant_casing": null,
-            "method_argument_space": null,
             "method_separation": null,
             "native_function_casing": null,
             "new_with_braces": null,
@@ -3462,8 +2673,6 @@
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
             "no_unneeded_control_parentheses": null,
-            "no_unneeded_curly_braces": null,
-            "no_unneeded_final_method": null,
             "no_unused_imports": null,
             "no_whitespace_before_comma_in_array": null,
             "no_whitespace_in_blank_line": null,
@@ -3492,21 +2701,17 @@
             "protected_to_private": null,
             "return_type_declaration": null,
             "self_accessor": null,
-            "semicolon_after_instruction": null,
             "short_scalar_cast": null,
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
             "single_quote": null,
-            "space_after_semicolon": {
-                "remove_in_empty_for_expressions": true
-            },
+            "space_after_semicolon": null,
             "standardize_not_equals": null,
             "ternary_operator_spaces": null,
             "trailing_comma_in_multiline_array": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
             "whitespace_after_comma_in_array": null,
-            "yoda_style": null,
             "blank_line_after_namespace": null,
             "elseif": null,
             "function_declaration": null,
@@ -3514,7 +2719,7 @@
             "line_ending": null,
             "lowercase_constants": null,
             "lowercase_keywords": null,
-            "no_break_comment": null,
+            "method_argument_space": null,
             "no_closing_tag": null,
             "no_spaces_after_function_name": null,
             "no_spaces_inside_parenthesis": null,
@@ -3536,22 +2741,11 @@
             "is_null": null,
             "modernize_types_casting": null,
             "no_alias_functions": null,
-            "no_homoglyph_names": null,
             "non_printable_character": null,
             "php_unit_construct": null,
             "php_unit_dedicate_assert": null,
             "psr4": null,
             "silenced_deprecation_error": null
-        },
-        "@DoctrineAnnotation": {
-            "doctrine_annotation_array_assignment": {
-                "operator": ":"
-            },
-            "doctrine_annotation_braces": null,
-            "doctrine_annotation_indentation": null,
-            "doctrine_annotation_spaces": {
-                "before_array_assignments_colon": false
-            }
         },
         "@PHP56Migration": [],
         "@PHP56Migration:risky": {
@@ -3562,9 +2756,6 @@
         },
         "@PHP70Migration:risky": {
             "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
@@ -3582,20 +2773,6 @@
                 ]
             },
             "ternary_to_null_coalescing": null
-        },
-        "@PHP71Migration:risky": {
-            "void_return": null,
-            "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "pow_to_exponentiation": null
         }
     }
 }
