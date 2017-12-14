@@ -1,5 +1,5 @@
 {
-    "version": "2.8.3-DEV",
+    "version": "2.9.0",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -399,6 +399,47 @@
                     "to": "<?php\n$bar = (string)$a;\n$foo = (int)$b;\n",
                     "configuration": {
                         "space": "none"
+                    }
+                }
+            ]
+        },
+        "class_attributes_separation": {
+            "configuration": [
+                {
+                    "name": "elements",
+                    "description": "List of classy elements; 'const', 'method', 'property'.",
+                    "defaultValue": [
+                        "const",
+                        "method",
+                        "property"
+                    ],
+                    "allowedTypes": [
+                        "array"
+                    ]
+                }
+            ],
+            "summary": "Class, trait and interface elements must be separated with one blank line.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n    protected function bar()\n    {\n    }\n\n\n}\n",
+                    "to": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n\n    protected function bar()\n    {\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\nclass Sample\n{private $a; \/\/ a is awesome\n    \/** second in a hour *\/\n    private $b;\n}\n",
+                    "to": "<?php\nclass Sample\n{\nprivate $a; \/\/ a is awesome\n\n    \/** second in a hour *\/\n    private $b;\n}\n",
+                    "configuration": {
+                        "elements": [
+                            "property"
+                        ]
+                    }
+                },
+                {
+                    "from": "<?php\nclass Sample\n{\n    const A = 1;\n    \/** seconds in some hours *\/\n    const B = 3600;\n}\n",
+                    "to": "<?php\nclass Sample\n{\n    const A = 1;\n\n    \/** seconds in some hours *\/\n    const B = 3600;\n}\n",
+                    "configuration": {
+                        "elements": [
+                            "const"
+                        ]
                     }
                 }
             ]
@@ -1178,6 +1219,126 @@
                 }
             ]
         },
+        "escape_implicit_backslashes": {
+            "configuration": [
+                {
+                    "name": "double_quoted",
+                    "description": "Whether to fix double-quoted strings.",
+                    "defaultValue": true,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                },
+                {
+                    "name": "heredoc_syntax",
+                    "description": "Whether to fix heredoc syntax.",
+                    "defaultValue": true,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                },
+                {
+                    "name": "single_quoted",
+                    "description": "Whether to fix single-quoted strings.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
+            "summary": "Escape implicit backslashes in strings and heredocs to ease the understanding of which are special chars interpreted by PHP and which not.",
+            "description": "In PHP double-quoted strings and heredocs some chars like `n`, `$` or `u` have special meanings if preceded by a backslash (and some are special only if followed by other special chars), while a backslash preceding other chars are interpreted like a plain backslash. The precise list of those special chars is hard to remember and to identify quickly: this fixer escapes backslashes that do not start a special interpretation with the char after them.\r\nIt is possible to fix also single-quoted strings: in this case there is no special chars apart from single-quote and backslash itself, so the fixer simply ensure that all backslashes are escaped. Both single and double backslashes are allowed in single-quoted strings, so the purpose in this context is mainly to have a uniformed way to have them written all over the codebase.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\999\nHEREDOC;\n",
+                    "to": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\\\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\\\999\nHEREDOC;\n"
+                },
+                {
+                    "from": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\999\nHEREDOC;\n",
+                    "to": "<?php\n\n$singleQuoted = 'String with \\\\\" and My\\\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\\\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\\\999\nHEREDOC;\n",
+                    "configuration": {
+                        "single_quoted": true
+                    }
+                },
+                {
+                    "from": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\999\nHEREDOC;\n",
+                    "to": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\\\999\nHEREDOC;\n",
+                    "configuration": {
+                        "double_quoted": false
+                    }
+                },
+                {
+                    "from": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\999\nHEREDOC;\n",
+                    "to": "<?php\n\n$singleQuoted = 'String with \\\" and My\\Prefix\\\\';\n\n$doubleQuoted = \"Interpret my \\n but not my \\\\a\";\n\n$hereDoc = <<<HEREDOC\nInterpret my \\100 but not my \\999\nHEREDOC;\n",
+                    "configuration": {
+                        "heredoc_syntax": false
+                    }
+                }
+            ]
+        },
+        "explicit_indirect_variable": {
+            "summary": "Add curly braces to indirect variables to make them clear to understand. Requires PHP >= 7.0.",
+            "codeSamples": [
+                {
+                    "from": "<?php\necho $$foo;\necho $$foo['bar'];\necho $foo->$bar['baz'];\necho $foo->$callback($baz);\n",
+                    "to": "<?php\necho ${$foo};\necho ${$foo}['bar'];\necho $foo->{$bar}['baz'];\necho $foo->{$callback}($baz);\n"
+                }
+            ]
+        },
+        "explicit_string_variable": {
+            "summary": "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax.",
+            "description": "The reasoning behind this rule is the following:\n- When there are two valid ways of doing the same thing, using both is confusing, there should be a coding standard to follow\n- PHP manual marks `\"$var\"` syntax as implicit and `\"${var}\"` syntax as explicit: explicit code should always be preferred\n- Explicit syntax allows word concatenation inside strings, e.g. `\"${var}IsAVar\"`, implicit doesn't\n- Explicit syntax is easier to detect for IDE\/editors and therefore has colors\/hightlight with higher contrast, which is easier to read",
+            "codeSamples": [
+                {
+                    "from": "<?php $a = \"My name is $name!\";\n",
+                    "to": "<?php $a = \"My name is ${name}!\";\n"
+                }
+            ]
+        },
+        "final_internal_class": {
+            "risky": true,
+            "configuration": [
+                {
+                    "name": "annotation-black-list",
+                    "description": "Class level annotations tags that must be omitted to fix the class, even if all of the white list ones are used as well. (case in sensitive)",
+                    "defaultValue": [
+                        "@final",
+                        "@Entity",
+                        "@ORM"
+                    ],
+                    "allowedTypes": [
+                        "array"
+                    ]
+                },
+                {
+                    "name": "annotation-white-list",
+                    "description": "Class level annotations tags that must be set in order to fix the class. (case in sensitive)",
+                    "defaultValue": [
+                        "@internal"
+                    ],
+                    "allowedTypes": [
+                        "array"
+                    ]
+                }
+            ],
+            "summary": "Internal classes should be `final`.",
+            "riskyDescription": "Changing classes to `final` might cause code execution to break.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n\/**\n * @internal\n *\/\nclass Sample\n{\n}\n",
+                    "to": "<?php\n\/**\n * @internal\n *\/\nfinal class Sample\n{\n}\n"
+                },
+                {
+                    "from": "<?php\n\/** @CUSTOM *\/class A{}\n",
+                    "to": "<?php\n\/** @CUSTOM *\/final class A{}\n",
+                    "configuration": {
+                        "annotation-white-list": [
+                            "@Custom"
+                        ]
+                    }
+                }
+            ]
+        },
         "full_opening_tag": {
             "summary": "PHP code must use the long `<?php` tags or short-echo `<?=` tags and not other tag variations.",
             "codeSamples": [
@@ -1595,6 +1756,15 @@
                         "ensure_fully_multiline": true,
                         "keep_multiple_spaces_after_comma": false
                     }
+                }
+            ]
+        },
+        "method_chaining_indentation": {
+            "summary": "Method chaining MUST be properly indented. Method chaining with different levels of indentation is not supported.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$user->setEmail('voff.web@gmail.com')\n         ->setPassword('233434');\n",
+                    "to": "<?php\n$user->setEmail('voff.web@gmail.com')\n    ->setPassword('233434');\n"
                 }
             ]
         },
@@ -2645,6 +2815,44 @@
                 }
             ]
         },
+        "php_unit_test_annotation": {
+            "risky": true,
+            "configuration": [
+                {
+                    "name": "case",
+                    "description": "Whether to camel or snake case when adding the test prefix",
+                    "defaultValue": "camel",
+                    "allowedValues": [
+                        "camel",
+                        "snake"
+                    ]
+                },
+                {
+                    "name": "style",
+                    "description": "Whether to use the @test annotation or not.",
+                    "defaultValue": "prefix",
+                    "allowedValues": [
+                        "prefix",
+                        "annotation"
+                    ]
+                }
+            ],
+            "summary": "Adds or removes @test annotations from tests, following configuration.",
+            "riskyDescription": "This fixer may change the name of your tests, and could cause incompatibility with abstract classes or interfaces.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    \/**\n     * @test\n     *\/\n    public function itDoesSomething() {} }\n",
+                    "to": "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    \/**\n     *\n     *\/\n    public function testItDoesSomething() {} }\n"
+                },
+                {
+                    "from": "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\npublic function testItDoesSomething() {}}\n",
+                    "to": "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n\/**\n * @test\n *\/\npublic function itDoesSomething() {}}\n",
+                    "configuration": {
+                        "style": "annotation"
+                    }
+                }
+            ]
+        },
         "php_unit_test_class_requires_covers": {
             "summary": "Adds a default `@coversNothing` annotation to PHPUnit test classes that have no `@covers*` annotation.",
             "codeSamples": [
@@ -3130,7 +3338,7 @@
             ]
         },
         "self_accessor": {
-            "summary": "Inside a classy element \"self\" should be preferred to the class name itself.",
+            "summary": "Inside class or interface element \"self\" should be preferred to the class name itself.",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Sample\n{\n    const BAZ = 1;\n    const BAR = Sample::BAZ;\n\n    public function getBar()\n    {\n        return Sample::BAR;\n    }\n}\n",
@@ -3336,6 +3544,17 @@
                 {
                     "from": "<?php\n$a = $b <> $c;\n",
                     "to": "<?php\n$a = $b != $c;\n"
+                }
+            ]
+        },
+        "static_lambda": {
+            "risky": true,
+            "summary": "Lambdas not (indirect) referencing `$this` must be declared `static`.",
+            "riskyDescription": "Risky when using \"->bindTo\" on lambdas without referencing to `$this`.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$a = function () use ($b)\n{   echo $b;\n};\n",
+                    "to": "<?php\n$a = static function () use ($b)\n{   echo $b;\n};\n"
                 }
             ]
         },
@@ -3574,6 +3793,11 @@
                 "allow_single_line_closure": true
             },
             "cast_spaces": null,
+            "class_attributes_separation": {
+                "elements": [
+                    "method"
+                ]
+            },
             "class_definition": {
                 "singleLine": true
             },
@@ -3587,7 +3811,6 @@
             "lowercase_cast": null,
             "magic_constant_casing": null,
             "method_argument_space": null,
-            "method_separation": null,
             "native_function_casing": null,
             "new_with_braces": null,
             "no_blank_lines_after_class_opening": null,
