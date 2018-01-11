@@ -19,3 +19,5 @@ while read -r LINE; do
 		php update-docs.php $LINE
 	fi
 done < versions.txt
+composer --working-dir=".." require friendsofphp/php-cs-fixer:2.* >/dev/null 2>/dev/null
+popd > /dev/null
