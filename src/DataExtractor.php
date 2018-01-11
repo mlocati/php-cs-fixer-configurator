@@ -7,6 +7,7 @@ use PhpCsFixer\Console\Application;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
 use PhpCsFixer\Fixer\DefinedFixerInterface;
+use PhpCsFixer\Fixer\DeprecatedFixerInterface;
 use PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface;
 use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
@@ -149,6 +150,9 @@ class DataExtractor
                     }
                     $fixerData['codeSamples'][] = $codeSampleData;
                 }
+            }
+            if ($fixer instanceof DeprecatedFixerInterface) {
+                $fixerData['deprecated_switchTo'] = $fixer->getSuccessorsNames();
             }
             $result[$fixer->getName()] = $fixerData;
         }

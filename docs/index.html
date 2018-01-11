@@ -281,6 +281,13 @@
                                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                                 {{/if}}
                             {{/if}}
+                            {{#if deprecated_switchTo}}
+                                {{#if deprecated_switchTo.length }}
+                                    <i class="fa fa-thumbs-down" aria-hidden="true" data-toggle="tooltip" title="Deprecated: switch to {{ deprecated_switchTo }}"></i>
+                                {{else}}
+                                    <i class="fa fa-thumbs-down" aria-hidden="true" data-toggle="tooltip" title="Deprecated"></i>
+                                {{/if}}
+                            {{/if}}
                             <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
                         </h5>
                         <p class="card-text">
@@ -327,6 +334,13 @@
                             <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
                         {{else}}
                             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        {{/if}}
+                    {{/if}}
+                    {{#if deprecated_switchTo}}
+                        {{#if deprecated_switchTo.length }}
+                            <i class="fa fa-thumbs-down" aria-hidden="true" data-toggle="tooltip" title="Deprecated: switch to {{ deprecated_switchTo }}"></i>
+                        {{else}}
+                            <i class="fa fa-thumbs-down" aria-hidden="true" data-toggle="tooltip" title="Deprecated"></i>
                         {{/if}}
                     {{/if}}
                 </td>
@@ -385,6 +399,23 @@
                                                     </div>
                                                 </dd>
                                             {{/if}}
+                                            {{#if deprecated_switchTo }}
+                                                <dt class="col-sm-3">Deprecated</dt>
+                                                <dd class="col-sm-9">
+                                                    <div class="alert alert-warning" role="alert">
+                                                        <i class="fa fa-thumbs-down" aria-hidden="true"></i>
+                                                        This fixer is marked as deprecated!
+                                                        {{#if deprecated_switchTo.length }}
+                                                        Please use
+                                                            <ul class="list-unstyled">
+                                                                {{#each deprecated_switchTo }}
+                                                                    <li><a href="#" class="badge badge-info" data-pcf-show-fixer="{{ this }}">{{this}}</a></li>
+                                                                {{/each}}
+                                                            </ul>
+                                                        {{/if}}
+                                                    </div>
+                                                </dd>
+                                            {{/if}}
                                             {{#if summary }}
                                                 <dt class="col-sm-3">Summary</dt>
                                                 <dd class="col-sm-9">{{ summary }}</dd>
@@ -403,6 +434,16 @@
                                                     <i>none</i>
                                                 {{/if}}
                                             </dd>
+                                            {{#if substitutes.length }}
+                                                <dt class="col-sm-3">Supersedes</dt>
+                                                <dd class="col-sm-9">
+                                                    <ul class="list-unstyled">
+                                                        {{#each substitutes}}
+                                                            <li><li><a href="#" class="badge badge-info" data-pcf-show-fixer="{{ this }}">{{this}}</a></li></li>
+                                                        {{/each}}
+                                                    </ul>
+                                                </dd>
+                                            {{/if}}
                                             {{#unless configurationOptions.length}}
                                                 <dt class="col-sm-3">Configuration</dt>
                                                 <dd class="col-sm-9">This fixer is not configurable</dt>

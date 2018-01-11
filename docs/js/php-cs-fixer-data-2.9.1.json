@@ -173,6 +173,9 @@
                     "from": "<?php\nfunction A()\n{\n    echo 1;\n    return 1;\n}\n",
                     "to": "<?php\nfunction A()\n{\n    echo 1;\n\n    return 1;\n}\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "blank_line_before_statement"
             ]
         },
         "blank_line_before_statement": {
@@ -1450,6 +1453,9 @@
                     "from": "<?php # comment\n",
                     "to": "<?php \/\/ comment\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "single_line_comment_style"
             ]
         },
         "header_comment": {
@@ -1775,6 +1781,9 @@
                     "from": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n    protected function bar()\n    {\n    }\n}\n",
                     "to": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n\n    protected function bar()\n    {\n    }\n}\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "class_attributes_separation"
             ]
         },
         "modernize_types_casting": {
@@ -3218,6 +3227,9 @@
                     "from": "<?php\n$a++;\n$b--;\n",
                     "to": "<?php\n++$a;\n--$b;\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "increment_style"
             ]
         },
         "protected_to_private": {

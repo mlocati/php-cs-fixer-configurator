@@ -47,7 +47,7 @@ div.pcs-fixerview-card .card-title {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-div.pcs-fixerview-card>.card>.card-block>.card-title>.fa-exclamation-triangle {
+div.pcs-fixerview-card>.card>.card-block>.card-title>.fa-exclamation-triangle, div.pcs-fixerview-card>.card>.card-block>.card-title>.fa-thumbs-down {
 	float: right;
 }
 div.pcs-fixerview-card>.card>.card-block>footer {
@@ -69,7 +69,9 @@ body.pcf-configuring tr.pcs-fixerview-selection-no .pcs-fixerview-configure {
 }
 
 
-
+ul.list-unstyled {
+	margin-bottom: 0;
+}
 
 div.cgs-configuringoption {
 	margin-top: 20px;

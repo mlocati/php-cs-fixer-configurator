@@ -409,12 +409,13 @@ var Fixers = (function () {
  */
 function Fixer(name, def) {
     this.name = name;
-    this.risky = !!def.risky;
+    this.risky = def.hasOwnProperty('risky') ? def.risky : false;
     this.summary = def.hasOwnProperty('summary') ? def.summary : '';
     this.description = def.hasOwnProperty('description') ? def.description : '';
     if (this.risky === true) {
         this.riskyDescription = def.hasOwnProperty('riskyDescription') ? def.riskyDescription : '';
     }
+    this.deprecated_switchTo = def.hasOwnProperty('deprecated_switchTo') ? def.deprecated_switchTo : null;
     var configurationOptions = [];
     if (def.hasOwnProperty('configuration')) {
         def.configuration.forEach(function (co) {
@@ -475,6 +476,15 @@ Fixer.prototype = {
         FixerSets.getAll().forEach(function (fixerSet) {
             if (fixerSet.hasFixer(me)) {
                 me.sets.push(fixerSet);
+            }
+        });
+    },
+    resolveSubstitutions: function() {
+        var me = this;
+        me.substitutes = [];
+        Fixers.getAll().forEach(function (fixer) {
+            if (fixer.deprecated_switchTo && fixer.deprecated_switchTo.indexOf(me.name) >= 0) {
+                me.substitutes.push(fixer.name);
             }
         });
     },
@@ -1863,6 +1873,7 @@ $.ajax({
         }
         Fixers.getAll().forEach(function (fixer) {
             fixer.resolveSets();
+            fixer.resolveSubstitutions();
         });
         Search.initialize();
         FixerSet.SelectedList.initialize();

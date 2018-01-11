@@ -173,6 +173,9 @@
                     "from": "<?php\nfunction A()\n{\n    echo 1;\n    return 1;\n}\n",
                     "to": "<?php\nfunction A()\n{\n    echo 1;\n\n    return 1;\n}\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "blank_line_before_statement"
             ]
         },
         "blank_line_before_statement": {
@@ -1289,6 +1292,9 @@
                     "from": "<?php # comment\n",
                     "to": "<?php \/\/ comment\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "single_line_comment_style"
             ]
         },
         "header_comment": {
@@ -3010,6 +3016,9 @@
                     "from": "<?php\n$a++;\n$b--;\n",
                     "to": "<?php\n++$a;\n--$b;\n"
                 }
+            ],
+            "deprecated_switchTo": [
+                "increment_style"
             ]
         },
         "protected_to_private": {
