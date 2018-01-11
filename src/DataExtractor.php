@@ -111,10 +111,8 @@ class DataExtractor
                 }
                 foreach ($definition->getCodeSamples() as $codeSample) {
                     $old = $codeSample->getCode();
-                    $configuration = $codeSample->getConfiguration();
-                    if ($configuration === null) {
-                        $configuration = [];
-                    }
+                    $originalConfiguration = $codeSample->getConfiguration();
+                    $configuration = $originalConfiguration === null ? [] : $originalConfiguration;
                     $new = null;
                     try {
                         $tokens = Tokens::fromCode($old);
@@ -146,8 +144,8 @@ class DataExtractor
                         'from' => $old,
                         'to' => $new,
                     ];
-                    if ($configuration !== null) {
-                        $codeSampleData['configuration'] = $this->anonymizePaths($configuration);
+                    if ($originalConfiguration !== null) {
+                        $codeSampleData['configuration'] = $this->anonymizePaths($originalConfiguration);
                     }
                     $fixerData['codeSamples'][] = $codeSampleData;
                 }
