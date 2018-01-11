@@ -112,6 +112,9 @@ class DataExtractor
                 foreach ($definition->getCodeSamples() as $codeSample) {
                     $old = $codeSample->getCode();
                     $configuration = $codeSample->getConfiguration();
+                    if ($configuration === null) {
+                        $configuration = [];
+                    }
                     $new = null;
                     try {
                         $tokens = Tokens::fromCode($old);
