@@ -3,14 +3,36 @@
 
 use MLocati\PhpCsFixerConfigurator\DataExtractor;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-
 if (PHP_VERSION_ID < 70100) {
     fprintf(STDERR, "This script must be run with PHP 7.1+.\n");
     exit(1);
 }
 
+function deleteFromFilesystem($path)
+{
+    if (is_link($path) || is_file($path)) {
+        @unlink($path);
+    }
+    elseif (is_dir($path)) {
+        $hDir = @opendir($path);
+        while(($item = @readdir($hDir)) !== false) {
+            switch ($item) {
+                case '.':
+                case '..':
+                    break;
+                default:
+                    deleteFromFilesystem($path . '/' . $item);
+                    break;
+            }
+        }
+        @closedir($hDir);
+        @rmdir($path);
+    }
+}
+
 if (isset($argv[1])) {
+    @unlink(dirname(__DIR__) . '/composer.lock');
+    deleteFromFilesystem(dirname(__DIR__) . '/vendor');
     fprintf(STDOUT, "Installing PHP-CS-Fixer version {$argv[1]}... ");
     $cmd = ['composer'];
     $cmd[] = '--no-progress';
@@ -32,6 +54,9 @@ if (isset($argv[1])) {
     }
     fprintf(STDOUT, "done.\n");
 }
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
 fprintf(STDOUT, 'Extracting data... ');
 $dataExtractor = new DataExtractor();
 $version = $dataExtractor->getVersion();
