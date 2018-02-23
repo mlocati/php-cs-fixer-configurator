@@ -1,5 +1,5 @@
 {
-    "version": "2.2.16",
+    "version": "2.2.17",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -2307,7 +2307,9 @@
             ]
         },
         "self_accessor": {
+            "risky": true,
             "summary": "Inside class or interface element \"self\" should be preferred to the class name itself.",
+            "riskyDescription": "Risky when using dynamic calls like get_called_class() or late static binding.",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Sample\n{\n    const BAZ = 1;\n    const BAR = Sample::BAZ;\n\n    public function getBar()\n    {\n        return Sample::BAR;\n    }\n}",
@@ -2701,7 +2703,6 @@
             "pre_increment": null,
             "protected_to_private": null,
             "return_type_declaration": null,
-            "self_accessor": null,
             "short_scalar_cast": null,
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
@@ -2746,6 +2747,7 @@
             "php_unit_construct": null,
             "php_unit_dedicate_assert": null,
             "psr4": null,
+            "self_accessor": null,
             "silenced_deprecation_error": null
         },
         "@PHP56Migration": [],
