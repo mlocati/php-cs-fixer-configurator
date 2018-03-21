@@ -1,5 +1,5 @@
 {
-    "version": "2.10.4",
+    "version": "2.11.0",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -35,6 +35,15 @@
                     "configuration": {
                         "comment_type": "all_multiline"
                     }
+                }
+            ]
+        },
+        "array_indentation": {
+            "summary": "Each element of an array must be indented exactly once.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$foo = [\n   'bar' => [\n    'baz' => true,\n  ],\n];\n",
+                    "to": "<?php\n$foo = [\n    'bar' => [\n        'baz' => true,\n    ],\n];\n"
                 }
             ]
         },
@@ -544,6 +553,17 @@
                 }
             ]
         },
+        "comment_to_phpdoc": {
+            "risky": true,
+            "summary": "Comments with annotation should be docblock.",
+            "riskyDescription": "Risky as new docblocks might began mean more, e.g. Doctrine's entity might have a new column in database",
+            "codeSamples": [
+                {
+                    "from": "<?php \/* @var bool $isFoo *\/\n",
+                    "to": "<?php \/** @var bool $isFoo *\/\n"
+                }
+            ]
+        },
         "compact_nullable_typehint": {
             "summary": "Remove extra spaces in a nullable typehint.",
             "description": "Rule is applied only in a PHP 7.1+ environment.",
@@ -585,6 +605,17 @@
                     "configuration": {
                         "spacing": "one"
                     }
+                }
+            ]
+        },
+        "date_time_immutable": {
+            "risky": true,
+            "summary": "Class `DateTimeImmutable` should be used instead of `DateTime`.",
+            "riskyDescription": "Risky when the code relies on modifying `DateTime` object or if any of the `date_create*` functions are overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nnew DateTime();\n",
+                    "to": "<?php\nnew DateTimeImmutable();\n"
                 }
             ]
         },
@@ -1361,6 +1392,19 @@
                 }
             ]
         },
+        "fully_qualified_strict_types": {
+            "summary": "Transforms imported FQCN parameters and return types in function arguments to short version.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n\nuse Foo\\Bar;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar $foo)\n    {\n    }\n}\n",
+                    "to": "<?php\n\nuse Foo\\Bar;\n\nclass SomeClass\n{\n    public function doSomething(Bar $foo)\n    {\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar $foo): \\Foo\\Bar\\Baz\n    {\n    }\n}\n",
+                    "to": "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(Bar $foo): Baz\n    {\n    }\n}\n"
+                }
+            ]
+        },
         "function_declaration": {
             "configuration": [
                 {
@@ -1892,6 +1936,27 @@
                 {
                     "from": "<?php\n$a = chop($b);\nclose($b);\n$a = doubleval($b);\n$a = fputs($b, $c);\nini_alter($b, $c);\n$a = is_double($b);\n$a = is_integer($b);\n$a = is_long($b);\n$a = is_real($b);\n$a = is_writeable($b);\n$a = join($glue, $pieces);\n$a = key_exists($key, $array);\nmagic_quotes_runtime($new_setting);\n$a = pos($array);\n$a = show_source($filename, true);\n$a = sizeof($b);\n$a = strchr($haystack, $needle);\n",
                     "to": "<?php\n$a = rtrim($b);\nclosedir($b);\n$a = floatval($b);\n$a = fwrite($b, $c);\nini_set($b, $c);\n$a = is_float($b);\n$a = is_int($b);\n$a = is_int($b);\n$a = is_float($b);\n$a = is_writable($b);\n$a = implode($glue, $pieces);\n$a = array_key_exists($key, $array);\nset_magic_quotes_runtime($new_setting);\n$a = current($array);\n$a = highlight_file($filename, true);\n$a = count($b);\n$a = strstr($haystack, $needle);\n"
+                }
+            ]
+        },
+        "no_alternative_syntax": {
+            "summary": "Replace control structure alternative syntax to use braces.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nif(true):echo 't';else:echo 'f';endif;\n",
+                    "to": "<?php\nif(true) { echo 't';} else { echo 'f';}\n"
+                },
+                {
+                    "from": "<?php\nwhile(true):echo 'red';endwhile;\n",
+                    "to": "<?php\nwhile(true) { echo 'red';}\n"
+                },
+                {
+                    "from": "<?php\nfor(;;):echo 'xc';endfor;\n",
+                    "to": "<?php\nfor(;;) { echo 'xc';}\n"
+                },
+                {
+                    "from": "<?php\nforeach(array('a') as $item):echo 'xc';endforeach;\n",
+                    "to": "<?php\nforeach(array('a') as $item) { echo 'xc';}\n"
                 }
             ]
         },
@@ -2659,6 +2724,15 @@
                     "allowedTypes": [
                         "array"
                     ]
+                },
+                {
+                    "name": "sortAlgorithm",
+                    "description": "How multiple occurrences of same type statements should be sorted",
+                    "defaultValue": "none",
+                    "allowedValues": [
+                        "none",
+                        "alpha"
+                    ]
                 }
             ],
             "summary": "Orders the elements of classes\/interfaces\/traits.",
@@ -2676,6 +2750,16 @@
                             "method_public"
                         ]
                     }
+                },
+                {
+                    "from": "<?php\nclass Example\n{\n    public function D(){}\n    public function B(){}\n    public function A(){}\n    public function C(){}\n}\n",
+                    "to": "<?php\nclass Example\n{\n    public function A(){}\n    public function B(){}\n    public function C(){}\n    public function D(){}\n}\n",
+                    "configuration": {
+                        "order": [
+                            "method_public"
+                        ],
+                        "sortAlgorithm": "alpha"
+                    }
                 }
             ]
         },
@@ -2692,11 +2776,12 @@
                 },
                 {
                     "name": "sortAlgorithm",
-                    "description": "whether the statements should be sorted alphabetically or by length",
+                    "description": "whether the statements should be sorted alphabetically or by length, or not sorted",
                     "defaultValue": "alpha",
                     "allowedValues": [
                         "alpha",
-                        "length"
+                        "length",
+                        "none"
                     ]
                 }
             ],
@@ -2734,6 +2819,18 @@
                     "to": "<?php\nuse const AAAA;\nuse const BBB;\n\nuse AAC;\nuse Acme;\nuse Bar;\n\nuse function CCC\\AA;\nuse function DDD;\n",
                     "configuration": {
                         "sortAlgorithm": "alpha",
+                        "importsOrder": [
+                            "const",
+                            "class",
+                            "function"
+                        ]
+                    }
+                },
+                {
+                    "from": "<?php\nuse const BBB;\nuse const AAAA;\n\nuse function DDD;\nuse function CCC\\AA;\n\nuse Acme;\nuse AAC;\nuse Bar;\n",
+                    "to": "<?php\nuse const BBB;\nuse const AAAA;\n\nuse Acme;\nuse AAC;\n\nuse Bar;\nuse function DDD;\nuse function CCC\\AA;\n",
+                    "configuration": {
+                        "sortAlgorithm": "none",
                         "importsOrder": [
                             "const",
                             "class",
@@ -2971,6 +3068,26 @@
                     "configuration": {
                         "target": "3.2"
                     }
+                }
+            ]
+        },
+        "php_unit_ordered_covers": {
+            "summary": "Order `@covers` annotation of PHPUnit tests.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n\/**\n * @covers Foo\n * @covers Bar\n *\/\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{}\n",
+                    "to": "<?php\n\/**\n * @covers Bar\n * @covers Foo\n *\/\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{}\n"
+                }
+            ]
+        },
+        "php_unit_set_up_tear_down_visibility": {
+            "risky": true,
+            "summary": "Changes the visibility of the setUp and tearDown functions of phpunit to protected, to match the PHPUnit TestCase.",
+            "riskyDescription": "This fixer may change functions named setUp or tearDown outside of PHPUnit tests, when a class is wrongly seen as a PHPUnit test.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    private $hello;\n    public function setUp()\n    {\n        $this->hello = \"hello\";\n    }\n\n    public function tearDown()\n    {\n        $this->hello = null;\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    private $hello;\n    protected function setUp()\n    {\n        $this->hello = \"hello\";\n    }\n\n    protected function tearDown()\n    {\n        $this->hello = null;\n    }\n}\n"
                 }
             ]
         },
@@ -3703,11 +3820,28 @@
             ]
         },
         "single_quote": {
+            "configuration": [
+                {
+                    "name": "strings_containing_single_quote_chars",
+                    "description": "Whether to fix double-quoted strings that contains single-quotes.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "Convert double quotes to single quotes for simple strings.",
             "codeSamples": [
                 {
-                    "from": "<?php $a = \"sample\";\n",
-                    "to": "<?php $a = 'sample';\n"
+                    "from": "<?php\n\n$a = \"sample\";\n$b = \"sample with 'single-quotes'\";\n",
+                    "to": "<?php\n\n$a = 'sample';\n$b = \"sample with 'single-quotes'\";\n"
+                },
+                {
+                    "from": "<?php\n\n$a = \"sample\";\n$b = \"sample with 'single-quotes'\";\n",
+                    "to": "<?php\n\n$a = 'sample';\n$b = 'sample with \\'single-quotes\\'';\n",
+                    "configuration": {
+                        "strings_containing_single_quote_chars": true
+                    }
                 }
             ]
         },
@@ -3734,6 +3868,19 @@
                     "configuration": {
                         "remove_in_empty_for_expressions": true
                     }
+                }
+            ]
+        },
+        "standardize_increment": {
+            "summary": "Increment and decrement operators should be used if possible.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$i += 1;\n",
+                    "to": "<?php\n++$i;\n"
+                },
+                {
+                    "from": "<?php\n$i -= 1;\n",
+                    "to": "<?php\n--$i;\n"
                 }
             ]
         },
@@ -3777,6 +3924,17 @@
                 {
                     "from": "<?php\n$a = array_keys($b);\n$a = array_search($b, $c);\n$a = base64_decode($b);\n$a = in_array($b, $c);\n$a = mb_detect_encoding($b, $c);\n",
                     "to": "<?php\n$a = array_keys($b);\n$a = array_search($b, $c, true);\n$a = base64_decode($b, true);\n$a = in_array($b, $c, true);\n$a = mb_detect_encoding($b, $c, true);\n"
+                }
+            ]
+        },
+        "string_line_ending": {
+            "risky": true,
+            "summary": "All multi-line strings must use correct line ending.",
+            "riskyDescription": "Changing the line endings of multi-line strings might affect string comparisons and outputs.",
+            "codeSamples": [
+                {
+                    "from": "<?php $a = 'my\r\nmulti\nline\r\nstring';\r\n",
+                    "to": "<?php $a = 'my\nmulti\nline\nstring';\r\n"
                 }
             ]
         },
@@ -4090,6 +4248,7 @@
             "space_after_semicolon": {
                 "remove_in_empty_for_expressions": true
             },
+            "standardize_increment": null,
             "standardize_not_equals": null,
             "ternary_operator_spaces": null,
             "trailing_comma_in_multiline_array": null,
