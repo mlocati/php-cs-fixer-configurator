@@ -1,5 +1,5 @@
 {
-    "version": "2.2.19",
+    "version": "2.2.20",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -174,7 +174,7 @@
         "class_definition": {
             "configuration": [
                 {
-                    "name": "multiLineExtendsEachSingleLine",
+                    "name": "multi_line_extends_each_single_line",
                     "description": "Whether definitions should be multiline.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -182,7 +182,7 @@
                     ]
                 },
                 {
-                    "name": "singleItemSingleLine",
+                    "name": "single_item_single_line",
                     "description": "Whether definitions should be single line when including a single item.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -190,7 +190,7 @@
                     ]
                 },
                 {
-                    "name": "singleLine",
+                    "name": "single_line",
                     "description": "Whether definitions should be single line.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -220,21 +220,21 @@
                     "from": "<?php\n\nclass Foo\nextends Bar\nimplements Baz, BarBaz\n{}\n",
                     "to": "<?php\n\nclass Foo extends Bar implements Baz, BarBaz\n{}\n",
                     "configuration": {
-                        "singleLine": true
+                        "single_line": true
                     }
                 },
                 {
                     "from": "<?php\n\nclass Foo\nextends Bar\nimplements Baz\n{}\n",
                     "to": "<?php\n\nclass Foo extends Bar implements Baz\n{}\n",
                     "configuration": {
-                        "singleItemSingleLine": true
+                        "single_item_single_line": true
                     }
                 },
                 {
                     "from": "<?php\n\ninterface Bar extends\n    Bar, BarBaz, FooBarBaz\n{}\n",
                     "to": "<?php\n\ninterface Bar extends\n    Bar,\n    BarBaz,\n    FooBarBaz\n{}\n",
                     "configuration": {
-                        "multiLineExtendsEachSingleLine": true
+                        "multi_line_extends_each_single_line": true
                     }
                 }
             ]
@@ -733,7 +733,7 @@
         },
         "ereg_to_preg": {
             "risky": true,
-            "summary": "Replace deprecated `ereg` regular expression functions with preg.",
+            "summary": "Replace deprecated `ereg` regular expression functions with `preg`.",
             "riskyDescription": "Risky if the `ereg` function is overridden.",
             "codeSamples": [
                 {
@@ -832,7 +832,7 @@
                     ]
                 }
             ],
-            "summary": "Configured annotations should be omitted from phpdocs.",
+            "summary": "Configured annotations should be omitted from PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @internal\n * @author someone\n *\/\nfunction foo() {}",
@@ -857,7 +857,7 @@
         "header_comment": {
             "configuration": [
                 {
-                    "name": "commentType",
+                    "name": "comment_type",
                     "description": "Comment syntax type.",
                     "defaultValue": "comment",
                     "allowedValues": [
@@ -907,7 +907,7 @@
                     "to": "<?php\n\/**\n * Made with love.\n *\/\n\ndeclare(strict_types=1);\n\nnamespace A\\B;\n\necho 1;\n",
                     "configuration": {
                         "header": "Made with love.",
-                        "commentType": "PHPDoc",
+                        "comment_type": "PHPDoc",
                         "location": "after_open",
                         "separate": "bottom"
                     }
@@ -917,7 +917,7 @@
                     "to": "<?php\ndeclare(strict_types=1);\n\n\/*\n * Made with love.\n *\/\n\nnamespace A\\B;\n\necho 1;\n",
                     "configuration": {
                         "header": "Made with love.",
-                        "commentType": "comment",
+                        "comment_type": "comment",
                         "location": "after_declare_strict"
                     }
                 }
@@ -1330,7 +1330,7 @@
             ]
         },
         "no_leading_import_slash": {
-            "summary": "Remove leading slashes in use clauses.",
+            "summary": "Remove leading slashes in `use` clauses.",
             "codeSamples": [
                 {
                     "from": "<?php\nnamespace Foo;\nuse \\Bar;",
@@ -1520,7 +1520,7 @@
             ]
         },
         "no_trailing_whitespace_in_comment": {
-            "summary": "There MUST be no trailing spaces inside comments and phpdocs.",
+            "summary": "There MUST be no trailing spaces inside comment or PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/\/ This is \n\/\/ a comment. \n",
@@ -1577,7 +1577,7 @@
             ]
         },
         "no_unused_imports": {
-            "summary": "Unused use statements must be removed.",
+            "summary": "Unused `use` statements must be removed.",
             "codeSamples": [
                 {
                     "from": "<?php\nuse \\DateTime;\nuse \\Exception;\n\nnew DateTime();",
@@ -1595,7 +1595,7 @@
             ]
         },
         "no_useless_return": {
-            "summary": "There should not be an empty return statement at the end of a function.",
+            "summary": "There should not be an empty `return` statement at the end of a function.",
             "codeSamples": [
                 {
                     "from": "<?php\nfunction example($b) {\n    if ($b) {\n        return;\n    }\n    return;\n}\n",
@@ -1715,7 +1715,7 @@
         "ordered_imports": {
             "configuration": [
                 {
-                    "name": "importsOrder",
+                    "name": "imports_order",
                     "description": "Defines the order of import types.",
                     "defaultValue": null,
                     "allowedTypes": [
@@ -1724,7 +1724,7 @@
                     ]
                 },
                 {
-                    "name": "sortAlgorithm",
+                    "name": "sort_algorithm",
                     "description": "whether the statements should be sorted alphabetically or by length",
                     "defaultValue": "alpha",
                     "allowedValues": [
@@ -1733,7 +1733,7 @@
                     ]
                 }
             ],
-            "summary": "Ordering use statements.",
+            "summary": "Ordering `use` statements.",
             "codeSamples": [
                 {
                     "from": "<?php\nuse Z; use A;",
@@ -1743,7 +1743,7 @@
                     "from": "<?php\nuse Bar1;\nuse Acme;\nuse Barr;\nuse Acme\\Bar;\n",
                     "to": "<?php\nuse Acme;\nuse Bar1;\nuse Barr;\nuse Acme\\Bar;\n",
                     "configuration": {
-                        "sortAlgorithm": "length"
+                        "sort_algorithm": "length"
                     }
                 },
                 {
@@ -1754,8 +1754,8 @@
                     "from": "<?php\nuse const AAAA;\nuse const BBB;\n\nuse Bar;\nuse AAC;\nuse Acme;\n\nuse function CCC\\AA;\nuse function DDD;\n",
                     "to": "<?php\nuse const BBB;\nuse const AAAA;\n\nuse AAC;\nuse Bar;\nuse Acme;\n\nuse function DDD;\nuse function CCC\\AA;\n",
                     "configuration": {
-                        "sortAlgorithm": "length",
-                        "importsOrder": [
+                        "sort_algorithm": "length",
+                        "imports_order": [
                             "const",
                             "class",
                             "function"
@@ -1766,8 +1766,8 @@
                     "from": "<?php\nuse const BBB;\nuse const AAAA;\n\nuse Acme;\nuse AAC;\nuse Bar;\n\nuse function DDD;\nuse function CCC\\AA;\n",
                     "to": "<?php\nuse const AAAA;\nuse const BBB;\n\nuse AAC;\nuse Acme;\nuse Bar;\n\nuse function CCC\\AA;\nuse function DDD;\n",
                     "configuration": {
-                        "sortAlgorithm": "alpha",
-                        "importsOrder": [
+                        "sort_algorithm": "alpha",
+                        "imports_order": [
                             "const",
                             "class",
                             "function"
@@ -1793,7 +1793,7 @@
                     ]
                 }
             ],
-            "summary": "PHPUnit assertion method calls like \"->assertSame(true, $foo)\" should be written with dedicated method like \"->assertTrue($foo)\".",
+            "summary": "PHPUnit assertion method calls like `->assertSame(true, $foo)` should be written with dedicated method like `->assertTrue($foo)`.",
             "riskyDescription": "Fixer could be risky if one is overriding PHPUnit's native methods.",
             "codeSamples": [
                 {
@@ -1845,7 +1845,7 @@
                     ]
                 }
             ],
-            "summary": "PHPUnit assertions like \"assertInternalType\", \"assertFileExists\", should be used over \"assertTrue\".",
+            "summary": "PHPUnit assertions like `assertInternalType`, `assertFileExists`, should be used over `assertTrue`.",
             "riskyDescription": "Fixer could be risky if one is overriding PHPUnit's native methods.",
             "codeSamples": [
                 {
@@ -1890,7 +1890,7 @@
                 }
             ],
             "summary": "PHPUnit methods like `assertSame` should be used instead of `assertEquals`.",
-            "riskyDescription": "Risky when any of the functions are overridden.",
+            "riskyDescription": "Risky when any of the functions are overridden or when testing object equality.",
             "codeSamples": [
                 {
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertAttributeEquals(a(), b());\n        $this->assertAttributeNotEquals(a(), b());\n        $this->assertEquals(a(), b());\n        $this->assertNotEquals(a(), b());\n    }\n}\n",
@@ -1918,7 +1918,7 @@
                     ]
                 }
             ],
-            "summary": "Phpdoc should contain @param for all params.",
+            "summary": "PHPDoc should contain `@param` for all params.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @param int $bar\n *\n * @return void\n *\/\nfunction f9(string $foo, $bar, $baz) {}",
@@ -1941,7 +1941,7 @@
             ]
         },
         "phpdoc_align": {
-            "summary": "All items of the @param, @throws, @return, @var, and @type phpdoc tags must be aligned vertically.",
+            "summary": "All items of the `@param`, `@throws`, `@return`, `@var`, and `@type` PHPDoc tags must be aligned vertically.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @param  EngineInterface $templating\n * @param string      $format\n * @param  int  $code       an HTTP response status code\n * @param    bool         $debug\n * @param  mixed    &$reference     a parameter passed by reference\n *\/\n",
@@ -1950,7 +1950,7 @@
             ]
         },
         "phpdoc_annotation_without_dot": {
-            "summary": "Phpdocs annotation descriptions should not be a sentence.",
+            "summary": "PHPDoc annotation descriptions should not be a sentence.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @param string $bar Some string.\n *\/\nfunction foo ($bar) {}\n",
@@ -1968,7 +1968,7 @@
             ]
         },
         "phpdoc_inline_tag": {
-            "summary": "Fix phpdoc inline tags, make inheritdoc always inline.",
+            "summary": "Fix PHPDoc inline tags, make `@inheritdoc` always inline.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @{TUTORIAL}\n * {{ @link }}\n * {@examples}\n * @inheritdocs\n *\/\n",
@@ -1977,7 +1977,7 @@
             ]
         },
         "phpdoc_no_access": {
-            "summary": "@access annotations should be omitted from phpdocs.",
+            "summary": "`@access` annotations should be omitted from PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Foo\n{\n    \/**\n     * @internal\n     * @access private\n     *\/\n    private $bar;\n}",
@@ -2019,7 +2019,7 @@
             ]
         },
         "phpdoc_no_empty_return": {
-            "summary": "@return void and @return null annotations should be omitted from phpdocs.",
+            "summary": "`@return` void and `@return null` annotations should be omitted from PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @return null\n*\/\nfunction foo() {}\n",
@@ -2032,7 +2032,7 @@
             ]
         },
         "phpdoc_no_package": {
-            "summary": "@package and @subpackage annotations should be omitted from phpdocs.",
+            "summary": "`@package` and `@subpackage` annotations should be omitted from PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @internal\n * @package Foo\n * subpackage Bar\n *\/\nclass Baz\n{\n}",
@@ -2041,7 +2041,7 @@
             ]
         },
         "phpdoc_no_useless_inheritdoc": {
-            "summary": "Classy that does not inherit must not have inheritdoc tags.",
+            "summary": "Classy that does not inherit must not have `@inheritdoc` tags.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/** {@inheritdoc} *\/\nclass Sample\n{\n}",
@@ -2054,7 +2054,7 @@
             ]
         },
         "phpdoc_order": {
-            "summary": "Annotations in phpdocs should be ordered so that param annotations come first, then throws annotations, then return annotations.",
+            "summary": "Annotations in PHPDoc should be ordered so that `@param` annotations come first, then `@throws` annotations, then `@return` annotations.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * Hello there!\n *\n * @throws Exception|RuntimeException dfsdf\n * @custom Test!\n * @return int  Return the number of changes.\n * @param string $foo\n * @param bool   $bar Bar\n *\/\n",
@@ -2107,7 +2107,7 @@
             ]
         },
         "phpdoc_separation": {
-            "summary": "Annotations in phpdocs should be grouped together so that annotations of the same type immediately follow each other, and annotations of a different type are separated by a single blank line.",
+            "summary": "Annotations in PHPDoc should be grouped together so that annotations of the same type immediately follow each other, and annotations of a different type are separated by a single blank line.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * Description.\n * @param string $foo\n *\n *\n * @param bool   $bar Bar\n * @throws Exception|RuntimeException\n * @return bool\n *\/\nfunction fnc($foo, $bar) {}",
@@ -2116,7 +2116,7 @@
             ]
         },
         "phpdoc_single_line_var_spacing": {
-            "summary": "Single line @var PHPDoc should have proper spacing.",
+            "summary": "Single line `@var` PHPDoc should have proper spacing.",
             "codeSamples": [
                 {
                     "from": "<?php \/**@var   MyClass   $a   *\/\n$a = test();",
@@ -2125,7 +2125,7 @@
             ]
         },
         "phpdoc_summary": {
-            "summary": "Phpdocs summary should end in either a full stop, exclamation mark, or question mark.",
+            "summary": "PHPDoc summary should end in either a full stop, exclamation mark, or question mark.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * Foo function is great\n *\/\nfunction foo () {}\n",
@@ -2143,7 +2143,7 @@
             ]
         },
         "phpdoc_trim": {
-            "summary": "Phpdocs should start and end with content, excluding the very first and last line of the docblocks.",
+            "summary": "PHPDoc should start and end with content, excluding the very first and last line of the docblocks.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n *\n * Foo must be final class.\n *\n *\n *\/\nfinal class Foo {}\n",
@@ -2152,7 +2152,7 @@
             ]
         },
         "phpdoc_types": {
-            "summary": "The correct case must be used for standard PHP types in phpdoc.",
+            "summary": "The correct case must be used for standard PHP types in PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @param STRING|String[] $bar\n *\n * @return inT[]\n *\/\n",
@@ -2161,11 +2161,11 @@
             ]
         },
         "phpdoc_var_without_name": {
-            "summary": "@var and @type annotations should not contain the variable name.",
+            "summary": "`@var` and `@type` annotations should not contain the variable name.",
             "codeSamples": [
                 {
-                    "from": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int $bar\n     *\/\n    public $bar;\n\n    \/**\n     * @var $baz float\n     *\/\n    public $baz;\n\n}\n",
-                    "to": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int\n     *\/\n    public $bar;\n\n    \/**\n     * @var float\n     *\/\n    public $baz;\n\n}\n"
+                    "from": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int $bar\n     *\/\n    public $bar;\n\n    \/**\n     * @type $baz float\n     *\/\n    public $baz;\n}\n",
+                    "to": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int\n     *\/\n    public $bar;\n\n    \/**\n     * @type float\n     *\/\n    public $baz;\n}\n"
                 }
             ]
         },
@@ -2308,7 +2308,7 @@
         },
         "self_accessor": {
             "risky": true,
-            "summary": "Inside class or interface element \"self\" should be preferred to the class name itself.",
+            "summary": "Inside class or interface element `self` should be preferred to the class name itself.",
             "riskyDescription": "Risky when using dynamic calls like get_called_class() or late static binding.",
             "codeSamples": [
                 {
@@ -2561,7 +2561,7 @@
                     ]
                 }
             ],
-            "summary": "Visibility MUST be declared on all properties and methods; abstract and final MUST be declared before the visibility; static MUST be declared after the visibility.",
+            "summary": "Visibility MUST be declared on all properties and methods; `abstract` and `final` MUST be declared before the visibility; `static` MUST be declared after the visibility.",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Sample\n{\n    var $a;\n    static protected $var_foo2;\n\n    function A()\n    {\n    }\n}\n",
@@ -2635,7 +2635,7 @@
             },
             "cast_spaces": null,
             "class_definition": {
-                "singleLine": true
+                "single_line": true
             },
             "concat_space": {
                 "spacing": "none"
