@@ -1,5 +1,5 @@
 {
-    "version": "2.12.0",
+    "version": "2.12.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -3814,7 +3814,7 @@
                 },
                 {
                     "from": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n",
-                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n"
+                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo(): object\n{}\n"
                 }
             ]
         },
