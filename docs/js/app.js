@@ -22,7 +22,7 @@ var Hasher = (function() {
             configurator: false,
             fixer: ''
         };
-        $.each(window.location.hash.replace(/^#/, '').split('|'), function(_, chunk) {
+        $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function(_, chunk) {
             if (chunk === '') {
                 return;
             }
