@@ -16,6 +16,64 @@ Handlebars.registerHelper('debug', function (value) {
     window.console.debug('Context', this, 'Value', value);
 });
 
+var Hasher = (function() {
+    function getCurrent() {
+        var result = {
+            configurator: false,
+            fixer: ''
+        };
+        $.each(window.location.hash.replace(/^#/, '').split('|'), function(_, chunk) {
+            if (chunk === '') {
+                return;
+            }
+            if (chunk === 'configurator') {
+                result.configurator = true;
+                return;
+            }
+            var match = /^fixer:(.+)$/.exec(chunk);
+            if (match) {
+                result.fixer = match[1];
+                return;
+            }
+            window.console.warn('Unknown location hash chunk: ' + chunk);
+        });
+        return result;
+    }
+    function update() {
+        var chunks = [];
+        if (Fixer.TopLevelDetailsFor !== null) {
+            chunks.push('fixer:' + Fixer.TopLevelDetailsFor.name);
+        }
+        if (Configurator.enabled) {
+            chunks.push('configurator');
+        }
+        window.location.hash = chunks.join('|');
+    }
+    function initialize() {
+        var state = getCurrent();
+        if (state.configurator === true) {
+            Configurator.enabled = true;
+        }
+        if (state.fixer !== '') {
+            var fixer = Fixers.getByName(state.fixer);
+            if (fixer === null) {
+                window.console.warn('Fixer non found: ' + state.fixer);    
+            } else {
+                fixer.showDetails();                
+            }
+        }
+        delete Hasher.initialize;
+        Hasher.update = update;
+    }
+    return {
+        initialize: function() {
+            initialize();
+        },
+        update: function() {
+        }
+    };
+})();
+
 /**
  * @class
  * @constructor
@@ -142,6 +200,7 @@ var Configurator = (function () {
                     fixer.view.updateClasses();
                 });
                 $toggle.removeClass('btn-default btn-success').addClass(enabled ? 'btn-success' : 'btn-default');
+                Hasher.update();
             }
         }
     });
@@ -283,8 +342,8 @@ var ModalManager = (function () {
             }
         }
     });
-    return {
-        show: function (dialog) {
+    return Object.defineProperties({
+        show: function (dialog, onClose) {
             var $dialog;
             if (dialog instanceof jQuery) {
                 $dialog = dialog;
@@ -306,6 +365,9 @@ var ModalManager = (function () {
                             stack[stack.length - 1].modal('show');
                         }
                     }
+                    if (onClose) {
+                        onClose();
+                    }
                 })
                 .modal({
                     keyboard: false,
@@ -315,7 +377,13 @@ var ModalManager = (function () {
             ;
             return $dialog;
         }
-    };
+    }, {
+        stackCount: {
+            get: function () {
+                return stack.length;
+            }
+        }
+    });
 })();
 
 var Search = (function () {
@@ -443,6 +511,7 @@ function Fixer(name, def) {
     }
     this.searchableString = ' ' + getSearchableArray(strings.join(' ')).join(' ') + ' ';
 }
+Fixer.TopLevelDetailsFor = null;
 Fixer.prototype = {
     satisfySearch: function (seachableArray, filterSets) {
         var ok = true;
@@ -468,7 +537,17 @@ Fixer.prototype = {
         return ok;
     },
     showDetails: function () {
-        ModalManager.show(Templater.build('fixer-details', this));
+        var isTopLevel = ModalManager.stackCount === 0;
+        if (isTopLevel === true) {
+            Fixer.TopLevelDetailsFor = this;
+            Hasher.update();
+        }
+        ModalManager.show(Templater.build('fixer-details', this), function() {
+            if (isTopLevel === true) {
+                Fixer.TopLevelDetailsFor = null;
+                Hasher.update();
+            }
+        });
     },
     resolveSets: function () {
         var me = this;
@@ -1892,9 +1971,7 @@ $.ajax({
         ]);
         Persister.initialize();
         View.initialize();
-        if (window.location.hash === '#configurator') {
-            Configurator.enabled = true;
-        }
+        Hasher.initialize();
     });
 });
 
