@@ -41,11 +41,11 @@ var Hasher = (function() {
     }
     function update() {
         var chunks = [];
-        if (Fixer.TopLevelDetailsFor !== null) {
-            chunks.push('fixer:' + Fixer.TopLevelDetailsFor.name);
-        }
         if (Configurator.enabled) {
             chunks.push('configurator');
+        }
+        if (Fixer.TopLevelDetailsFor !== null) {
+            chunks.push('fixer:' + Fixer.TopLevelDetailsFor.name);
         }
         window.location.hash = chunks.join('|');
     }
