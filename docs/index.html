@@ -372,7 +372,7 @@
                         <div class="modal-body">
                             {{#if codeSamples.length}}
                                 {{#if manyCodeSamples}}
-                                    <select class="form-control" onchange="debugger; $(this).closest('.modal-body').find('>.tab-content>.tab-pane').hide(); $('#' + this.value).show()">
+                                    <select class="form-control" onchange="$(this).closest('.modal-body').find('>.tab-content>.tab-pane').hide(); $('#' + this.value).show()">
                                         <option value="template-fixer-details-main" selected="selected">General</a>
                                         {{#each codeSamples as |codeSample codeSampleIndex|}}
                                             <option value="template-fixer-details-example-{{ @index }}">Example #{{add1 codeSampleIndex}}</option>
