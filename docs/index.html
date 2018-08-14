@@ -370,26 +370,26 @@
                             </button>
                         </div>
                         <div class="modal-body">
-							{{#if codeSamples.length}}
-								{{#if manyCodeSamples}}
-									<select class="form-control" onchange="debugger; $(this).closest('.modal-body').find('>.tab-content>.tab-pane').hide(); $('#' + this.value).show()">
-										<option value="template-fixer-details-main" selected="selected">General</a>
-										{{#each codeSamples as |codeSample codeSampleIndex|}}
-											<option value="template-fixer-details-example-{{ @index }}">Example #{{add1 codeSampleIndex}}</option>
-										{{/each}}
-									</select>
-								{{else}}
-                                	<ul class="nav nav-tabs" role="tablist">
-                                    	<li class="nav-item">
-                                        	<a class="nav-link active" data-toggle="tab" href="#template-fixer-details-main" role="tab">General</a>
-                                    	</li>
-                                    	{{#each codeSamples as |codeSample codeSampleIndex|}}
-                                        	<li class="nav-item">
-                                            	<a class="nav-link" data-toggle="tab" href="#template-fixer-details-example-{{ @index }}" role="tab">Example #{{add1 codeSampleIndex}}</a>
-                                        	</li>
-                                    	{{/each}}
-                                	</ul>
-								{{/if}}
+                            {{#if codeSamples.length}}
+                                {{#if manyCodeSamples}}
+                                    <select class="form-control" onchange="debugger; $(this).closest('.modal-body').find('>.tab-content>.tab-pane').hide(); $('#' + this.value).show()">
+                                        <option value="template-fixer-details-main" selected="selected">General</a>
+                                        {{#each codeSamples as |codeSample codeSampleIndex|}}
+                                            <option value="template-fixer-details-example-{{ @index }}">Example #{{add1 codeSampleIndex}}</option>
+                                        {{/each}}
+                                    </select>
+                                {{else}}
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#template-fixer-details-main" role="tab">General</a>
+                                        </li>
+                                        {{#each codeSamples as |codeSample codeSampleIndex|}}
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="tab" href="#template-fixer-details-example-{{ @index }}" role="tab">Example #{{add1 codeSampleIndex}}</a>
+                                            </li>
+                                        {{/each}}
+                                    </ul>
+                                {{/if}}
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="template-fixer-details-main" role="tabpanel">
                                         <br />
