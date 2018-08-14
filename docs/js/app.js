@@ -531,6 +531,7 @@ function Fixer(name, def) {
         });
     }
     this.codeSamples = codeSamples;
+    this.manyCodeSamples = codeSamples.length > 5;
     var strings = [this.name, this.summary, this.description];
     if (this.risky === true) {
         strings.push(this.riskyDescription);
