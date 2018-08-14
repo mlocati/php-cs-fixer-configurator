@@ -16,6 +16,29 @@ Handlebars.registerHelper('debug', function (value) {
     window.console.debug('Context', this, 'Value', value);
 });
 
+var textToHtml = (function() {
+    var $div = null;
+    return function(text, backTicksToCode) {
+        text = (text === null || text === undefined) ? '' : text.toString();
+        if ($div === null) {
+            $div = $('<div />');
+        }
+        var result = '',
+            lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+        lines.forEach(function(line, index) {
+            if (index > 0) {
+                result += '<br />';
+            }
+            var h = $div.text(line).html();
+            result += h;
+        });
+        if (backTicksToCode) {
+            result = result.replace(/`(.*?)`/g, '<code>$1</code>');
+        }
+        return result;
+    };
+})();
+
 var Hasher = (function() {
     function getCurrent() {
         var result = {
@@ -479,9 +502,12 @@ function Fixer(name, def) {
     this.name = name;
     this.risky = def.hasOwnProperty('risky') ? def.risky : false;
     this.summary = def.hasOwnProperty('summary') ? def.summary : '';
+    this.summaryHTML = textToHtml(this.summary, true);
     this.description = def.hasOwnProperty('description') ? def.description : '';
+    this.descriptionHTML = textToHtml(this.description, true);
     if (this.risky === true) {
         this.riskyDescription = def.hasOwnProperty('riskyDescription') ? def.riskyDescription : '';
+        this.riskyDescriptionHTML = textToHtml(this.riskyDescription, true);
     }
     this.deprecated_switchTo = def.hasOwnProperty('deprecated_switchTo') ? def.deprecated_switchTo : null;
     var configurationOptions = [];
@@ -580,6 +606,7 @@ Fixer.prototype = {
 Fixer.ConfigurationOption = function (co) {
     this.name = co.name;
     this.description = co.hasOwnProperty('description') ? co.description : '';
+    this.descriptionHTML = textToHtml(this.description, true); 
     this.hasDefaultValue = co.hasOwnProperty('defaultValue');
     if (this.hasDefaultValue) {
         this.defaultValue = co.defaultValue;

@@ -275,8 +275,8 @@
                     <div class="card-block">
                         <h5 class="card-title">
                             {{#if risky }}
-                                {{#if riskyDescription}}
-                                    <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
+                                {{#if riskyDescriptionHTML}}
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-html="true" title="{{ riskyDescriptionHTML }}"></i>
                                 {{else}}
                                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                                 {{/if}}
@@ -291,10 +291,10 @@
                             <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
                         </h5>
                         <p class="card-text">
-                            {{#if summary }}
-                                {{ summary }}
+                            {{#if summaryHTML }}
+                                {{{ summaryHTML }}}
                             {{else}}
-                                {{ description }}
+                                {{{ descriptionHTML }}}
                             {{/if}}
                         </p>
                         <footer>
@@ -330,8 +330,8 @@
                 <td>
                     <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
                     {{#if risky }}
-                        {{#if riskyDescription}}
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" title="{{ riskyDescription }}"></i>
+                        {{#if riskyDescriptionHTML}}
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-html="true" title="{{ riskyDescriptionHTML }}"></i>
                         {{else}}
                             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                         {{/if}}
@@ -345,10 +345,10 @@
                     {{/if}}
                 </td>
                 <td class="hidden-xs-down">
-                    {{#if summary }}
-                        {{ summary }}
+                    {{#if summaryHTML }}
+                        {{{ summaryHTML }}}
                     {{else}}
-                        {{ description }}
+                        {{{ descriptionHTML }}}
                     {{/if}}
                 </td>
                 <td class="hidden-sm-down">
@@ -391,8 +391,8 @@
                                                 <dd class="col-sm-9">
                                                     <div class="alert alert-danger" role="alert">
                                                         <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                                                        {{#if riskyDescription }}
-                                                            {{ riskyDescription }}
+                                                        {{#if riskyDescriptionHTML }}
+                                                            {{{ riskyDescriptionHTML }}}
                                                         {{else}}
                                                             This fixer is marked as risky!
                                                         {{/if}}
@@ -416,13 +416,13 @@
                                                     </div>
                                                 </dd>
                                             {{/if}}
-                                            {{#if summary }}
+                                            {{#if summaryHTML }}
                                                 <dt class="col-sm-3">Summary</dt>
-                                                <dd class="col-sm-9">{{ summary }}</dd>
+                                                <dd class="col-sm-9">{{{ summaryHTML }}}</dd>
                                             {{/if}}
-                                            {{#if description }}
+                                            {{#if descriptionHTML }}
                                                 <dt class="col-sm-3">Description</dt>
-                                                <dd class="col-sm-9">{{ description }}</dd>
+                                                <dd class="col-sm-9">{{{ descriptionHTML }}}</dd>
                                             {{/if}}
                                             <dt class="col-sm-3">Used in presets</dt>
                                             <dd class="col-sm-9">
@@ -456,8 +456,8 @@
                                                     <code>{{ name }}</code> option
                                                 </div>
                                                 <div class="card-block">
-                                                    {{#if description}}
-                                                        <p class="card-text">{{ description }}</p>
+                                                    {{#if descriptionHTML}}
+                                                        <p class="card-text">{{{ descriptionHTML }}}</p>
                                                     {{/if}}
                                                     <dl class="row">
                                                         <dt class="col-sm-3">Default value</dt>
@@ -623,9 +623,9 @@
                             </div>
                             {{#each options as |optionConfigurator index|}}
                                 <div class="cgs-configuringoption cgs-configuringoption-{{index}}">
-                                    {{#if option.description }}
+                                    {{#if option.descriptionHTML }}
                                         <div class="alert alert-info" role="alert">
-                                            {{ option.description }}
+                                            {{{ option.descriptionHTML }}}
                                         </div>
                                     {{/if}}
                                     <form>
