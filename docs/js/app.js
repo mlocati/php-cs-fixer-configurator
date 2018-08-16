@@ -140,7 +140,7 @@ ErrorList.prototype.add = function (error) {
 };
 
 var Version = (function() {
-    var available, current, displayNames;
+    var available, current, currentMajorMinor, displayNames;
     return {
         initialize: function (availableVersions) {
             available = availableVersions;
@@ -166,20 +166,31 @@ var Version = (function() {
             if (current === null) {
                 current = available[0];
             }
+            currentMajorMinor = current.split('.').slice(0, 2).join('.');
             Object.defineProperties(Version, {
                 available: {
                     get: function () {
-                        return available.splice(0);
+                        return available.slice(0);
                     },
                 },
                 current: {
                     get: function() {
                         return current;
                     }
-                }
+                },
+                currentMajorMinor: {
+                    get: function() {
+                        return currentMajorMinor;
+                    }
+                },
             });
             Version.getDisplayName = function (version) {
                 return displayNames.hasOwnProperty(version) ? displayNames[version] : null;
+            };
+            Version.getCurrentMajorMinorOf = function (version) {
+                version = version === null || version === undefined ? '' : version.toString();
+                var match = /^(\d+)\.(\d+)($|\.)/.exec(version);
+                return match ? parseInt(match[1], 10).toString() + '.' + parseInt(match[2], 10).toString() : null;
             };
             delete Version.initialize;
         },
@@ -1295,10 +1306,12 @@ var State = (function () {
         },
         get: function (full) {
             var state = {};
+            state.version = Version.current;
             var whitespace = Saver.whitespace;
             if ($.isEmptyObject(whitespace) === false) {
                 state.whitespace = whitespace;
             }
+            state.expandSets = Saver.expandSets;
             FixerSet.SelectedList.getSelected().forEach(function (item) {
                 if (item[1] === true && item[0].risky === true) {
                     state.risky = true;
@@ -1344,6 +1357,8 @@ var State = (function () {
                 }
                 delete state.whitespace;
             }
+            Saver.expandSets = state.expandSets ? true : false;
+            delete state.expandSets;
             if (state.fixerSets instanceof Array) {
                 state.fixerSets.forEach(function (fixerSetName) {
                     var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
@@ -1427,6 +1442,26 @@ var Loader = (function () {
                 window.alert(e.message || e.toString());
                 return;
             }
+        }
+        if (state.hasOwnProperty('version')) {
+            var mm = Version.getCurrentMajorMinorOf(state.version);
+            if (mm !== null && mm !== Version.currentMajorMinor) {
+                var vCompatible = null;
+                Version.available.forEach(function (v) {
+                    if (Version.getCurrentMajorMinorOf(v) === mm) {
+                        vCompatible = v;
+                    }
+                })
+                if (vCompatible !== null && window.confirm([
+                    'The configuration is for PHP-CS-Fixer version ' + mm + ' but this page is currently configured for PHP-CS-Fixer version ' + Version.currentMajorMinor + '.',
+                    '',
+                    'Do you want to reload this page for PHP-CS-Fixer version ' + vCompatible + '?'
+                ].join('\n'))) {
+                    window.location.href = '?version=' + mm + '#configurator';
+                    return;
+                }
+            }
+            delete state.version;
         }
         try {
             State.set(state);
@@ -1541,6 +1576,7 @@ var Saver = (function () {
     var $saveFormat = $('#pcs-save-format'),
         $saveIndent = $('#pcs-save-indent'),
         $saveLineEnding = $('#pcs-save-line-ending'),
+        $saveExpandSets = $('#pcs-save-expandsets'),
         $out = $('#pcs-save-output'),
         $outCopy = $('#pcs-save-output-copy'),
         $persist = $('#pcs-save-persist'),
@@ -1590,7 +1626,7 @@ var Saver = (function () {
             shown = false;
         })
     ;
-    $saveFormat.add($saveIndent).add($saveLineEnding).on('change', function () {
+    $saveFormat.add($saveIndent).add($saveLineEnding).add($saveExpandSets).on('change', function () {
         if (shown === true) {
             refreshOutput();
         }
@@ -1705,6 +1741,14 @@ var Saver = (function () {
                     }
                 }
             },
+            expandSets: {
+                get: function () {
+                    return $saveExpandSets.is(':checked');
+                },
+                set: function (value) {
+                    return $saveExpandSets.prop('checked', !!value);
+                }
+            },
             currentExporter: {
                 get: function () {
                     return $saveFormat.find('>option:selected').data('pcs-exporter') || null;
@@ -1759,18 +1803,43 @@ PhpCsExporter.prototype = {
             }
         }
         lines.push('    ->setRules([');
-        if ('fixerSets' in state) {
-            state.fixerSets.forEach(function (fixerSetName) {
-                if (fixerSetName.charAt(0) === '-') {
-                    lines.push('        ' + toPHP(fixerSetName.substr(1)) + ' => ' + toPHP(false) + ',');
-                } else {
-                    lines.push('        ' + toPHP(fixerSetName) + ' => ' + toPHP(true) + ',');
-                }
-            });
+        var fixers = null;
+        if (Saver.expandSets) {
+            fixers = {};
+            if ('fixerSets' in state) {
+                state.fixerSets.forEach(function (fixerSetName) {
+                    var fixerSet = FixerSets.getByName(fixerSetName);
+                    fixerSet.fixers.forEach(function (fixerData) {
+                        fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
+                    });
+                });
+            }
+            if ('fixers' in state) {
+                $.each(state.fixers, function (fixerName, fixerState) {
+                    fixers[fixerName] = fixerState;
+                });
+            }
+        } else {
+            if ('fixerSets' in state) {
+                state.fixerSets.forEach(function (fixerSetName) {
+                    if (fixerSetName.charAt(0) === '-') {
+                        lines.push('        ' + toPHP(fixerSetName.substr(1)) + ' => ' + toPHP(false) + ',');
+                    } else {
+                        lines.push('        ' + toPHP(fixerSetName) + ' => ' + toPHP(true) + ',');
+                    }
+                });
+            }
+            if ('fixers' in state) {
+                fixers = state.fixers;
+            }
         }
-        if ('fixers' in state) {
-            $.each(state.fixers, function (fixerName, fixerState) {
-                lines.push('        ' + toPHP(fixerName) + ' => ' + toPHP(fixerState) + ',');
+        if (fixers !== null) {
+            var ruleLines = [];
+            $.each(fixers, function (fixerName, fixerState) {
+                ruleLines.push('        ' + toPHP(fixerName) + ' => ' + toPHP(fixerState) + ',');
+            });
+            ruleLines.forEach(function (ruleLine) {
+                lines.push(ruleLine);
             });
         }
         lines.push('    ])');
