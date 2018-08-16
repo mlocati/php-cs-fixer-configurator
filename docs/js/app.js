@@ -705,6 +705,17 @@ FixerSet.prototype = {
         }
         return ok;
     },
+    getFixerConfiguration: function (fixer) {
+        for (var i = 0, n = this.fixers.length; i < n; i++) {
+            if (this.fixers[i].fixer === fixer) {
+                if (this.fixers[i].isConfigured) {
+                    return this.fixers[i].configuration;
+                }
+                return true;
+            }
+        }
+        return null;
+    },
     hasFixer: function (fixer) {
         for (var i = 0, n = this.fixers.length; i < n; i++) {
             if (this.fixers[i].fixer === fixer) {
@@ -807,6 +818,19 @@ FixerSet.SelectedList = (function () {
         initialize: function () {
             updateView();
             delete FixerSet.SelectedList.initialize;
+        },
+        getFixerConfigurationFromSets: function (fixer) {
+            var result = null;
+            selected.forEach(function (item) {
+                if (item[0].hasFixer(fixer)) {
+                    if (!item[1]) {
+                        result = null;
+                    } else {
+                        result = item[0].getFixerConfiguration(fixer);
+                    }
+                };
+            });
+            return result;
         },
         containsFixer: function (fixer) {
             var result = false;
@@ -1016,6 +1040,9 @@ Fixer.View.Configurator = function (fixerView) {
     var me = this;
     me.fixerView = fixerView;
     me.inFixerSets = FixerSet.SelectedList.containsFixer(fixerView.fixer);
+    if (me.inFixerSets) {
+        me.configurationsFromFixerSets = FixerSet.SelectedList.getFixerConfigurationFromSets(fixerView.fixer);
+    }
     me.options = [];
     me.fixerView.fixer.configurationOptions.forEach(function (option, index) {
         me.options.push(new Fixer.View.Configurator.Option(me, option));
@@ -1091,6 +1118,12 @@ Fixer.View.Configurator.prototype = {
 Fixer.View.Configurator.Option = function (configurator, option) {
     this.configurator = configurator;
     this.option = option;
+    if (configurator.configurationsFromFixerSets && configurator.configurationsFromFixerSets.hasOwnProperty(option.name)) {
+        this.hasConfigurationFromFixerSets = true;
+        this.configurationFromFixerSets = configurator.configurationsFromFixerSets[option.name];
+    } else {
+        this.hasConfigurationFromFixerSets = false;
+    }
 };
 Fixer.View.Configurator.Option.prototype = {
     initialize: function ($container) {

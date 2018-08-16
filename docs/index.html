@@ -670,15 +670,36 @@
                                     </form>
                                     <div class="cgs-configuringoption-value cgs-configuringoption-value-default">
                                         {{#if ../inFixerSets}}
-                                            {{#if option.hasDefaultValue}}
-                                                <p>Use the preset default value (if no other option is configured) or the fixer default value (if other options are configured).</p>
+                                            {{#if hasConfigurationFromFixerSets}}
+                                                {{#if option.hasDefaultValue}}
+                                                    <p>Use the preset default value (if no other option is configured) or the fixer default value (if other options are configured).</p>
+                                                {{else}}
+                                                    <p>If no options are configured, the value set by the preset will be used. Otherwise you <strong>MUST</strong> specify a value for this option.</p>
+                                                {{/if}}
+                                                <p>
+                                                    Preset default value:<br />
+                                                    <code>{{toPHP configurationFromFixerSets }}</code>
+                                                </p>
+                                                {{#if option.hasDefaultValue}}
+                                                    <p>
+                                                        Fixer default value:<br />
+                                                        <code>{{toPHP option.defaultValue }}</code>
+                                                    </p>
+                                                {{/if}}
                                             {{else}}
-                                                <p>If no options are configured, the value set by the preset will be used. Otherwise you <strong>MUST</strong> specify a value for this option.</p>
+                                                {{#if option.hasDefaultValue}}
+                                                    <p>
+                                                        Use the default value:<br />
+                                                        <code>{{toPHP option.defaultValue }}</code>
+                                                    </p>
+                                                {{/if}}
                                             {{/if}}
                                         {{else}}
                                             {{#if option.hasDefaultValue}}
-                                                <p>Use the default value:</p>
-                                                <code>{{toPHP option.defaultValue }}</code>
+                                                <p>
+                                                    Use the default value:<br />
+                                                    <code>{{toPHP option.defaultValue }}</code>
+                                                </p>
                                             {{else}}
                                                 <div class="alert alert-danger" role="alert">
                                                     This option does not have any configuration option: you <strong>MUST</strong> specify one.
