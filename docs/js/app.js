@@ -317,7 +317,11 @@ function toPHP(v) {
 }
 
 var Templater = (function () {
-    var loadedTemplates = {};
+    var loadedTemplates = {},
+        buildCount = 0;
+    Handlebars.registerHelper('templateBuiltID', function () {
+        return 'pcf-template-built-id-' + buildCount;
+    });
     return {
         get: function (id, data) {
             if (!loadedTemplates.hasOwnProperty(id)) {
@@ -326,6 +330,7 @@ var Templater = (function () {
             return loadedTemplates[id];
         },
         build: function (id, data) {
+            buildCount++;
             var template = Templater.get(id),
                 html = template(data),
                 $node = $(html);
