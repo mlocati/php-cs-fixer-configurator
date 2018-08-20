@@ -1,5 +1,5 @@
 {
-    "version": "2.12.2",
+    "version": "2.12.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -3653,7 +3653,7 @@
             ]
         },
         "phpdoc_no_empty_return": {
-            "summary": "`@return` void and `@return null` annotations should be omitted from PHPDoc.",
+            "summary": "`@return void` and `@return null` annotations should be omitted from PHPDoc.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * @return null\n*\/\nfunction foo() {}\n",
@@ -3814,7 +3814,7 @@
                 },
                 {
                     "from": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n",
-                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo(): object\n{}\n"
+                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n"
                 }
             ]
         },
