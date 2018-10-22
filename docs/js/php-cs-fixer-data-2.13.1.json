@@ -1,5 +1,5 @@
 {
-    "version": "2.12.3",
+    "version": "2.13.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -115,6 +115,7 @@
                         "align_single_space",
                         "align_single_space_minimal",
                         "single_space",
+                        "no_space",
                         null
                     ]
                 },
@@ -158,6 +159,15 @@
                     "configuration": {
                         "operators": {
                             "===": "align_single_space_minimal"
+                        }
+                    }
+                },
+                {
+                    "from": "<?php\n$foo = \\json_encode($bar, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT);\n",
+                    "to": "<?php\n$foo = \\json_encode($bar, JSON_PRESERVE_ZERO_FRACTION|JSON_PRETTY_PRINT);\n",
+                    "configuration": {
+                        "operators": {
+                            "|": "no_space"
                         }
                     }
                 }
@@ -550,6 +560,17 @@
                 {
                     "from": "<?php\nunset($a); unset($b);\n",
                     "to": "<?php\nunset($a, $b); \n"
+                }
+            ]
+        },
+        "combine_nested_dirname": {
+            "risky": true,
+            "summary": "Replace multiple nested calls of `dirname` by only one call with second `$level` parameter. Requires PHP >= 7.0.",
+            "riskyDescription": "Risky when the function `dirname` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\ndirname(dirname(dirname($path)));\n",
+                    "to": "<?php\ndirname($path,3);\n"
                 }
             ]
         },
@@ -1437,6 +1458,28 @@
                 }
             ]
         },
+        "fopen_flag_order": {
+            "risky": true,
+            "summary": "Order the flags in `fopen` calls, `b` and `t` must be last.",
+            "riskyDescription": "Risky when the function `fopen` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$a = fopen($foo, 'br+');\n",
+                    "to": "<?php\n$a = fopen($foo, 'r+b');\n"
+                }
+            ]
+        },
+        "fopen_flags": {
+            "risky": true,
+            "summary": "The flags in `fopen` calls must contain `b` and must omit `t`.",
+            "riskyDescription": "Risky when the function `fopen` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$a = fopen($foo, 'rwt');\n",
+                    "to": "<?php\n$a = fopen($foo, 'rwb');\n"
+                }
+            ]
+        },
         "full_opening_tag": {
             "summary": "PHP code must use the long `<?php` tags or short-echo `<?=` tags and not other tag variations.",
             "codeSamples": [
@@ -1644,6 +1687,21 @@
                 }
             ]
         },
+        "implode_call": {
+            "risky": true,
+            "summary": "Function `implode` must be called with 2 arguments in the documented order.",
+            "riskyDescription": "Risky when the function `implode` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nimplode($pieces, '');\n",
+                    "to": "<?php\nimplode('', $pieces);\n"
+                },
+                {
+                    "from": "<?php\nimplode($pieces);\n",
+                    "to": "<?php\nimplode('', $pieces);\n"
+                }
+            ]
+        },
         "include": {
             "summary": "Include\/Require and file path should be divided with a single space. File path should not be placed under brackets.",
             "codeSamples": [
@@ -1812,6 +1870,19 @@
                 {
                     "from": "<?php\necho __dir__;\n",
                     "to": "<?php\necho __DIR__;\n"
+                }
+            ]
+        },
+        "magic_method_casing": {
+            "summary": "Magic method definitions and calls must be using the correct casing.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass Foo\n{\n    public function __Sleep()\n    {\n    }\n}\n",
+                    "to": "<?php\nclass Foo\n{\n    public function __sleep()\n    {\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\n$foo->__INVOKE(1);\n",
+                    "to": "<?php\n$foo->__invoke(1);\n"
                 }
             ]
         },
@@ -2005,6 +2076,15 @@
                     "allowedTypes": [
                         "array"
                     ]
+                },
+                {
+                    "name": "scope",
+                    "description": "Only fix constant invocations that are made within a namespace or fix all.",
+                    "defaultValue": "all",
+                    "allowedValues": [
+                        "all",
+                        "namespaced"
+                    ]
                 }
             ],
             "summary": "Add leading `\\` before constant invocation of internal constant to speed up resolving. Constant name match is case-sensitive, except for `null`, `false` and `true`.",
@@ -2013,6 +2093,13 @@
                 {
                     "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
                     "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\r\n"
+                },
+                {
+                    "from": "<?php\nnamespace space1 {\n    echo PHP_VERSION;\n}\nnamespace {\n    echo M_PI;\n}\n",
+                    "to": "<?php\nnamespace space1 {\n    echo \\PHP_VERSION;\n}\nnamespace {\n    echo M_PI;\n}\n",
+                    "configuration": {
+                        "scope": "namespaced"
+                    }
                 },
                 {
                     "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
@@ -2163,12 +2250,34 @@
         },
         "no_alias_functions": {
             "risky": true,
+            "configuration": [
+                {
+                    "name": "sets",
+                    "description": "List of sets to fix. Defined sets are `@internal` (native functions), `@IMAP` (IMAP functions), `@mbreg` (from `ext-mbstring`) `@all` (all listed sets).",
+                    "defaultValue": [
+                        "@internal",
+                        "@IMAP"
+                    ],
+                    "allowedTypes": [
+                        "array"
+                    ]
+                }
+            ],
             "summary": "Master functions shall be used instead of aliases.",
             "riskyDescription": "Risky when any of the alias functions are overridden.",
             "codeSamples": [
                 {
-                    "from": "<?php\n$a = chop($b);\nclose($b);\n$a = doubleval($b);\n$a = fputs($b, $c);\nini_alter($b, $c);\n$a = is_double($b);\n$a = is_integer($b);\n$a = is_long($b);\n$a = is_real($b);\n$a = is_writeable($b);\n$a = join($glue, $pieces);\n$a = key_exists($key, $array);\nmagic_quotes_runtime($new_setting);\n$a = pos($array);\n$a = show_source($filename, true);\n$a = sizeof($b);\n$a = strchr($haystack, $needle);\n",
-                    "to": "<?php\n$a = rtrim($b);\nclosedir($b);\n$a = floatval($b);\n$a = fwrite($b, $c);\nini_set($b, $c);\n$a = is_float($b);\n$a = is_int($b);\n$a = is_int($b);\n$a = is_float($b);\n$a = is_writable($b);\n$a = implode($glue, $pieces);\n$a = array_key_exists($key, $array);\nset_magic_quotes_runtime($new_setting);\n$a = current($array);\n$a = highlight_file($filename, true);\n$a = count($b);\n$a = strstr($haystack, $needle);\n"
+                    "from": "<?php\n$a = chop($b);\nclose($b);\n$a = doubleval($b);\n$a = fputs($b, $c);\nini_alter($b, $c);\n$a = is_double($b);\n$a = is_integer($b);\n$a = is_long($b);\n$a = is_real($b);\n$a = is_writeable($b);\n$a = join($glue, $pieces);\n$a = key_exists($key, $array);\nmagic_quotes_runtime($new_setting);\n$a = pos($array);\n$a = show_source($filename, true);\n$a = sizeof($b);\n$a = strchr($haystack, $needle);\n$a = imap_header($imap_stream, 1);\nmbereg_search_getregs();\n",
+                    "to": "<?php\n$a = rtrim($b);\nclosedir($b);\n$a = floatval($b);\n$a = fwrite($b, $c);\nini_set($b, $c);\n$a = is_float($b);\n$a = is_int($b);\n$a = is_int($b);\n$a = is_float($b);\n$a = is_writable($b);\n$a = implode($glue, $pieces);\n$a = array_key_exists($key, $array);\nset_magic_quotes_runtime($new_setting);\n$a = current($array);\n$a = highlight_file($filename, true);\n$a = count($b);\n$a = strstr($haystack, $needle);\n$a = imap_headerinfo($imap_stream, 1);\nmbereg_search_getregs();\n"
+                },
+                {
+                    "from": "<?php\n$a = is_double($b);\nmbereg_search_getregs();\n",
+                    "to": "<?php\n$a = is_double($b);\nmb_ereg_search_getregs();\n",
+                    "configuration": {
+                        "sets": [
+                            "@mbreg"
+                        ]
+                    }
                 }
             ]
         },
@@ -3261,6 +3370,33 @@
                 }
             ]
         },
+        "php_unit_method_casing": {
+            "configuration": [
+                {
+                    "name": "case",
+                    "description": "Apply camel or snake case to test methods",
+                    "defaultValue": "camel_case",
+                    "allowedValues": [
+                        "camel_case",
+                        "snake_case"
+                    ]
+                }
+            ],
+            "summary": "Enforce camel (or snake) case for PHPUnit test methods, following configuration.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_my_code() {}\n}\n",
+                    "to": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMyCode() {}\n}\n"
+                },
+                {
+                    "from": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMyCode() {}\n}\n",
+                    "to": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_my_code() {}\n}\n",
+                    "configuration": {
+                        "case": "snake_case"
+                    }
+                }
+            ]
+        },
         "php_unit_mock": {
             "risky": true,
             "configuration": [
@@ -3837,6 +3973,20 @@
             ]
         },
         "phpdoc_types": {
+            "configuration": [
+                {
+                    "name": "groups",
+                    "description": "Type groups to fix.",
+                    "defaultValue": [
+                        "simple",
+                        "alias",
+                        "meta"
+                    ],
+                    "allowedTypes": [
+                        "array"
+                    ]
+                }
+            ],
             "summary": "The correct case must be used for standard PHP types in PHPDoc.",
             "codeSamples": [
                 {
@@ -4609,6 +4759,7 @@
             "lowercase_cast": null,
             "lowercase_static_reference": null,
             "magic_constant_casing": null,
+            "magic_method_casing": null,
             "method_argument_space": null,
             "native_function_casing": null,
             "new_with_braces": null,
@@ -4724,7 +4875,10 @@
             "dir_constant": null,
             "ereg_to_preg": null,
             "error_suppression": null,
+            "fopen_flag_order": null,
+            "fopen_flags": null,
             "function_to_constant": null,
+            "implode_call": null,
             "is_null": null,
             "modernize_types_casting": null,
             "native_constant_invocation": {
@@ -4733,7 +4887,14 @@
                     "DIRECTORY_SEPARATOR",
                     "PHP_SAPI",
                     "PHP_VERSION_ID"
-                ]
+                ],
+                "scope": "namespaced"
+            },
+            "native_function_invocation": {
+                "include": [
+                    "@compiler_optimized"
+                ],
+                "scope": "namespaced"
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
@@ -4763,6 +4924,7 @@
             "ternary_to_null_coalescing": null
         },
         "@PHP70Migration:risky": {
+            "combine_nested_dirname": null,
             "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
@@ -4787,6 +4949,7 @@
         },
         "@PHP71Migration:risky": {
             "void_return": null,
+            "combine_nested_dirname": null,
             "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
