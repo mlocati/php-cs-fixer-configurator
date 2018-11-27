@@ -1800,7 +1800,7 @@ PhpCsExporter.prototype = {
     getLanguage: function () {
         return 'php';
     },
-    render: function (state) {
+    render: function (state, keepMetadata) {
         var lines = ['<?php', ''];
         lines.push('return PhpCsFixer\\Config::create()');
         if (state.risky === true) {
@@ -1848,14 +1848,14 @@ PhpCsExporter.prototype = {
         if (fixers !== null) {
             var ruleLines = [];
             $.each(fixers, function (fixerName, fixerState) {
-            	if (Saver.addComments) {
-            		var fixer = Fixers.getByName(fixerName);
-            		if (fixer !== null && fixer.summary) {
-            			$.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function (_, line) {
-            				ruleLines.push('        // ' + line);
-            			});
-            		}
-            	}
+                if (Saver.addComments) {
+                    var fixer = Fixers.getByName(fixerName);
+                    if (fixer !== null && fixer.summary) {
+                        $.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function (_, line) {
+                            ruleLines.push('        // ' + line);
+                        });
+                    }
+                }
                 ruleLines.push('        ' + toPHP(fixerName) + ' => ' + toPHP(fixerState) + ',');
             });
             ruleLines.forEach(function (ruleLine) {
@@ -1875,7 +1875,7 @@ PhpCsExporter.prototype = {
         lines.push('you can change this configuration by importing this YAML code:');
         lines.push('');
         var yamlExporter = new YamlExporter();
-        lines = lines.concat(yamlExporter.render(state).split('\n'));
+        lines = lines.concat(yamlExporter.render(state, true).split('\n'));
         lines.push('*/');
         return lines.join('\n');
     }
@@ -1890,10 +1890,12 @@ JsonExporter.prototype = {
     getLanguage: function () {
         return 'json';
     },
-    render: function (state) {
-    	state = $.extend({}, state);
-    	delete state.expandSets;
-    	delete state.addComments;
+    render: function (state, keepMetadata) {
+        if (!keepMetadata) {
+            state = $.extend({}, state);
+            delete state.expandSets;
+            delete state.addComments;
+        }
         return JSON.stringify(state, null, 4);
     }
 };
@@ -1907,10 +1909,12 @@ YamlExporter.prototype = {
     getLanguage: function () {
         return 'yaml';
     },
-    render: function (state) {
-    	state = $.extend({}, state);
-    	delete state.expandSets;
-    	delete state.addComments;
+    render: function (state, keepMetadata) {
+        if (!keepMetadata) {
+            state = $.extend({}, state);
+            delete state.expandSets;
+            delete state.addComments;
+        }
         return jsyaml.safeDump(state);
     }
 };
@@ -1930,7 +1934,7 @@ StyleCILikeExporter.prototype = {
     supportsLineEnding: function () {
         return false;
     },
-    render: function (state) {
+    render: function (state, keepMetadata) {
         var data = {};
         var preset = null;
         if ('fixerSets' in state) {
