@@ -126,3 +126,7 @@ body.pcf-configuring .pcs-modal-help-normal {
 #pcs-modal-help .card {
 	min-height: 20px;
 }
+
+#pcs-save-output {
+	overflow: auto;
+}

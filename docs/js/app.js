@@ -1650,9 +1650,16 @@ var Saver = (function () {
             $outCopy.attr('disabled', 'disabled');
         }
     }
+
+    function resizeOutput() {
+    	$out.height(Math.min(Math.max($(window).height() - 550, 100), 1000));
+    }
+
     $('#pcs-modal-save')
         .on('show.bs.modal', function (e) {
             shown = true;
+            resizeOutput();
+            $(window).on('resize', resizeOutput);
             refreshOutput();
         })
         .on('shown.bs.modal', function () {
@@ -1661,6 +1668,7 @@ var Saver = (function () {
             }
         })
         .on('hidden.bs.modal', function (e) {
+        	$(window).off('resize', resizeOutput);
             shown = false;
         })
     ;
