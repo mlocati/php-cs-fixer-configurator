@@ -839,7 +839,7 @@ FixerSet.SelectedList = (function () {
                     } else {
                         result = item[0].getFixerConfiguration(fixer);
                     }
-                };
+                }
             });
             return result;
         },
@@ -1312,6 +1312,7 @@ var State = (function () {
                 state.whitespace = whitespace;
             }
             state.expandSets = Saver.expandSets;
+            state.addComments = Saver.addComments;
             FixerSet.SelectedList.getSelected().forEach(function (item) {
                 if (item[1] === true && item[0].risky === true) {
                     state.risky = true;
@@ -1359,6 +1360,8 @@ var State = (function () {
             }
             Saver.expandSets = state.expandSets ? true : false;
             delete state.expandSets;
+            Saver.addComments = state.addComments ? true : false;
+            delete state.addComments;
             if (state.fixerSets instanceof Array) {
                 state.fixerSets.forEach(function (fixerSetName) {
                     var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
@@ -1451,7 +1454,7 @@ var Loader = (function () {
                     if (Version.getCurrentMajorMinorOf(v) === mm) {
                         vCompatible = v;
                     }
-                })
+                });
                 if (vCompatible !== null && window.confirm([
                     'The configuration is for PHP-CS-Fixer version ' + mm + ' but this page is currently configured for PHP-CS-Fixer version ' + Version.currentMajorMinor + '.',
                     '',
@@ -1577,6 +1580,7 @@ var Saver = (function () {
         $saveIndent = $('#pcs-save-indent'),
         $saveLineEnding = $('#pcs-save-line-ending'),
         $saveExpandSets = $('#pcs-save-expandsets'),
+        $saveAddComments = $('#pcs-save-addcomments'),
         $out = $('#pcs-save-output'),
         $outCopy = $('#pcs-save-output-copy'),
         $persist = $('#pcs-save-persist'),
@@ -1626,7 +1630,7 @@ var Saver = (function () {
             shown = false;
         })
     ;
-    $saveFormat.add($saveIndent).add($saveLineEnding).add($saveExpandSets).on('change', function () {
+    $saveFormat.add($saveIndent).add($saveLineEnding).add($saveExpandSets).add($saveAddComments).on('change', function () {
         if (shown === true) {
             refreshOutput();
         }
@@ -1749,6 +1753,14 @@ var Saver = (function () {
                     return $saveExpandSets.prop('checked', !!value);
                 }
             },
+            addComments: {
+                get: function () {
+                    return $saveAddComments.is(':checked');
+                },
+                set: function (value) {
+                    return $saveAddComments.prop('checked', !!value);
+                }
+            },
             currentExporter: {
                 get: function () {
                     return $saveFormat.find('>option:selected').data('pcs-exporter') || null;
@@ -1836,6 +1848,14 @@ PhpCsExporter.prototype = {
         if (fixers !== null) {
             var ruleLines = [];
             $.each(fixers, function (fixerName, fixerState) {
+            	if (Saver.addComments) {
+            		var fixer = Fixers.getByName(fixerName);
+            		if (fixer !== null && fixer.summary) {
+            			$.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function (_, line) {
+            				ruleLines.push('        // ' + line);
+            			});
+            		}
+            	}
                 ruleLines.push('        ' + toPHP(fixerName) + ' => ' + toPHP(fixerState) + ',');
             });
             ruleLines.forEach(function (ruleLine) {
@@ -1871,6 +1891,9 @@ JsonExporter.prototype = {
         return 'json';
     },
     render: function (state) {
+    	state = $.extend({}, state);
+    	delete state.expandSets;
+    	delete state.addComments;
         return JSON.stringify(state, null, 4);
     }
 };
@@ -1885,6 +1908,9 @@ YamlExporter.prototype = {
         return 'yaml';
     },
     render: function (state) {
+    	state = $.extend({}, state);
+    	delete state.expandSets;
+    	delete state.addComments;
         return jsyaml.safeDump(state);
     }
 };
