@@ -1599,7 +1599,9 @@ var Saver = (function () {
                 if (fixers === null) {
                     fixers = {};
                 }
-                fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
+                if (!(fixerData.fixer.name in fixers)) {
+                    fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
+                }
             });
         });
         delete state.fixerSets;
