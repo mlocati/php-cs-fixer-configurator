@@ -1592,17 +1592,29 @@ var Saver = (function () {
         if (!('fixerSets' in state)) {
             return state;
         }
+        var fixers = 'fixers' in state ? state.fixers : null;
         state.fixerSets.forEach(function (fixerSetName) {
             var fixerSet = FixerSets.getByName(fixerSetName);
             fixerSet.fixers.forEach(function (fixerData) {
-                if (!('fixers' in state)) {
-                    state.fixers = {};
+                if (fixers === null) {
+                    fixers = {};
                 }
-                state.fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
+                fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
             });
         });
         delete state.fixerSets;
-
+        if (fixers === null) {
+            return state;
+        }
+        var names = [];
+        $.each(fixers, function (name) {
+            names.push(name);
+        });
+        names.sort();
+        state.fixers = {};
+        $.each(names, function (_, name) {
+            state.fixers[name] = fixers[name];
+        });
         return state;
     }
 
