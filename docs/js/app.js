@@ -1311,7 +1311,6 @@ var State = (function () {
             if ($.isEmptyObject(whitespace) === false) {
                 state.whitespace = whitespace;
             }
-            state.expandSets = Saver.expandSets;
             state.addComments = Saver.addComments;
             FixerSet.SelectedList.getSelected().forEach(function (item) {
                 if (item[1] === true && item[0].risky === true) {
@@ -1358,8 +1357,7 @@ var State = (function () {
                 }
                 delete state.whitespace;
             }
-            Saver.expandSets = state.expandSets ? true : false;
-            delete state.expandSets;
+            delete state.expandSets; // BC
             Saver.addComments = state.addComments ? true : false;
             delete state.addComments;
             if (state.fixerSets instanceof Array) {
@@ -1586,6 +1584,28 @@ var Saver = (function () {
         $persist = $('#pcs-save-persist'),
         shown = false;
 
+    function getStateToRender() {
+        var state = State.get();
+        if (!Saver.expandSets) {
+            return state;
+        }
+        if (!('fixerSets' in state)) {
+            return state;
+        }
+        state.fixerSets.forEach(function (fixerSetName) {
+            var fixerSet = FixerSets.getByName(fixerSetName);
+            fixerSet.fixers.forEach(function (fixerData) {
+                if (!('fixers' in state)) {
+                    state.fixers = {};
+                }
+                state.fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
+            });
+        });
+        delete state.fixerSets;
+
+        return state;
+    }
+
     function refreshOutput() {
         $out.empty();
         try {
@@ -1603,7 +1623,7 @@ var Saver = (function () {
             } else {
                 $saveLineEnding.removeAttr('disabled');
             }
-            var state = State.get(),
+            var state = getStateToRender(),
                 $code = $('<code />')
                     .attr('class', 'language-' + exporter.getLanguage())
                     .text(exporter.render(state)),
@@ -1815,40 +1835,19 @@ PhpCsExporter.prototype = {
             }
         }
         lines.push('    ->setRules([');
-        var fixers = null;
-        if (Saver.expandSets) {
-            fixers = {};
-            if ('fixerSets' in state) {
-                state.fixerSets.forEach(function (fixerSetName) {
-                    var fixerSet = FixerSets.getByName(fixerSetName);
-                    fixerSet.fixers.forEach(function (fixerData) {
-                        fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
-                    });
-                });
-            }
-            if ('fixers' in state) {
-                $.each(state.fixers, function (fixerName, fixerState) {
-                    fixers[fixerName] = fixerState;
-                });
-            }
-        } else {
-            if ('fixerSets' in state) {
-                state.fixerSets.forEach(function (fixerSetName) {
-                    if (fixerSetName.charAt(0) === '-') {
-                        lines.push('        ' + toPHP(fixerSetName.substr(1)) + ' => ' + toPHP(false) + ',');
-                    } else {
-                        lines.push('        ' + toPHP(fixerSetName) + ' => ' + toPHP(true) + ',');
-                    }
-                });
-            }
-            if ('fixers' in state) {
-                fixers = state.fixers;
-            }
+        if ('fixerSets' in state) {
+            state.fixerSets.forEach(function (fixerSetName) {
+                if (fixerSetName.charAt(0) === '-') {
+                    lines.push('        ' + toPHP(fixerSetName.substr(1)) + ' => ' + toPHP(false) + ',');
+                } else {
+                    lines.push('        ' + toPHP(fixerSetName) + ' => ' + toPHP(true) + ',');
+                }
+            });
         }
-        if (fixers !== null) {
+        if ('fixers' in state) {
             var ruleLines = [];
-            $.each(fixers, function (fixerName, fixerState) {
-                if (Saver.addComments) {
+            $.each(state.fixers, function (fixerName, fixerState) {
+                if (state.addComments) {
                     var fixer = Fixers.getByName(fixerName);
                     if (fixer !== null && fixer.summary) {
                         $.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function (_, line) {
@@ -1893,7 +1892,6 @@ JsonExporter.prototype = {
     render: function (state, keepMetadata) {
         if (!keepMetadata) {
             state = $.extend({}, state);
-            delete state.expandSets;
             delete state.addComments;
         }
         return JSON.stringify(state, null, 4);
@@ -1912,7 +1910,6 @@ YamlExporter.prototype = {
     render: function (state, keepMetadata) {
         if (!keepMetadata) {
             state = $.extend({}, state);
-            delete state.expandSets;
             delete state.addComments;
         }
         return jsyaml.safeDump(state);
