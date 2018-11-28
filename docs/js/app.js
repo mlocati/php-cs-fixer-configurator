@@ -1602,6 +1602,9 @@ var Saver = (function () {
                 if (!(fixerData.fixer.name in fixers)) {
                     fixers[fixerData.fixer.name] = fixerData.isConfigured ? fixerData.configuration : true;
                 }
+                if (fixers[fixerData.fixer.name] === false) {
+                    delete fixers[fixerData.fixer.name];
+                }
             });
         });
         delete state.fixerSets;
@@ -1652,7 +1655,7 @@ var Saver = (function () {
     }
 
     function resizeOutput() {
-    	$out.height(Math.min(Math.max($(window).height() - 550, 100), 1000));
+        $out.height(Math.min(Math.max($(window).height() - 550, 100), 1000));
     }
 
     $('#pcs-modal-save')
@@ -1668,7 +1671,7 @@ var Saver = (function () {
             }
         })
         .on('hidden.bs.modal', function (e) {
-        	$(window).off('resize', resizeOutput);
+            $(window).off('resize', resizeOutput);
             shown = false;
         })
     ;
