@@ -16,16 +16,16 @@ Handlebars.registerHelper('debug', function (value) {
     window.console.debug('Context', this, 'Value', value);
 });
 
-var textToHtml = (function() {
+var textToHtml = (function () {
     var $div = null;
-    return function(text, backTicksToCode) {
+    return function (text, backTicksToCode) {
         text = (text === null || text === undefined) ? '' : text.toString();
         if ($div === null) {
             $div = $('<div />');
         }
         var result = '',
             lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-        lines.forEach(function(line, index) {
+        lines.forEach(function (line, index) {
             if (index > 0) {
                 result += '<br />';
             }
@@ -39,13 +39,13 @@ var textToHtml = (function() {
     };
 })();
 
-var Hasher = (function() {
+var Hasher = (function () {
     function getCurrent() {
         var result = {
             configurator: false,
             fixer: ''
         };
-        $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function(_, chunk) {
+        $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function (_, chunk) {
             if (chunk === '') {
                 return;
             }
@@ -80,19 +80,19 @@ var Hasher = (function() {
         if (state.fixer !== '') {
             var fixer = Fixers.getByName(state.fixer);
             if (fixer === null) {
-                window.console.warn('Fixer non found: ' + state.fixer);    
+                window.console.warn('Fixer non found: ' + state.fixer);
             } else {
-                fixer.showDetails();                
+                fixer.showDetails();
             }
         }
         delete Hasher.initialize;
         Hasher.update = update;
     }
     return {
-        initialize: function() {
+        initialize: function () {
             initialize();
         },
-        update: function() {
+        update: function () {
         }
     };
 })();
@@ -139,7 +139,7 @@ ErrorList.prototype.add = function (error) {
     this.has = true;
 };
 
-var Version = (function() {
+var Version = (function () {
     var available, current, currentMajorMinor, displayNames;
     return {
         initialize: function (availableVersions) {
@@ -174,12 +174,12 @@ var Version = (function() {
                     },
                 },
                 current: {
-                    get: function() {
+                    get: function () {
                         return current;
                     }
                 },
                 currentMajorMinor: {
-                    get: function() {
+                    get: function () {
                         return currentMajorMinor;
                     }
                 },
@@ -585,7 +585,7 @@ Fixer.prototype = {
             Fixer.TopLevelDetailsFor = this;
             Hasher.update();
         }
-        ModalManager.show(Templater.build('fixer-details', this), function() {
+        ModalManager.show(Templater.build('fixer-details', this), function () {
             if (isTopLevel === true) {
                 Fixer.TopLevelDetailsFor = null;
                 Hasher.update();
@@ -601,7 +601,7 @@ Fixer.prototype = {
             }
         });
     },
-    resolveSubstitutions: function() {
+    resolveSubstitutions: function () {
         var me = this;
         me.substitutes = [];
         Fixers.getAll().forEach(function (fixer) {
@@ -623,7 +623,7 @@ Fixer.prototype = {
 Fixer.ConfigurationOption = function (co) {
     this.name = co.name;
     this.description = co.hasOwnProperty('description') ? co.description : '';
-    this.descriptionHTML = textToHtml(this.description, true); 
+    this.descriptionHTML = textToHtml(this.description, true);
     this.hasDefaultValue = co.hasOwnProperty('defaultValue');
     if (this.hasDefaultValue) {
         this.defaultValue = co.defaultValue;
@@ -859,7 +859,7 @@ FixerSet.SelectedList = (function () {
             });
             return result;
         },
-        reset: function() {
+        reset: function () {
             selected = [];
             updateView();
             refreshCards();
@@ -921,7 +921,7 @@ Fixer.View = function (fixer) {
     me.updateClasses();
 };
 Fixer.View.prototype = {
-    reset: function() {
+    reset: function () {
         this.selected = null;
         this.setConfiguration(null);
         this.updateClasses();
@@ -1297,7 +1297,7 @@ Fixer.View.Configurator.Option.prototype = {
 
 var State = (function () {
     return {
-        reset: function() {
+        reset: function () {
             FixerSet.SelectedList.reset();
             Fixers.getAll().forEach(function (fixer) {
                 fixer.view.reset();
@@ -1428,6 +1428,10 @@ var Loader = (function () {
     var $loadFormat = $('#pcs-load-format'),
         $input = $('#pcs-modal-load textarea');
 
+    $loadFormat.on('change', function () {
+        var importer = Loader.currentImporter;
+        $input.attr('placeholder', importer && importer.getPlaceholder ? importer.getPlaceholder() : '');
+    });
     function load() {
         var serialized = $.trim($input.val()), state;
         if (serialized === '') {
@@ -1514,6 +1518,15 @@ var Loader = (function () {
             }
         },
         {
+            registeredImporters: {
+                get: function () {
+                    var importers = [];
+                    $loadFormat.find('>option').each(function () {
+                        importers.push($(this).data('pcs-importer'));
+                    });
+                    return importers;
+                }
+            },
             currentImporter: {
                 get: function () {
                     return $loadFormat.find('>option:selected').data('pcs-importer') || null;
@@ -1534,6 +1547,201 @@ var Loader = (function () {
         }
     );
 })();
+function AutoDetectImporter() {
+}
+AutoDetectImporter.prototype = {
+    getName: function () {
+        return 'Auto-detect';
+    },
+    getPlaceholder: function () {
+        return "Paste here the state in any of the supported formats.\n\nWe'll try to auto-detect its format.";
+    },
+    parse: function (serialized) {
+        var state = null;
+        $.each(Loader.registeredImporters, function () {
+            if (this instanceof AutoDetectImporter) {
+                return;
+            }
+            var stateFromExporter;
+            try {
+                stateFromExporter = this.parse(serialized);
+            } catch (e) {
+                return;
+            }
+            if (state === null) {
+                state = stateFromExporter;
+            } else {
+                state = null;
+                return false;
+            }
+        });
+        if (state === null) {
+            throw new Error('Automatic detection failed. Try to use a specific format.');
+        }
+        return state;
+    }
+};
+function PhpImporter() {
+    this.parser = new window.PhpParser({
+        parser: {
+            debug: false,
+            locations: false,
+            extractDoc: false,
+            suppressErrors: false
+        },
+        lexer: {
+            all_tokens: false,
+            comment_tokens: false,
+            mode_eval: true,
+            asp_tags: false,
+            short_tags: false
+        }
+    });
+}
+PhpImporter.prototype = {
+    getName: function () {
+        return 'PHP';
+    },
+    getPlaceholder: function () {
+        return "Paste here the full contents of your .php_cs / .php_cs.dist files (or just the array with the rules).";
+    },
+    getAST: function (serialized) {
+        var ast;
+        ast = this.parser.parseCode(serialized);
+        if (ast.children.length === 1 && ast.children[0].kind === 'inline') {
+            ast = this.parser.parseEval(serialized);
+        }
+        return ast;
+    },
+    findRelevantValue: function (ast, method) {
+        var methodLC = method.toLowerCase();
+        var walker = function (node) {
+            if (!node) {
+                return null;
+            }
+            var result = null;
+            switch (node.kind) {
+                case 'call':
+                    if (node.what && node.what.offset && typeof node.what.offset.name === 'string' && node.what.offset.name.toLowerCase() === methodLC) {
+                        switch (methodLC) {
+                            case 'setrules':
+                                if (node.arguments.length !== 1 || node.arguments[0].kind !== 'array') {
+                                    throw new Error('Expecting an array as the only argument of ' + method + '().');
+                                }
+                                result = node.arguments[0];
+                                break;
+                            case 'setindent':
+                            case 'setlineending':
+                                if (node.arguments.length !== 1 || node.arguments[0].kind !== 'string') {
+                                    throw new Error('Expecting a string as the only argument of ' + method + '().');
+                                }
+                                result = node.arguments[0].value;
+                                break;
+                        }
+                    }
+                    if (result === null && node.arguments) {
+                        $.each(node.arguments, function (index, argument) {
+                            result = walker(argument);
+                            if (result !== null) {
+                                return false;
+                            }
+                        });
+                    }
+                    if (result === null && node.what && node.what.kind === 'propertylookup') {
+                        result = walker(node.what.what);
+                    }
+                    break;
+                case 'return':
+                    result = walker(node.expr);
+                    break;
+            }
+            return result;
+        };
+        var arr;
+        for (var childIndex = 0, numChildren = ast.children ? ast.children.length : 0; childIndex < numChildren; childIndex++) {
+            arr = walker(ast.children[childIndex]);
+            if (arr !== null) {
+                return arr;
+            }
+        }
+        if (methodLC === 'setrules' && ast.children.length === 1 && ast.children[0].kind === 'expressionstatement' && ast.children[0].expression.kind === 'array') {
+            return ast.children[0].expression;
+        }
+        return null;
+    },
+    parseSetRulesArray: function (setRulesArray) {
+        var result = {fixerSets: [], fixers: {}},
+            valueToJavascript = function (value) {
+                var valueKind = value && value.kind ? value.kind : '?';
+                switch (valueKind) {
+                    case 'boolean':
+                    case 'number':
+                    case 'string':
+                        return value.value;
+                    case 'array':
+                        var arr = {}, index;
+                        for (index = 0; index < value.items.length; index++) {
+                            if (value.items[index] && !value.items[index].key) {
+                                arr = [];
+                                break;
+                            }
+                        }
+                        for (index = 0; index < value.items.length; index++) {
+                            if (value.items[index]) {
+                                if (value.items[index].key) {
+                                    arr[valueToJavascript(value.items[index].key)] = valueToJavascript(value.items[index].value);
+                                } else {
+                                    arr.push(valueToJavascript(value.items[index]));
+                                }
+                            }
+                        }
+                        return arr;
+                }
+                throw new Error('Unsupported value type "' + valueKind + '" in setRules() array.');
+            },
+            arr = valueToJavascript(setRulesArray);
+        if (!$.isPlainObject(arr)) {
+            throw new Error('Expected dictionary as setRules() array.');
+        }
+        $.each(arr, function (key, value) {
+            if (typeof key !== 'string') {
+                throw new Error('Expected dictionary as setRules() array.');
+            }
+            if (key.charAt(0) === '@') {
+                if (value === true) {
+                    result.fixerSets.push(key);
+                } else if(value === false) {
+                    result.fixerSets.push('-' + key);
+                } else {
+                    throw new Error('Unsupported value type in setRules() array.');
+                }
+            } else {
+                result.fixers[key] = value;
+            }
+        });
+        return result;
+    },
+    parse: function (serialized) {
+        var ast = this.getAST(serialized),
+            setRulesArray = this.findRelevantValue(ast, 'setRules');
+        if (setRulesArray === null) {
+            throw new Error('Unable to find the setRules() call, and the PHP code is not an array.');
+        }
+        var state = this.parseSetRulesArray(setRulesArray),
+            indentValue = this.findRelevantValue(ast, 'setIndent'),
+            lineEndingValue = this.findRelevantValue(ast, 'setLineEnding');
+        if (indentValue !== null || lineEndingValue !== null) {
+            state.whitespace = {};
+            if (indentValue !== null) {
+                state.whitespace.indent = indentValue;
+            }
+            if (lineEndingValue !== null) {
+                state.whitespace.lineEnding = lineEndingValue;
+            }
+        }
+        return state;
+    }
+};
 function JsonImporter() {
 }
 JsonImporter.prototype = {
@@ -1742,7 +1950,7 @@ var Saver = (function () {
                     ;
                 }
             },
-            resetOptions: function() {
+            resetOptions: function () {
                 Saver.whitespace = DefaultWhitespaceConfig;
             },
         },
@@ -1846,7 +2054,15 @@ PhpCsExporter.prototype = {
         return 'php';
     },
     render: function (state, keepMetadata) {
-        var lines = ['<?php', ''];
+        var lines = [
+            '<?php',
+            '/*',
+            ' * This document has been generated with',
+            ' * https://mlocati.github.io/php-cs-fixer-configurator/?version=' + Version.currentMajorMinor + '#configurator',
+            ' * you can change this configuration by importing this file.',
+            ' */',
+            ''
+        ];
         lines.push('return PhpCsFixer\\Config::create()');
         if (state.risky === true) {
             lines.push('    ->setRiskyAllowed(true)');
@@ -1892,15 +2108,6 @@ PhpCsExporter.prototype = {
         lines.push('        ->in(__DIR__)');
         lines.push('    )');
         lines.push(';');
-        lines.push('');
-        lines.push('/*');
-        lines.push('This document has been generated with');
-        lines.push('https://mlocati.github.io/php-cs-fixer-configurator/?version=' + Version.currentMajorMinor + '#configurator');
-        lines.push('you can change this configuration by importing this YAML code:');
-        lines.push('');
-        var yamlExporter = new YamlExporter();
-        lines = lines.concat(yamlExporter.render(state, true).split('\n'));
-        lines.push('*/');
         return lines.join('\n');
     }
 };
@@ -2147,6 +2354,8 @@ $.ajax({
             fixer.initializeView();
         });
         Loader.initialize([
+            new AutoDetectImporter(),
+            new PhpImporter(),
             new JsonImporter(),
             new YamlImporter()
         ]);
