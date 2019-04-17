@@ -70,7 +70,19 @@ var Hasher = (function () {
         if (Fixer.TopLevelDetailsFor !== null) {
             chunks.push('fixer:' + Fixer.TopLevelDetailsFor.name);
         }
-        window.location.hash = chunks.join('|');
+        if (chunks.length === 0) {
+            try {
+                window.history.replaceState(null, null, ' ');
+            } catch (e) {
+                var x = document.body.scrollLeft,
+                    y = document.body.scrollTop;
+                window.location.hash = chunks.join('|');
+                document.body.scrollLeft = x;
+                document.body.scrollTop = y;
+            }
+        } else {
+            window.location.hash = chunks.join('|');
+        }
     }
     function initialize() {
         var state = getCurrent();
