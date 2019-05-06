@@ -3814,7 +3814,7 @@
                 },
                 {
                     "from": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n",
-                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n"
+                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo(): object\n{}\n"
                 }
             ]
         },

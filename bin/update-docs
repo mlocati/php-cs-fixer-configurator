@@ -3,8 +3,8 @@
 
 use MLocati\PhpCsFixerConfigurator\DataExtractor;
 
-if (PHP_VERSION_ID < 70100) {
-    fprintf(STDERR, "This script must be run with PHP 7.1+.\n");
+if (PHP_VERSION_ID < 70300) {
+    fprintf(STDERR, "This script must be run with PHP 7.3+.\n");
     exit(1);
 }
 
@@ -35,6 +35,7 @@ if (isset($argv[1])) {
     deleteFromFilesystem(dirname(__DIR__) . '/vendor');
     fprintf(STDOUT, "Installing PHP-CS-Fixer version {$argv[1]}... ");
     $cmd = ['composer'];
+    $cmd[] = '--ignore-platform-reqs';
     $cmd[] = '--no-progress';
     $cmd[] = '--no-suggest';
     $cmd[] = '--optimize-autoloader';

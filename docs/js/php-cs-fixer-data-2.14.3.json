@@ -1693,11 +1693,11 @@
             "codeSamples": [
                 {
                     "from": "<?php\n    $a = <<<EOD\nabc\n    def\nEOD;\n",
-                    "to": "<?php\n    $a = <<<EOD\nabc\n    def\nEOD;\n"
+                    "to": "<?php\n    $a = <<<EOD\n        abc\n            def\n        EOD;\n"
                 },
                 {
                     "from": "<?php\n    $a = <<<'EOD'\nabc\n    def\nEOD;\n",
-                    "to": "<?php\n    $a = <<<'EOD'\nabc\n    def\nEOD;\n"
+                    "to": "<?php\n    $a = <<<'EOD'\n        abc\n            def\n        EOD;\n"
                 }
             ]
         },
@@ -4000,7 +4000,7 @@
                 },
                 {
                     "from": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n",
-                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n"
+                    "to": "<?php\n\n\/** @return object *\/\nfunction my_foo(): object\n{}\n"
                 }
             ]
         },
