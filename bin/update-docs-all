@@ -1,0 +1,361 @@
+#!/usr/bin/env php
+<?php
+
+if (PHP_VERSION_ID < 70100) {
+    fprintf(STDERR, "This script must be run with PHP 7.1+.\n");
+    exit(1);
+}
+
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    fprintf(STDERR, "{$errstr}\n");
+    if ($errfile) {
+        fprintf(STDERR, "File: {$errfile}\n");
+        if ($errline) {
+            fprintf(STDERR, "Line: {$errline}\n");
+        }
+    }
+    exit(-1);
+}, -1);
+
+class PCFCWorker
+{
+    /**
+     * @var bool
+     */
+    private $force = false;
+
+    /**
+     * @var string
+     */
+    private $rootDir;
+
+    /**
+     * @param string $rootDir
+     */
+    public function __construct($rootDir)
+    {
+        $this->rootDir = rtrim(str_replace(DIRECTORY_SEPARATOR, '/', (string) $rootDir), '/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForce()
+    {
+        return $this->force;
+    }
+
+    /**
+     * @param bool $value
+     *
+     * @return $this
+     */
+    public function setForce($value)
+    {
+        $this->force = (bool)$value;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootDir()
+    {
+        return $this->rootDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBinDir()
+    {
+        return $this->getRootDir() . '/bin';
+    }
+
+    /**
+     * @return string
+     */
+    public function getJSDir()
+    {
+        return $this->getRootDir() . '/docs/js';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentVersionsFile()
+    {
+        return $this->getJSDir() . '/php-cs-fixer-versions.json';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getWantedVersions()
+    {
+        $match = null;
+        $wantedVersions = [];
+        $packageData = json_decode(file_get_contents('https://repo.packagist.org/p/friendsofphp/php-cs-fixer.json'), true);
+        foreach (array_keys($packageData['packages']['friendsofphp/php-cs-fixer']) as $rawVersion) {
+            if (preg_match('/^(?:v\.?\s*)?((\d+\.\d+).\d+)$/', $rawVersion, $match)) {
+                if (version_compare($match[1], '2.2.0') >= 0) {
+                    if (!isset($wantedVersions[$match[2]]) || version_compare($match[1], $wantedVersions[$match[2]]) >= 0) {
+                        $wantedVersions[$match[2]] = $match[1];
+                    }
+                }
+            }
+        }
+        $wantedVersions = array_values($wantedVersions);
+        usort($wantedVersions, function ($a, $b) {
+            return version_compare($a, $b);
+        });
+
+        return $wantedVersions;
+    }
+
+    /**
+     * @return PCFCCurrentVersion[]
+     */
+    public function getCurrentVersions()
+    {
+        $currentVersions = [];
+        $this->getCurrentVersionsFromDataFiles($currentVersions);
+        $this->getCurrentVersionsFromVersionsFile($currentVersions);
+        uksort($currentVersions, function ($a, $b) {
+            return version_compare($a, $b);
+        });
+
+        return $currentVersions;
+    }
+
+    /**
+     * @param PCFCCurrentVersion[] $currentVersions
+     */
+    private function getCurrentVersionsFromDataFiles(array &$currentVersions)
+    {
+        $matches = null;
+        $jsDir = $this->getJSDir();
+        foreach (scandir($jsDir) as $jsFile) {
+            if (preg_match('/^php-cs-fixer-data-(\d+(?:\.\d+)*)(?:\.min)?.json$/', $jsFile, $matches)) {
+                $version = $matches[1];
+                if (!isset($currentVersions[$version])) {
+                    $currentVersions[$version] = new PCFCCurrentVersion();
+                }
+                $currentVersions[$version]->addJSDataFile($jsDir . '/' . $jsFile);
+            }
+        }
+    }
+
+    /**
+     * @param PCFCCurrentVersion[] $currentVersions
+     */
+    private function getCurrentVersionsFromVersionsFile(array &$currentVersions)
+    {
+        $versions = json_decode(file_get_contents($this->getCurrentVersionsFile()), true);
+        foreach ($versions as $version)
+        {
+            if (!isset($currentVersions[$version])) {
+                $currentVersions[$version] = new PCFCCurrentVersion();
+            }
+            $currentVersions[$version]->setInVersionsFile(true);
+        }
+    }
+
+    /**
+     * @param PCFCCurrentVersion $version
+     *
+     * @return $this
+     */
+    public function deleteCurrentVersion($versionID, PCFCCurrentVersion $versionData)
+    {
+        if ($versionData->isInVersionsFile()) {
+            $this->removeVersionFromCurrentVersionsFile($versionID);
+        }
+        foreach ($versionData->getJSDataFiles() as $jsDataFile) {
+            unlink($jsDataFile);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function parseNewVersion($version)
+    {
+        $args = [
+            escapeshellarg(PHP_BINARY),
+            escapeshellarg($this->getBinDir() . '/update-docs'),
+            escapeshellarg($version),
+        ];
+        $rc = null;
+        passthru(implode(' ', $args), $rc);
+        if ($rc !== 0) {
+            throw new Exception('Failed!');
+        }
+    }
+
+    /**
+     * 
+     */
+    public function resetComposerJson()
+    {
+        $rootDir = $this->getRootDir();
+        $args = [
+            'composer',
+            escapeshellarg('--working-dir=' . $rootDir),
+            '--no-update',
+            'require', escapeshellarg('friendsofphp/php-cs-fixer:2.*'),
+        ];
+        passthru(implode(' ', $args));
+        if (is_file($rootDir . '/composer.lock')) {
+            unlink($rootDir . '/composer.lock');
+        }
+        if (is_dir($rootDir . '/vendor')) {
+            $this->unlink($rootDir . '/vendor');
+        }
+    }
+
+    /**
+     * @param string $version
+     */
+    private function removeVersionFromCurrentVersionsFile($version)
+    {
+        $versions = json_decode(file_get_contents($this->getCurrentVersionsFile()), true);
+        $index = array_search($version, $versions, true);
+        if ($index === false) {
+            return;
+        }
+        array_splice($versions, $index, 1);
+        file_put_contents($this->getCurrentVersionsFile(), json_encode($versions, JSON_PRETTY_PRINT));
+    }
+
+    /**
+     * @param string $path
+     */
+    private function unlink($path)
+    {
+        if (is_dir($path)) {
+            foreach (scandir($path) as $entry) {
+                $entryPath = $path . '/' . $entry;
+                switch ($entry) {
+                    case '.':
+                    case '..':
+                        break;
+                    default:
+                        $this->unlink($entryPath);
+                        break;
+                }
+            }
+            rmdir($path);
+        } else {
+            unlink($path);
+        }
+    }
+}
+
+class PCFCCurrentVersion
+{
+    /**
+     * @var bool
+     */
+    private $inVersionsFile = false;
+
+    /**
+     * @var string[]
+     */
+    private $jsDataFiles = [];
+
+    /**
+     * @return bool
+     */
+    public function isInVersionsFile()
+    {
+        return $this->inVersionsFile;
+    }
+
+    /**
+     * @param bool $value
+     *
+     * @return $this
+     */
+    public function setInVersionsFile($value)
+    {
+        $this->inVersionsFile = (bool) $value;
+        return $this;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return $this
+     */
+    public function addJSDataFile($path)
+    {
+        $this->jsDataFiles[] = $path;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getJSDataFiles()
+    {
+        return $this->jsDataFiles;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOK()
+    {
+        return $this->isInVersionsFile() && count($this->getJSDataFiles()) === 2;
+    }
+}
+
+$force = in_array('-f', $argv, true) || in_array('--force', $argv, true);
+
+$worker = new PCFCWorker(dirname(__DIR__));
+
+fprintf(STDOUT, "Listing currently parsed versions... ");
+$currentVersions = $worker->getCurrentVersions();
+fprintf(STDOUT, "done.\n");
+
+fprintf(STDOUT, "Listing latest versions... ");
+$wantedVersions = $worker->getWantedVersions();
+fprintf(STDOUT, "done.\n");
+
+foreach ($currentVersions as $versionID => $versionData)
+{
+    if ($force) {
+        fprintf(STDOUT, "Removing version {$versionID} because of the --force flag.\n");
+    } elseif ($versionData->isOK() !== true) {
+        fprintf(STDOUT, "Removing version {$versionID} because it lacks some data.\n");
+    } elseif (in_array($versionID, $wantedVersions, true) === false) {
+        fprintf(STDOUT, "Removing version {$versionID} because it's no more needed.\n");
+    } else {
+        continue;
+    }
+    $worker->deleteCurrentVersion($versionID, $versionData);
+    unset($currentVersions[$versionID]);
+}
+
+$someVersionParsed = false;
+try {
+    foreach ($wantedVersions as $wantedVersion)
+    {
+        fprintf(STDOUT, "Version {$wantedVersion} ");
+        if (isset($currentVersions[$wantedVersion])) {
+            fprintf(STDOUT, "already parsed.\n");
+            continue;
+        }
+        fprintf(STDOUT, "needs parsing.\n");
+        $someVersionParsed = true;
+        $worker->parseNewVersion($wantedVersion);
+    }
+} finally {
+    if ($someVersionParsed) {
+        fprintf(STDOUT, "Resetting composer.json.\n");
+        $worker->resetComposerJson();
+    }
+}
