@@ -112,7 +112,7 @@
                 {
                     "name": "operators",
                     "description": "Dictionary of `binary operator` => `fix strategy` values that differ from the default strategy.",
-                    "defaultValue": [],
+                    "defaultValue": {},
                     "allowedTypes": [
                         "array"
                     ]
