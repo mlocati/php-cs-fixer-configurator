@@ -2,12 +2,14 @@
 namespace MLocati\PhpCsFixerConfigurator;
 
 use Exception;
+use MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue;
 use PhpCsFixer\Config;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
 use PhpCsFixer\Fixer\DefinedFixerInterface;
 use PhpCsFixer\Fixer\DeprecatedFixerInterface;
+use PhpCsFixer\FixerConfiguration\FixerOptionInterface;
 use PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface;
 use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
@@ -69,7 +71,11 @@ class DataExtractor
                         $o['description'] = $s;
                     }
                     if ($option->hasDefault()) {
-                        $o['defaultValue'] = $option->getDefault();
+                        $defaultOptionValue = $option->getDefault();
+                        if ($defaultOptionValue === []) {
+                            $defaultOptionValue = $this->guessOptionEmptyArrayType($option, $fixer);
+                        }
+                        $o['defaultValue'] = $defaultOptionValue;
                     }
                     $allowedTypes = $option->getAllowedTypes();
                     if ($allowedTypes !== null) {
@@ -199,6 +205,39 @@ class DataExtractor
                 $rootNormalized = rtrim(str_replace(DIRECTORY_SEPARATOR, '/', dirname(__DIR__, 1)), '/') . '/';
                 if (strpos($valueNormalized, $rootNormalized) === 0) {
                     $result = '/path/to/' . substr($valueNormalized, strlen($rootNormalized));
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \PhpCsFixer\FixerConfiguration\FixerOptionInterface $option
+     * @param \PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface $fixer
+     *
+     * @return \MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue
+     */
+    private function guessOptionEmptyArrayType(FixerOptionInterface $option, ConfigurationDefinitionFixerInterface $fixer)
+    {
+        $result = new EmptyArrayValue();
+
+        if ($fixer instanceof DefinedFixerInterface) {
+            foreach ($fixer->getDefinition()->getCodeSamples() as $codeSample) {
+                $sampleConfiguration = $codeSample->getConfiguration();
+                if (is_array($sampleConfiguration) && isset($sampleConfiguration[$option->getName()])) {
+                    $sampleOptionConfiguration = $sampleConfiguration[$option->getName()];
+                    if (is_array($sampleOptionConfiguration)) {
+                        $count = count($sampleOptionConfiguration);
+                        if ($count !== 0) {
+                            if (array_keys($sampleOptionConfiguration) === range(0, $count - 1)) {
+                                $result->setJsonKind(EmptyArrayValue::JSONKIND_ARRAY);
+                            } else {
+                                $result->setJsonKind(EmptyArrayValue::JSONKIND_OBJECT);
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         }

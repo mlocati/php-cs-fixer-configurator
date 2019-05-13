@@ -2,6 +2,7 @@
 <?php
 
 use MLocati\PhpCsFixerConfigurator\DataExtractor;
+use MLocati\PhpCsFixerConfigurator\JsonEncoder;
 
 if (PHP_VERSION_ID < 70300) {
     fprintf(STDERR, "This script must be run with PHP 7.3+.\n");
@@ -81,6 +82,7 @@ if (is_file("{$jsDir}/php-cs-fixer-versions.json")) {
 } else {
     $versions = [];
 }
+$encoder = new JsonEncoder();
 if (!in_array($version, $versions, true)) {
     $versions[] = $version;
     usort($versions, function ($versionA, $versionB) {
@@ -91,11 +93,11 @@ if (!in_array($version, $versions, true)) {
         exit(1);
     }
 }
-if (@file_put_contents("{$jsDir}/php-cs-fixer-data-{$version}.json", json_encode($data, JSON_PRETTY_PRINT)) === false) {
+if (@file_put_contents("{$jsDir}/php-cs-fixer-data-{$version}.json", $encoder->setPrettyPrint(true)->stringify($data)) === false) {
     fprintf(STDERR, "Error saving data!\n");
     exit(1);
 }
-if (@file_put_contents("{$jsDir}/php-cs-fixer-data-{$version}.min.json", json_encode($data)) === false) {
+if (@file_put_contents("{$jsDir}/php-cs-fixer-data-{$version}.min.json", $encoder->setPrettyPrint(false)->stringify($data)) === false) {
     fprintf(STDERR, "Error saving compressed data!\n");
     exit(1);
 }
