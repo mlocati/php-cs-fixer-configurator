@@ -394,14 +394,16 @@ var ModalManager = (function() {
         }
     });
     return Object.defineProperties({
-        show: function(dialog, onClose) {
+        show: function(dialog, onClose, domPersistent) {
             var $dialog;
             if (dialog instanceof jQuery) {
                 $dialog = dialog;
             } else {
                 $dialog = $(dialog);
             }
-            $(window.document.body).append($dialog);
+            if (!domPersistent) {
+                $(window.document.body).append($dialog);
+            }
             stack.push($dialog);
             if (stack.length > 1) {
                 stack[stack.length - 2].modal('hide');
@@ -411,7 +413,9 @@ var ModalManager = (function() {
                 .on('hidden.bs.modal', function() {
                     if (stack[stack.length - 1] === $dialog) {
                         stack.pop();
-                        $dialog.remove();
+                        if (!domPersistent) {
+                            $dialog.remove();
+                        }
                         if (stack.length > 0) {
                             stack[stack.length - 1].modal('show');
                         }
@@ -2337,6 +2341,14 @@ VersionData.prototype = {
             }
         }
         return null;
+    },
+    getFixerSetByName: function(name) {
+        for (var i = 0, n = this.fixerSets.length; i < n; i++) {
+            if (this.fixerSets[i].name === name) {
+                return this.fixerSets[i];
+            }
+        }
+        return null;
     }
 };
 VersionData.all = {};
@@ -2358,6 +2370,93 @@ VersionData.getByVersion = function(version, cb) {
         cb(true, VersionData.all[version]);
     });
 };
+
+var VersionsComparer = (function() {
+    var $dialog = null, $vFrom, $vTo, $vToAndFrom;
+    function refreshChanges() {
+        $vToAndFrom.attr('disabled', 'disabled');
+        $dialog.find('.modal-body').empty();
+        VersionData.getByVersion($vFrom.val(), function(ok, vFrom) {
+            if (!ok) {
+                $vToAndFrom.removeAttr('disabled');
+                return window.alert(vFrom);
+            }
+            VersionData.getByVersion($vTo.val(), function(ok, vTo) {
+                if (!ok) {
+                    $vToAndFrom.removeAttr('disabled');
+                    return window.alert(vFrom);
+                }
+                showChanges(vFrom, vTo);
+                $vToAndFrom.removeAttr('disabled');
+            });
+        });
+    }
+    function showChanges(vFrom, vTo) {
+        var diff = {
+            fixersAdded: [],
+            fixersRemoved: [],
+            fixersChanged: [],
+            fixerSetsAdded: [],
+            fixerSetsRemoved: [],
+            fixerSetsChanged: []
+        };
+        var fixerPairs = [];
+        vFrom.fixers.forEach(function(fFrom) {
+            var fTo = vTo.getFixerByName(fFrom.name);
+            if (fTo === null) {
+                diff.fixersAdded.push(fFrom);
+            } else {
+                fixerPairs.push({fFrom: fFrom, fTo: fTo});
+            }
+        });
+        vTo.fixers.forEach(function(fTo) {
+            if (vFrom.getFixerByName(fTo.name) === null) {
+                diff.fixersRemoved.push(fTo);
+            }
+        });
+        // @todo: fixerPairs -> fixersChanged
+        var fixerSetPairs = [];
+        vFrom.fixerSets.forEach(function(fsFrom) {
+            var fsTo = vTo.getFixerSetByName(fsFrom.name);
+            if (fsTo === null) {
+                diff.fixerSetsAdded.push(fsFrom);
+            } else {
+                fixerSetPairs.push({fsFrom: fsFrom, fsTo: fsTo});
+            }
+        });
+        vTo.fixerSets.forEach(function(fsTo) {
+            if (vFrom.getFixerSetByName(fsTo.name) === null) {
+                diff.fixerSetsRemoved.push(fsTo);
+            }
+        });
+        // @todo: fixerSetPairs -> fixerSetsChanged
+        diff.noChanges = diff.fixersAdded.length === 0 && diff.fixersRemoved.length === 0 && diff.fixersChanged.length === 0 && diff.fixerSetsAdded.length === 0 && diff.fixerSetsRemoved.length === 0 && diff.fixerSetsChanged.length === 0
+        $dialog.find('.modal-body')
+            .empty()
+            .append(Templater.build('compare-versions-body', diff))
+        ;
+    }
+    return {
+        show: function() {
+            if ($dialog === null) {
+                $dialog = $('#pcs-compare-versions-dialog');
+                $vFrom = $('#pcs-compare-versions-vfrom');
+                $vTo = $('#pcs-compare-versions-vto');
+                $vToAndFrom = $vFrom.add($vTo);
+                Version.available.forEach(function(version) {
+                    $vToAndFrom.append($('<option />').val(version).text(version));
+                    $vFrom.find('option[value="' + Version.current + '"]').prop('selected', true);
+                    $vTo.prop('selectedIndex', $vFrom.prop('selectedIndex') === 0 ? 1 : 0);
+                    $vToAndFrom.on('change', function() {
+                        refreshChanges();
+                    });
+                });
+            }
+            refreshChanges();
+            ModalManager.show($dialog, null, true);
+        }
+    };
+})();
 
 $.ajax({
     dataType: 'json',
@@ -2391,6 +2490,17 @@ $.ajax({
                 );
             }
         });
+        if (Version.available.length > 1) {
+            $('#pcs-versions')
+                .append($('<div class="dropdown-divider" />'))
+                .append($('<a class="dropdown-item" href="#">Compare versions</a>')
+                    .on('click', function(e) {
+                        e.preventDefault();
+                        VersionsComparer.show();
+                    })
+                )
+            ;
+        }
         versionData.fixers.forEach(function(fixer) {
             Fixers.add(fixer);
         });

@@ -726,6 +726,199 @@
             </div>
         </script>
 
+        <div class="modal" role="dialog" id="pcs-compare-versions-dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title container">
+                            <div class="row">
+                                <div class="col-2 text-right">
+                                    Compare
+                                </div>
+                                <div class="col-3">
+                                    <select id="pcs-compare-versions-vfrom" class="form-control form-control-sm"></select>
+                                </div>
+                                <div class="col-2 text-right">
+                                    with
+                                </div>
+                                <div class="col-3">
+                                    <select id="pcs-compare-versions-vto" class="form-control form-control-sm"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script id="template-compare-versions-body" type="text/template">
+            <div id="template-compare-versions-items">
+
+                {{#if fixersAdded.length }}
+                    <div class="card">
+                        <div class="card-header" id="cgs-compare-versions-fixers-head-added">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#cgs-compare-versions-fixers-body-added" aria-expanded="false" aria-controls="cgs-compare-versions-fixers-body-added">
+                                    Added fixers ({{ fixersAdded.length }})
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="cgs-compare-versions-fixers-body-added" class="collapse" aria-labelledby="cgs-compare-versions-fixers-head-added" data-parent="#template-compare-versions-items">
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {{#each fixersAdded}}
+                                            <tr>
+                                                <td><code>{{ name }}</code></td>
+                                                <td>
+                                                    {{#if summaryHTML }}
+                                                        {{{ summaryHTML }}}
+                                                    {{else}}
+                                                        {{{ descriptionHTML }}}
+                                                    {{/if}}
+                                                </td>
+                                            </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+
+                {{#if fixersRemoved.length }}
+                    <div class="card">
+                        <div class="card-header" id="cgs-compare-versions-fixers-head-removed">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#cgs-compare-versions-fixers-body-removed" aria-expanded="false" aria-controls="cgs-compare-versions-fixers-body-removed">
+                                    Removed fixers ({{ fixersRemoved.length }})
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="cgs-compare-versions-fixers-body-removed" class="collapse" aria-labelledby="cgs-compare-versions-fixers-head-removed" data-parent="#template-compare-versions-items">
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {{#each fixersRemoved}}
+                                            <tr>
+                                                <td><code>{{ name }}</code></td>
+                                                <td>
+                                                    {{#if summaryHTML }}
+                                                        {{{ summaryHTML }}}
+                                                    {{else}}
+                                                        {{{ descriptionHTML }}}
+                                                    {{/if}}
+                                                </td>
+                                            </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+
+                {{#if fixersChanged.length }}
+                    <div class="card">
+                        <div class="card-header" id="cgs-compare-versions-fixers-head-changed">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#cgs-compare-versions-fixers-body-changed" aria-expanded="false" aria-controls="cgs-compare-versions-fixers-body-changed">
+                                    Changed fixers ({{ fixersChanged.length }})
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="cgs-compare-versions-fixers-body-changed" class="collapse" aria-labelledby="cgs-compare-versions-fixers-head-changed" data-parent="#template-compare-versions-items">
+                            <div class="card-body">
+                                @todo
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+
+                {{#if fixerSetsAdded.length }}
+                    <div class="card">
+                        <div class="card-header" id="cgs-compare-versions-fixersets-head-added">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#cgs-compare-versions-fixersets-body-added" aria-expanded="false" aria-controls="cgs-compare-versions-fixersets-body-added">
+                                    Added fixer sets ({{ fixerSetsAdded.length }})
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="cgs-compare-versions-fixersets-body-added" class="collapse" aria-labelledby="cgs-compare-versions-fixersets-head-added" data-parent="#template-compare-versions-items">
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {{#each fixerSetsAdded}}
+                                            <tr>
+                                                <td><code>{{ name }}</code></td>
+                                            </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+
+                {{#if fixerSetsRemoved.length }}
+                    <div class="card">
+                        <div class="card-header" id="cgs-compare-versions-fixersets-head-removed">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#cgs-compare-versions-fixersets-body-removed" aria-expanded="false" aria-controls="cgs-compare-versions-fixersets-body-removed">
+                                    Removed fixer sets ({{ fixerSetsRemoved.length }})
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="cgs-compare-versions-fixersets-body-removed" class="collapse" aria-labelledby="cgs-compare-versions-fixersets-head-removed" data-parent="#template-compare-versions-items">
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {{#each fixerSetsRemoved}}
+                                            <tr>
+                                                <td><code>{{ name }}</code></td>
+                                            </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+
+                {{#if fixerSetsChanged.length }}
+                    <div class="card">
+                        <div class="card-header" id="cgs-compare-versions-fixersets-head-changed">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#cgs-compare-versions-fixersets-body-changed" aria-expanded="false" aria-controls="cgs-compare-versions-fixersets-body-changed">
+                                    Changed fixer sets ({{ fixerSetsChanged.length }})
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="cgs-compare-versions-fixersets-body-changed" class="collapse" aria-labelledby="cgs-compare-versions-fixersets-head-changed" data-parent="#template-compare-versions-items">
+                            <div class="card-body">
+                                @todo
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+
+                {{#if noChanges }}
+                    <div class="alert alert-success" role="alert">
+                        No changes detected.
+                    </div>
+                {{/if}}
+
+            </div>
+        </script>
+
         <script src="js/jquery.min.js"></script>
         <script src="js/tether.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
