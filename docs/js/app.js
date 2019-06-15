@@ -496,15 +496,9 @@ var Search = (function() {
 
 var Fixers = (function() {
     var list = [];
-    function sort() {
-        list.sort(function(a, b) {
-            return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
-        });
-    }
     return {
         add: function(fixer) {
             list.push(fixer);
-            sort();
         },
         getAll: function() {
             return [].concat(list);
@@ -604,10 +598,10 @@ Fixer.prototype = {
             }
         });
     },
-    resolveSets: function() {
+    resolveSets: function(fixerSets) {
         var me = this;
         me.sets = [];
-        FixerSets.getAll().forEach(function(fixerSet) {
+        fixerSets.forEach(function(fixerSet) {
             if (fixerSet.hasFixer(me)) {
                 me.sets.push(fixerSet);
             }
@@ -660,15 +654,9 @@ Fixer.CodeSample = function(cs) {
 
 var FixerSets = (function() {
     var list = [];
-    function sort() {
-        list.sort(function(a, b) {
-            return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
-        });
-    }
     return {
         add: function(fixerSet) {
             list.push(fixerSet);
-            sort();
         },
         getAll: function() {
             return [].concat(list);
@@ -689,8 +677,9 @@ var FixerSets = (function() {
  * @constructor
  * @param {string} name
  * @param {object[]} fixerDefs
+ * @param {VersionData} versionData
  */
-function FixerSet(name, fixerDefs) {
+function FixerSet(name, fixerDefs, versionData) {
     this.name = name;
     this.fixers = [];
     this.risky = false;
@@ -698,7 +687,7 @@ function FixerSet(name, fixerDefs) {
     for (var fixerName in fixerDefs) {
         if (fixerDefs.hasOwnProperty(fixerName)) {
             var fixerData = {};
-            fixerData.fixer = Fixers.getByName(fixerName);
+            fixerData.fixer = versionData.getFixerByName(fixerName);
             if (fixerData.fixer === null) {
                 throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName) + ' for set ' + name);
             }
@@ -2307,6 +2296,69 @@ var View = (function() {
     );
 })();
 
+/**
+ * @class
+ * @constructor
+ */
+function VersionData(data) {
+    var my = this;
+    my.whitespaceConfig = {
+        indent: data.indent,
+        lineEnding: data.lineEnding
+    };
+    my.fixers = [];
+    for (var fixerName in data.fixers) {
+        if (data.fixers.hasOwnProperty(fixerName)) {
+            my.fixers.push(new Fixer(fixerName, data.fixers[fixerName]));
+        }
+    }
+    my.fixers.sort(function(a, b) {
+        return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+    });
+    my.fixerSets = [];
+    for (var setName in data.sets) {
+        if (data.sets.hasOwnProperty(setName)) {
+            my.fixerSets.push(new FixerSet(setName, data.sets[setName], my));
+        }
+    }
+    my.fixerSets.sort(function(a, b) {
+        return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+    });
+    my.fixers.forEach(function(fixer) {
+        fixer.resolveSets(my.fixerSets);
+        fixer.resolveSubstitutions();
+    });
+}
+VersionData.prototype = {
+    getFixerByName: function(name) {
+        for (var i = 0, n = this.fixers.length; i < n; i++) {
+            if (this.fixers[i].name === name) {
+                return this.fixers[i];
+            }
+        }
+        return null;
+    }
+};
+VersionData.all = {};
+VersionData.getByVersion = function(version, cb) {
+    if (VersionData.all.hasOwnProperty(version)) {
+        cb(true, VersionData.all[version]);
+        return;
+    }
+    $.ajax({
+        dataType: 'json',
+        url: 'js/php-cs-fixer-data-' + version + '.min.json',
+        cache: true,
+    })
+    .fail(function(xhr, testStatus, errorThrown) {
+        cb(false, errorThrown);
+    })
+    .done(function(data) {
+        VersionData.all[version] = new VersionData(data);
+        cb(true, VersionData.all[version]);
+    });
+};
+
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-versions.json',
@@ -2317,19 +2369,12 @@ $.ajax({
 })
 .done(function(data) {
     Version.initialize(data);
-    $.ajax({
-        dataType: 'json',
-        url: 'js/php-cs-fixer-data-' + Version.current + '.min.json',
-        cache: true,
-    })
-    .fail(function(xhr, testStatus, errorThrown) {
-        window.alert(errorThrown);
-    })
-    .done(function(data) {
-        DefaultWhitespaceConfig = {
-            indent: data.indent,
-            lineEnding: data.lineEnding
-        };
+    VersionData.getByVersion(Version.current, function(ok, versionData) {
+        if (!ok) {
+            window.alert(versionData);
+            return;
+        }
+        DefaultWhitespaceConfig = $.extend(true, {}, versionData.whitespaceConfig);
         $('#pcs-version').text(Version.current);
         Version.available.forEach(function(version) {
             if (version === Version.current) {
@@ -2346,19 +2391,11 @@ $.ajax({
                 );
             }
         });
-        for (var fixerName in data.fixers) {
-            if (data.fixers.hasOwnProperty(fixerName)) {
-                Fixers.add(new Fixer(fixerName, data.fixers[fixerName]));
-            }
-        }
-        for (var setName in data.sets) {
-            if (data.sets.hasOwnProperty(setName)) {
-                FixerSets.add(new FixerSet(setName, data.sets[setName]));
-            }
-        }
-        Fixers.getAll().forEach(function(fixer) {
-            fixer.resolveSets();
-            fixer.resolveSubstitutions();
+        versionData.fixers.forEach(function(fixer) {
+            Fixers.add(fixer);
+        });
+        versionData.fixerSets.forEach(function(fixerSet) {
+            FixerSets.add(fixerSet);
         });
         Search.initialize();
         FixerSet.SelectedList.initialize();
