@@ -1,31 +1,31 @@
 /* jshint unused:vars, undef:true, browser:true, jquery:true */
 /* global Handlebars, Prism, jsyaml */
-$(function () {
+$(function() {
 'use strict';
 
-Handlebars.registerHelper('toJSON', function (value) {
+Handlebars.registerHelper('toJSON', function(value) {
     return JSON.stringify(value, null, 4);
 });
-Handlebars.registerHelper('toPHP', function (value) {
+Handlebars.registerHelper('toPHP', function(value) {
     return toPHP(value);
 });
-Handlebars.registerHelper('add1', function (value) {
+Handlebars.registerHelper('add1', function(value) {
     return 1 + value;
 });
-Handlebars.registerHelper('debug', function (value) {
+Handlebars.registerHelper('debug', function(value) {
     window.console.debug('Context', this, 'Value', value);
 });
 
-var textToHtml = (function () {
+var textToHtml = (function() {
     var $div = null;
-    return function (text, backTicksToCode) {
+    return function(text, backTicksToCode) {
         text = (text === null || text === undefined) ? '' : text.toString();
         if ($div === null) {
             $div = $('<div />');
         }
         var result = '',
             lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-        lines.forEach(function (line, index) {
+        lines.forEach(function(line, index) {
             if (index > 0) {
                 result += '<br />';
             }
@@ -39,13 +39,13 @@ var textToHtml = (function () {
     };
 })();
 
-var Hasher = (function () {
+var Hasher = (function() {
     function getCurrent() {
         var result = {
             configurator: false,
             fixer: ''
         };
-        $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function (_, chunk) {
+        $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function(_, chunk) {
             if (chunk === '') {
                 return;
             }
@@ -101,10 +101,10 @@ var Hasher = (function () {
         Hasher.update = update;
     }
     return {
-        initialize: function () {
+        initialize: function() {
             initialize();
         },
-        update: function () {
+        update: function() {
         }
     };
 })();
@@ -126,10 +126,10 @@ function ErrorList(error) {
     }
 }
 ErrorList.prototype = Object.create(Error.prototype);
-ErrorList.prototype.add = function (error) {
+ErrorList.prototype.add = function(error) {
     if (error instanceof ErrorList) {
         var me = this;
-        error.list.forEach(function (error) {
+        error.list.forEach(function(error) {
             me.add(error);
         });
         return;
@@ -151,13 +151,13 @@ ErrorList.prototype.add = function (error) {
     this.has = true;
 };
 
-var Version = (function () {
+var Version = (function() {
     var available, current, currentMajorMinor, displayNames;
     return {
-        initialize: function (availableVersions) {
+        initialize: function(availableVersions) {
             available = availableVersions;
             displayNames = {};
-            available.forEach(function (v) {
+            available.forEach(function(v) {
                 var matches = /^(\d+\.\d+)\.\d+$/.exec(v);
                 displayNames[v] = matches === null ? v : matches[1];
             });
@@ -181,25 +181,25 @@ var Version = (function () {
             currentMajorMinor = current.split('.').slice(0, 2).join('.');
             Object.defineProperties(Version, {
                 available: {
-                    get: function () {
+                    get: function() {
                         return available.slice(0);
                     },
                 },
                 current: {
-                    get: function () {
+                    get: function() {
                         return current;
                     }
                 },
                 currentMajorMinor: {
-                    get: function () {
+                    get: function() {
                         return currentMajorMinor;
                     }
                 },
             });
-            Version.getDisplayName = function (version) {
+            Version.getDisplayName = function(version) {
                 return displayNames.hasOwnProperty(version) ? displayNames[version] : null;
             };
-            Version.getCurrentMajorMinorOf = function (version) {
+            Version.getCurrentMajorMinorOf = function(version) {
                 version = version === null || version === undefined ? '' : version.toString();
                 var match = /^(\d+)\.(\d+)($|\.)/.exec(version);
                 return match ? parseInt(match[1], 10).toString() + '.' + parseInt(match[2], 10).toString() : null;
@@ -218,18 +218,18 @@ var Version = (function () {
  */
 var DefaultWhitespaceConfig;
 
-var Configurator = (function () {
+var Configurator = (function() {
     var enabled = false,
         $toggle = $('#pcs-btn-configure');
-    $toggle.on('click', function () {
+    $toggle.on('click', function() {
         Configurator.enabled = !Configurator.enabled;
     });
     return Object.defineProperties({}, {
         enabled: {
-            get: function () {
+            get: function() {
                 return enabled;
             },
-            set: function (value) {
+            set: function(value) {
                 value = !!value;
                 if (enabled === value) {
                     return;
@@ -242,7 +242,7 @@ var Configurator = (function () {
                     $('.pcf-onlyconfiguring-visible').removeClass('pcf-onlyconfiguring-visible').addClass('pcf-onlyconfiguring-hidden');
                     $(document.body).removeClass('pcf-configuring');
                 }
-                Fixers.getAll().forEach(function (fixer) {
+                Fixers.getAll().forEach(function(fixer) {
                     fixer.view.updateClasses();
                 });
                 $toggle.removeClass('btn-default btn-success').addClass(enabled ? 'btn-success' : 'btn-default');
@@ -266,7 +266,7 @@ function getSearchableArray(string) {
         .replace(/  +/g, ' ')
         .replace(/^ | $/g, '')
         .split(' ')
-        .filter(function (value, index, array) {
+        .filter(function(value, index, array) {
             return value !== '' && array.indexOf(value) === index;
         })
     ;
@@ -323,7 +323,7 @@ function toPHP(v) {
     var chunks;
     if (v instanceof Array) {
         chunks = [];
-        v.forEach(function (chunk) {
+        v.forEach(function(chunk) {
             chunks.push(toPHP(chunk));
         });
         return '[' + chunks.join(', ') + ']';
@@ -339,39 +339,39 @@ function toPHP(v) {
     }
 }
 
-var Templater = (function () {
+var Templater = (function() {
     var loadedTemplates = {},
         buildCount = 0;
-    Handlebars.registerHelper('templateBuiltID', function () {
+    Handlebars.registerHelper('templateBuiltID', function() {
         return 'pcf-template-built-id-' + buildCount;
     });
     return {
-        get: function (id, data) {
+        get: function(id, data) {
             if (!loadedTemplates.hasOwnProperty(id)) {
                 loadedTemplates[id] = Handlebars.compile($('#template-' + id).html());
             }
             return loadedTemplates[id];
         },
-        build: function (id, data) {
+        build: function(id, data) {
             buildCount++;
             var template = Templater.get(id),
                 html = template(data),
                 $node = $(html);
-            $node.find('.prismify-me>code').each(function () {
+            $node.find('.prismify-me>code').each(function() {
                 Prism.highlightElement(this);
             });
-            $node.find('[data-pcf-show-fixer]').each(function () {
+            $node.find('[data-pcf-show-fixer]').each(function() {
                 var $a = $(this), fixerName = $a.data('pcf-show-fixer');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixer');
-                $a.on('click', function (e) {
+                $a.on('click', function(e) {
                     e.preventDefault();
                     Fixers.getByName(fixerName).showDetails();
                 });
             });
-            $node.find('[data-pcf-show-fixerset]').each(function () {
+            $node.find('[data-pcf-show-fixerset]').each(function() {
                 var $a = $(this), fixerSetName = $a.data('pcf-show-fixerset');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixerset');
-                $a.on('click', function (e) {
+                $a.on('click', function(e) {
                     e.preventDefault();
                     FixerSets.getByName(fixerSetName).showDetails();
                 });
@@ -384,9 +384,9 @@ var Templater = (function () {
     };
 })();
 
-var ModalManager = (function () {
+var ModalManager = (function() {
     var stack = [];
-    $(window).on('keyup', function (e) {
+    $(window).on('keyup', function(e) {
         if ((e.keyCode || e.which) === 27) {
             if (stack.length > 0) {
                 stack[stack.length - 1].modal('hide');
@@ -394,7 +394,7 @@ var ModalManager = (function () {
         }
     });
     return Object.defineProperties({
-        show: function (dialog, onClose) {
+        show: function(dialog, onClose) {
             var $dialog;
             if (dialog instanceof jQuery) {
                 $dialog = dialog;
@@ -408,7 +408,7 @@ var ModalManager = (function () {
                 $dialog.find('.modal-footer button[data-dismiss]').text('Back');
             }
             $dialog
-                .on('hidden.bs.modal', function () {
+                .on('hidden.bs.modal', function() {
                     if (stack[stack.length - 1] === $dialog) {
                         stack.pop();
                         $dialog.remove();
@@ -430,19 +430,19 @@ var ModalManager = (function () {
         }
     }, {
         stackCount: {
-            get: function () {
+            get: function() {
                 return stack.length;
             }
         }
     });
 })();
 
-var Search = (function () {
+var Search = (function() {
     var lastSearchText = '', lastFixerSets = [], $search, $fixerSetItems, selectedFixerSets = [];
     function toggleFixerSet(name) {
         $fixerSetItems.filter('[data-fixerset="' + name + '"]').find('i.fa').toggleClass('fa-check-square-o fa-square-o');
         selectedFixerSets = [];
-        $fixerSetItems.find('i.fa-check-square-o').each(function () {
+        $fixerSetItems.find('i.fa-check-square-o').each(function() {
             selectedFixerSets.push($(this).closest('a[data-fixerset]').data('fixerset'));
         });
         if (selectedFixerSets.length === $fixerSetItems.length) {
@@ -461,7 +461,7 @@ var Search = (function () {
         lastSearchText = searchText;
         lastFixerSets = filterSets;
         var searchArray = getSearchableArray(searchText);
-        Fixers.getAll().forEach(function (fixer) {
+        Fixers.getAll().forEach(function(fixer) {
             if (fixer.satisfySearch(searchArray, filterSets) === true) {
                 fixer.view.$views.removeClass('pcs-search-failed');
             } else {
@@ -470,10 +470,10 @@ var Search = (function () {
         });
     }
     return {
-        initialize: function () {
+        initialize: function() {
             $search = $('#pcs-search');
             var $fixerSetMenu = $('#pcs-filter-sets');
-            FixerSets.getAll().forEach(function (fixerSet) {
+            FixerSets.getAll().forEach(function(fixerSet) {
                 $fixerSetMenu.append($('<a class="dropdown-item" href="#" />')
                     .attr('data-fixerset', fixerSet.name)
                     .text(' ' + fixerSet.name)
@@ -481,10 +481,10 @@ var Search = (function () {
                 );
             });
             $fixerSetItems = $fixerSetMenu.find('a[data-fixerset]');
-            $search.on('keydown keyup keypress change blur mousedown mouseup', function () {
+            $search.on('keydown keyup keypress change blur mousedown mouseup', function() {
                 performSearch();
             });
-            $fixerSetItems.on('click', function (e) {
+            $fixerSetItems.on('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleFixerSet($(this).data('fixerset'));
@@ -494,22 +494,22 @@ var Search = (function () {
     };
 })();
 
-var Fixers = (function () {
+var Fixers = (function() {
     var list = [];
     function sort() {
-        list.sort(function (a, b) {
+        list.sort(function(a, b) {
             return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
         });
     }
     return {
-        add: function (fixer) {
+        add: function(fixer) {
             list.push(fixer);
             sort();
         },
-        getAll: function () {
+        getAll: function() {
             return [].concat(list);
         },
-        getByName: function (name) {
+        getByName: function(name) {
             for (var i = 0, n = list.length; i < n; i++) {
                 if (list[i].name === name) {
                     return list[i];
@@ -540,11 +540,11 @@ function Fixer(name, def) {
     this.deprecated_switchTo = def.hasOwnProperty('deprecated_switchTo') ? def.deprecated_switchTo : null;
     var configurationOptions = [];
     if (def.hasOwnProperty('configuration')) {
-        def.configuration.forEach(function (co) {
+        def.configuration.forEach(function(co) {
             configurationOptions.push(new Fixer.ConfigurationOption(co));
         });
     }
-    configurationOptions.sort(function (a, b) {
+    configurationOptions.sort(function(a, b) {
         if (a.hasDefaultValue !== b.hasDefaultValue) {
             return a.hasDefaultValue ? 1 : -1;
         } else {
@@ -554,7 +554,7 @@ function Fixer(name, def) {
     this.configurationOptions = configurationOptions;
     var codeSamples = [];
     if (def.hasOwnProperty('codeSamples')) {
-        def.codeSamples.forEach(function (cs) {
+        def.codeSamples.forEach(function(cs) {
             codeSamples.push(new Fixer.CodeSample(cs));
         });
     }
@@ -568,7 +568,7 @@ function Fixer(name, def) {
 }
 Fixer.TopLevelDetailsFor = null;
 Fixer.prototype = {
-    satisfySearch: function (seachableArray, filterSets) {
+    satisfySearch: function(seachableArray, filterSets) {
         var ok = true;
         for (var wordIndex = 0; ok === true && wordIndex < seachableArray.length; wordIndex++) {
             if (this.searchableString.indexOf(seachableArray[wordIndex]) < 0) {
@@ -591,38 +591,38 @@ Fixer.prototype = {
         }
         return ok;
     },
-    showDetails: function () {
+    showDetails: function() {
         var isTopLevel = ModalManager.stackCount === 0;
         if (isTopLevel === true) {
             Fixer.TopLevelDetailsFor = this;
             Hasher.update();
         }
-        ModalManager.show(Templater.build('fixer-details', this), function () {
+        ModalManager.show(Templater.build('fixer-details', this), function() {
             if (isTopLevel === true) {
                 Fixer.TopLevelDetailsFor = null;
                 Hasher.update();
             }
         });
     },
-    resolveSets: function () {
+    resolveSets: function() {
         var me = this;
         me.sets = [];
-        FixerSets.getAll().forEach(function (fixerSet) {
+        FixerSets.getAll().forEach(function(fixerSet) {
             if (fixerSet.hasFixer(me)) {
                 me.sets.push(fixerSet);
             }
         });
     },
-    resolveSubstitutions: function () {
+    resolveSubstitutions: function() {
         var me = this;
         me.substitutes = [];
-        Fixers.getAll().forEach(function (fixer) {
+        Fixers.getAll().forEach(function(fixer) {
             if (fixer.deprecated_switchTo && fixer.deprecated_switchTo.indexOf(me.name) >= 0) {
                 me.substitutes.push(fixer.name);
             }
         });
     },
-    initializeView: function () {
+    initializeView: function() {
         this.view = new Fixer.View(this);
     }
 };
@@ -632,7 +632,7 @@ Fixer.prototype = {
  * @constructor
  * @param {object} co
  */
-Fixer.ConfigurationOption = function (co) {
+Fixer.ConfigurationOption = function(co) {
     this.name = co.name;
     this.description = co.hasOwnProperty('description') ? co.description : '';
     this.descriptionHTML = textToHtml(this.description, true);
@@ -649,7 +649,7 @@ Fixer.ConfigurationOption = function (co) {
  * @constructor
  * @param {object} cs
  */
-Fixer.CodeSample = function (cs) {
+Fixer.CodeSample = function(cs) {
     this.fromCode = cs.from;
     this.toCode = cs.to;
     this.isConfigured = cs.hasOwnProperty('configuration');
@@ -658,22 +658,22 @@ Fixer.CodeSample = function (cs) {
     }
 };
 
-var FixerSets = (function () {
+var FixerSets = (function() {
     var list = [];
     function sort() {
-        list.sort(function (a, b) {
+        list.sort(function(a, b) {
             return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
         });
     }
     return {
-        add: function (fixerSet) {
+        add: function(fixerSet) {
             list.push(fixerSet);
             sort();
         },
-        getAll: function () {
+        getAll: function() {
             return [].concat(list);
         },
-        getByName: function (name) {
+        getByName: function(name) {
             for (var i = 0, n = list.length; i < n; i++) {
                 if (list[i].name === name) {
                     return list[i];
@@ -714,12 +714,12 @@ function FixerSet(name, fixerDefs) {
         }
     }
     this.searchableString = ' ' + getSearchableArray(searchableStrings.join(' ')).join(' ') + ' ';
-    this.fixers.sort(function (a, b) {
+    this.fixers.sort(function(a, b) {
         return a.fixer.name < b.fixer.name ? -1 : (a.fixer.name > b.fixer.name ? 1 : 0);
     });
 }
 FixerSet.prototype = {
-    satisfySearch: function (seachableArray) {
+    satisfySearch: function(seachableArray) {
         var ok = true, numWords = seachableArray.length, wordIndex;
         for (wordIndex = 0; ok === true && wordIndex < numWords; wordIndex++) {
             if (this.searchableString.indexOf(seachableArray[wordIndex]) < 0) {
@@ -728,7 +728,7 @@ FixerSet.prototype = {
         }
         return ok;
     },
-    getFixerConfiguration: function (fixer) {
+    getFixerConfiguration: function(fixer) {
         for (var i = 0, n = this.fixers.length; i < n; i++) {
             if (this.fixers[i].fixer === fixer) {
                 if (this.fixers[i].isConfigured) {
@@ -739,7 +739,7 @@ FixerSet.prototype = {
         }
         return null;
     },
-    hasFixer: function (fixer) {
+    hasFixer: function(fixer) {
         for (var i = 0, n = this.fixers.length; i < n; i++) {
             if (this.fixers[i].fixer === fixer) {
                 return true;
@@ -747,28 +747,28 @@ FixerSet.prototype = {
         }
         return false;
     },
-    showDetails: function () {
+    showDetails: function() {
         ModalManager.show(Templater.build('fixerset-details', this));
     }
 };
 
-FixerSet.SelectedList = (function () {
+FixerSet.SelectedList = (function() {
     var selected = [],
         $selected = $('#pcs-selected-presets'),
         $unselected = $('#pcs-selected-presets-add');
     function refreshCards() {
-        Fixers.getAll().forEach(function (fixer) {
+        Fixers.getAll().forEach(function(fixer) {
             fixer.view.updateClasses();
         });
     }
     function updateView() {
         $selected.empty();
         $unselected.empty();
-        selected.forEach(function (item, itemIndex) {
+        selected.forEach(function(item, itemIndex) {
             $selected.append($('<span class="badge ' + (item[1] ? 'badge-success' : 'badge-danger') + '" />')
                 .text(item[0].name + ' ')
                 .append($('<a href="#" class="badge badge-warning"><i class="fa fa-times" aria-hidden="true"></i></a>')
-                    .on('click', function (e) {
+                    .on('click', function(e) {
                         e.preventDefault();
                         selected.splice(itemIndex, 1);
                         while (selected.length > 0 && selected[0][1] === false) {
@@ -780,9 +780,9 @@ FixerSet.SelectedList = (function () {
                 )
             );
         });
-        FixerSets.getAll().forEach(function (fixerSet) {
+        FixerSets.getAll().forEach(function(fixerSet) {
             var isSelected = false, somePlus = false;
-            selected.forEach(function (item) {
+            selected.forEach(function(item) {
                 if (item[0] === fixerSet) {
                     isSelected = true;
                 }
@@ -796,7 +796,7 @@ FixerSet.SelectedList = (function () {
             var $item;
             $unselected
                 .append($item = $('<div class="dropdown-item" />')
-                    .on('click', function (e) {
+                    .on('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                     })
@@ -805,10 +805,10 @@ FixerSet.SelectedList = (function () {
             if (somePlus) {
                 $item
                     .prepend($('<a href="#" class="btn btn-sm btn-danger' + (somePlus ? '' : 'disabled') + '"><i class="fa fa-minus" aria-hidden="true"></i></a>')
-                        .on('click', function (e) {
+                        .on('click', function(e) {
                             e.preventDefault();
                             setTimeout(
-                                function () {
+                                function() {
                                     selected.push([fixerSet, false]);
                                     updateView();
                                     refreshCards();
@@ -822,10 +822,10 @@ FixerSet.SelectedList = (function () {
             }
             $item
                 .prepend($('<a href="#" class="btn btn-sm btn-success"><i class="fa fa-plus" aria-hidden="true"></i></a>')
-                    .on('click', function (e) {
+                    .on('click', function(e) {
                         e.preventDefault();
                         setTimeout(
-                            function () {
+                            function() {
                                 selected.push([fixerSet, true]);
                                 updateView();
                                 refreshCards();
@@ -838,13 +838,13 @@ FixerSet.SelectedList = (function () {
         });
     }
     return {
-        initialize: function () {
+        initialize: function() {
             updateView();
             delete FixerSet.SelectedList.initialize;
         },
-        getFixerConfigurationFromSets: function (fixer) {
+        getFixerConfigurationFromSets: function(fixer) {
             var result = null;
-            selected.forEach(function (item) {
+            selected.forEach(function(item) {
                 if (item[0].hasFixer(fixer)) {
                     if (!item[1]) {
                         result = null;
@@ -855,33 +855,33 @@ FixerSet.SelectedList = (function () {
             });
             return result;
         },
-        containsFixer: function (fixer) {
+        containsFixer: function(fixer) {
             var result = false;
-            selected.forEach(function (item) {
+            selected.forEach(function(item) {
                 if (item[0].hasFixer(fixer)) {
                     result = item[1];
                 }
             });
             return result;
         },
-        getSelected: function () {
+        getSelected: function() {
             var result = [];
-            selected.forEach(function (item) {
+            selected.forEach(function(item) {
                 result.push([item[0], item[1]]);
             });
             return result;
         },
-        reset: function () {
+        reset: function() {
             selected = [];
             updateView();
             refreshCards();
         },
-        add: function (fixerSetName, substract) {
+        add: function(fixerSetName, substract) {
             var fixerSet = FixerSets.getByName(fixerSetName);
             if (fixerSet === null) {
                 throw new Error('Unable to find a preset named ' + JSON.stringify(fixerSetName));
             }
-            selected.forEach(function (item) {
+            selected.forEach(function(item) {
                 if (item[0] === fixerSet) {
                     throw new Error('The preset ' + fixerSetName + ' is already selected');
                 }
@@ -895,7 +895,7 @@ FixerSet.SelectedList = (function () {
             refreshCards();
             return true;
         },
-        updateVisibility: function () {
+        updateVisibility: function() {
             updateView();
             refreshCards();
         }
@@ -907,23 +907,23 @@ FixerSet.SelectedList = (function () {
  * @constructor
  * @param {Fixer} fixer
  */
-Fixer.View = function (fixer) {
+Fixer.View = function(fixer) {
     var me = this;
     me.fixer = fixer;
     me.selected = null;
     me.$card = $(Templater.build('fixerview-card', fixer));
     me.$row = $(Templater.build('fixerview-row', fixer));
     me.$views = me.$card.add(me.$row);
-    me.$views.find('button, a').on('click', function (e) {
+    me.$views.find('button, a').on('click', function(e) {
         e.stopPropagation();
     });
-    me.$card.find('>.card').add(me.$row).on('click', function () {
+    me.$card.find('>.card').add(me.$row).on('click', function() {
         if (Configurator.enabled) {
             me.toggleManualSelection();
         }
     });
     if (me.fixer.configurationOptions.length > 0) {
-        me.$views.find('.pcs-fixerview-configure button').on('click', function () {
+        me.$views.find('.pcs-fixerview-configure button').on('click', function() {
             me.configure();
         });
     }
@@ -933,12 +933,12 @@ Fixer.View = function (fixer) {
     me.updateClasses();
 };
 Fixer.View.prototype = {
-    reset: function () {
+    reset: function() {
         this.selected = null;
         this.setConfiguration(null);
         this.updateClasses();
     },
-    toggleManualSelection: function () {
+    toggleManualSelection: function() {
         if (FixerSet.SelectedList.containsFixer(this.fixer)) {
             if (this.selected === true || this.selected === null) {
                 this.selected = false;
@@ -954,7 +954,7 @@ Fixer.View.prototype = {
         }
         this.updateClasses();
     },
-    updateClasses: function () {
+    updateClasses: function() {
         this.$views.removeClass('pcs-fixerview-selection-no pcs-fixerview-selection-byfixerset-excluded pcs-fixerview-selection-byfixerset-included pcs-fixerview-selection-yes');
         var newClass = 'pcs-fixerview-selection-no';
         if (Configurator.enabled) {
@@ -970,10 +970,10 @@ Fixer.View.prototype = {
         }
         this.$views.addClass(newClass);
     },
-    configure: function () {
+    configure: function() {
         new Fixer.View.Configurator(this);
     },
-    setConfiguration: function (configuration, allowWarnings) {
+    setConfiguration: function(configuration, allowWarnings) {
         var me = this;
         var errors = new ErrorList();
         if (configuration === null || $.isPlainObject(configuration) && $.isEmptyObject(configuration)) {
@@ -987,7 +987,7 @@ Fixer.View.prototype = {
             }
             configuration = $.extend(true, {}, configuration);
             var fatalError = false;
-            me.fixer.configurationOptions.forEach(function (configurationOption) {
+            me.fixer.configurationOptions.forEach(function(configurationOption) {
                 if (configuration.hasOwnProperty(configurationOption.name)) {
                     // Check value
                 } else if(configurationOption.hasDefaultValue === false) {
@@ -995,9 +995,9 @@ Fixer.View.prototype = {
                     fatalError = true;
                 }
             });
-            $.each(configuration, function (configurationField) {
+            $.each(configuration, function(configurationField) {
                 var found = false;
-                me.fixer.configurationOptions.forEach(function (configurationOption) {
+                me.fixer.configurationOptions.forEach(function(configurationOption) {
                     if (configurationField === configurationOption.name) {
                         found = true;
                     }
@@ -1026,7 +1026,7 @@ Fixer.View.prototype = {
     /**
      * @returns {(null|boolean|object)} - Returns null if the fixer is not selected, false if excluded from selected presets, true if added with the default options, an object if it's added with custom options
      */
-    getState: function () {
+    getState: function() {
         if (FixerSet.SelectedList.containsFixer(this.fixer)) {
             if (this.selected === false) {
                 return false;
@@ -1040,7 +1040,7 @@ Fixer.View.prototype = {
             }
             if (this.configuration === null) {
                 var fixer = this.fixer;
-                fixer.configurationOptions.forEach(function (configurationOption) {
+                fixer.configurationOptions.forEach(function(configurationOption) {
                     if (!configurationOption.hasDefaultValue) {
                         throw new Error('The option "' + configurationOption.name + '" of the fixer "' + fixer.name + '" must be configured');
                     }
@@ -1059,7 +1059,7 @@ Fixer.View.prototype = {
  * @constructor
  * @param {Fixer.View} fixerView
  */
-Fixer.View.Configurator = function (fixerView) {
+Fixer.View.Configurator = function(fixerView) {
     var me = this;
     me.fixerView = fixerView;
     me.inFixerSets = FixerSet.SelectedList.containsFixer(fixerView.fixer);
@@ -1067,17 +1067,17 @@ Fixer.View.Configurator = function (fixerView) {
         me.configurationsFromFixerSets = FixerSet.SelectedList.getFixerConfigurationFromSets(fixerView.fixer);
     }
     me.options = [];
-    me.fixerView.fixer.configurationOptions.forEach(function (option, index) {
+    me.fixerView.fixer.configurationOptions.forEach(function(option, index) {
         me.options.push(new Fixer.View.Configurator.Option(me, option));
     });
     me.$dialog = ModalManager.show(Templater.build('fixer-configure', me));
     me.$select = me.$dialog.find('select.cgs-configuringoption');
     me.$panels = me.$dialog.find('div.cgs-configuringoption');
-    me.$select.on('change', function () {
+    me.$select.on('change', function() {
         me.showOption(this.selectedIndex);
     });
     try {
-        me.options.forEach(function (option, index) {
+        me.options.forEach(function(option, index) {
             option.initialize($(me.$panels[index]));
         });
     } catch (e) {
@@ -1085,13 +1085,13 @@ Fixer.View.Configurator = function (fixerView) {
         window.alert(e.message || e.toString());
     }
     me.showOption(0);
-    me.$dialog.find('.modal-footer .btn-primary').on('click', function () {
+    me.$dialog.find('.modal-footer .btn-primary').on('click', function() {
         var configuration;
         try {
             configuration = me.getConfiguration();
         } catch (e) {
             setTimeout(
-                function () {
+                function() {
                     window.alert(e.message || e.toString());
                 },
                 10
@@ -1103,7 +1103,7 @@ Fixer.View.Configurator = function (fixerView) {
     });
 };
 Fixer.View.Configurator.prototype = {
-    showOption: function (index) {
+    showOption: function(index) {
         if (this.$select.prop('selectedIndex') !== index) {
             this.$select.prop('selectedIndex', index).trigger('change');
         } else {
@@ -1111,9 +1111,9 @@ Fixer.View.Configurator.prototype = {
             $(this.$panels[index]).show();
         }
     },
-    getConfiguration: function () {
+    getConfiguration: function() {
         var me = this, configuration = null;
-        me.options.forEach(function (option, index) {
+        me.options.forEach(function(option, index) {
             var value;
             try {
                 value = option.getValue();
@@ -1138,7 +1138,7 @@ Fixer.View.Configurator.prototype = {
  * @param {Fixer.View.Configurator} configurator
  * @param {Fixer.ConfigurationOption} option
  */
-Fixer.View.Configurator.Option = function (configurator, option) {
+Fixer.View.Configurator.Option = function(configurator, option) {
     this.configurator = configurator;
     this.option = option;
     if (configurator.configurationsFromFixerSets && configurator.configurationsFromFixerSets.hasOwnProperty(option.name)) {
@@ -1149,11 +1149,11 @@ Fixer.View.Configurator.Option = function (configurator, option) {
     }
 };
 Fixer.View.Configurator.Option.prototype = {
-    initialize: function ($container) {
+    initialize: function($container) {
         var me = this;
         me.$container = $container;
         me.$configure = $container.find('input[type="radio"][name="cgs-configuringoption-configure"]');
-        me.$configure.on('change', function () {
+        me.$configure.on('change', function() {
             var custom = me.hasCustomConfig();
             me.$container
                 .find('div.cgs-configuringoption-value')
@@ -1185,19 +1185,19 @@ Fixer.View.Configurator.Option.prototype = {
             throw new Error('Unsupported definition for option ' + me.option.name);
         }
     },
-    hasCustomConfig: function () {
+    hasCustomConfig: function() {
         return this.$container.find('input[name="cgs-configuringoption-configure"][value="custom"]').is(':checked');
     },
-    getInitialValue: function () {
+    getInitialValue: function() {
         return this.configurator.fixerView.configuration !== null && this.configurator.fixerView.configuration.hasOwnProperty(this.option.name) ?
             this.configurator.fixerView.configuration[this.option.name] :
             undefined
         ;
     },
-    initialize_AllowedValues: function (allowedValues) {
+    initialize_AllowedValues: function(allowedValues) {
         var me = this, $form, initialValue = this.getInitialValue();
         me.$custom.append($form = $('<form />'));
-        allowedValues.forEach(function (value) {
+        allowedValues.forEach(function(value) {
             $form.append($('<div class="form-check" />')
                 .append($('<label class="form-check-label" />')
                     .append($('<input class="form-check-input" type="radio" name="value"' + (value === initialValue ? ' checked="checked"' : '') + ' />')
@@ -1210,7 +1210,7 @@ Fixer.View.Configurator.Option.prototype = {
                 )
             );
         });
-        me.getCustomValue = function () {
+        me.getCustomValue = function() {
             var $checked = $form.find('input:checked');
             if ($checked.length === 0) {
                 throw new Error('Please select one of the allowed values');
@@ -1218,7 +1218,7 @@ Fixer.View.Configurator.Option.prototype = {
             return $checked.data('pcf-value');
         };
     },
-    initializeType_bool: function (nullable) {
+    initializeType_bool: function(nullable) {
         var allowedValues = [];
         if (nullable === true) {
             allowedValues.push(null);
@@ -1227,7 +1227,7 @@ Fixer.View.Configurator.Option.prototype = {
         allowedValues.push(true);
         this.initialize_AllowedValues(allowedValues);
     },
-    initializeType_array: function (nullable) {
+    initializeType_array: function(nullable) {
         var me = this, type = null, typeName = 'Please specify an array or an object in JSON format';
         if (me.option.hasDefaultValue) {
             if (me.option.defaultValue instanceof Array) {
@@ -1251,7 +1251,7 @@ Fixer.View.Configurator.Option.prototype = {
         if (initialValue) {
             me.$custom.find('textarea').val(JSON.stringify(initialValue, null, 4));
         }
-        me.getCustomValue = function () {
+        me.getCustomValue = function() {
             var json = $.trim(me.$custom.find('textarea').val());
             if (json === '') {
                 if (nullable === true) {
@@ -1286,7 +1286,7 @@ Fixer.View.Configurator.Option.prototype = {
             return value;
         };
     },
-    initializeType_string: function () {
+    initializeType_string: function() {
         var me = this;
         me.$custom.html([
             '<div class="form-group">',
@@ -1298,25 +1298,25 @@ Fixer.View.Configurator.Option.prototype = {
         if (initialValue !== undefined) {
             me.$custom.find('textarea').val(initialValue);
         }
-        me.getCustomValue = function () {
+        me.getCustomValue = function() {
             return me.$custom.find('textarea').val();
         };
     },
-    getValue: function () {
+    getValue: function() {
         return this.hasCustomConfig() ? this.getCustomValue() : undefined;
     }
 };
 
-var State = (function () {
+var State = (function() {
     return {
-        reset: function () {
+        reset: function() {
             FixerSet.SelectedList.reset();
-            Fixers.getAll().forEach(function (fixer) {
+            Fixers.getAll().forEach(function(fixer) {
                 fixer.view.reset();
             });
             Saver.resetOptions();
         },
-        get: function (full) {
+        get: function(full) {
             var state = {};
             state.version = Version.current;
             var whitespace = Saver.whitespace;
@@ -1324,7 +1324,7 @@ var State = (function () {
                 state.whitespace = whitespace;
             }
             state.addComments = Saver.addComments;
-            FixerSet.SelectedList.getSelected().forEach(function (item) {
+            FixerSet.SelectedList.getSelected().forEach(function(item) {
                 if (item[1] === true && item[0].risky === true) {
                     state.risky = true;
                 }
@@ -1333,7 +1333,7 @@ var State = (function () {
                 }
                 state.fixerSets.push((item[1] ? '' : '-') + item[0].name);
             });
-            Fixers.getAll().forEach(function (fixer) {
+            Fixers.getAll().forEach(function(fixer) {
                 var fixerState = fixer.view.getState();
                 if (fixerState !== null) {
                     if (fixerState !== false && fixer.risky === true) {
@@ -1357,7 +1357,7 @@ var State = (function () {
             }
             return state;
         },
-        set: function (state) {
+        set: function(state) {
             state = $.extend(true, {}, state);
             var errors = new ErrorList();
             State.reset();
@@ -1373,7 +1373,7 @@ var State = (function () {
             Saver.addComments = state.addComments ? true : false;
             delete state.addComments;
             if (state.fixerSets instanceof Array) {
-                state.fixerSets.forEach(function (fixerSetName) {
+                state.fixerSets.forEach(function(fixerSetName) {
                     var negated = typeof fixerSetName === 'string' && fixerSetName.length > 1 && fixerSetName.charAt(0) === '-';
                     if (negated) {
                         fixerSetName = fixerSetName.substr(1);
@@ -1387,7 +1387,7 @@ var State = (function () {
                 delete state.fixerSets;
             }
             if ($.isPlainObject(state.fixers)) {
-                $.each(state.fixers, function (fixerName, fixerConfiguration) {
+                $.each(state.fixers, function(fixerName, fixerConfiguration) {
                     try {
                         var fixer = Fixers.getByName(fixerName);
                         if (fixer === null) {
@@ -1426,7 +1426,7 @@ var State = (function () {
                 Saver.currentExporter = state._exporter;
                 delete state._exporter;
             }
-            $.each(state, function (unrecognized) {
+            $.each(state, function(unrecognized) {
                 errors.add(new Error('Unrecognized property: ' + unrecognized));
             });
             if (errors.has) {
@@ -1436,11 +1436,11 @@ var State = (function () {
     };
 })();
 
-var Loader = (function () {
+var Loader = (function() {
     var $loadFormat = $('#pcs-load-format'),
         $input = $('#pcs-modal-load textarea');
 
-    $loadFormat.on('change', function () {
+    $loadFormat.on('change', function() {
         var importer = Loader.currentImporter;
         $input.attr('placeholder', importer && importer.getPlaceholder ? importer.getPlaceholder() : '');
     });
@@ -1464,7 +1464,7 @@ var Loader = (function () {
             var mm = Version.getCurrentMajorMinorOf(state.version);
             if (mm !== null && mm !== Version.currentMajorMinor) {
                 var vCompatible = null;
-                Version.available.forEach(function (v) {
+                Version.available.forEach(function(v) {
                     if (Version.getCurrentMajorMinorOf(v) === mm) {
                         vCompatible = v;
                     }
@@ -1484,7 +1484,7 @@ var Loader = (function () {
             State.set(state);
         } catch (errors) {
             setTimeout(
-                function () {
+                function() {
                     window.alert(errors.message);
                 },
                 10
@@ -1495,27 +1495,27 @@ var Loader = (function () {
     }
 
     $('#pcs-modal-load')
-        .on('shown.bs.modal', function () {
+        .on('shown.bs.modal', function() {
             if ($(window).height() > 600) {
                 $input.focus();
             }
         })
-        .find('.btn-primary').on('click', function () {
+        .find('.btn-primary').on('click', function() {
             load();
         })
     ;
 
     return Object.defineProperties(
         {
-            initialize: function (importers) {
+            initialize: function(importers) {
                 if (importers) {
-                    importers.forEach(function (importer) {
+                    importers.forEach(function(importer) {
                         Loader.registerImporter(importer);
                     });
                 }
                 delete Loader.initialize;
             },
-            registerImporter: function (importer, selected) {
+            registerImporter: function(importer, selected) {
                 $loadFormat.append($('<option />')
                     .text(importer.getName())
                     .data('pcs-importer', importer)
@@ -1531,20 +1531,20 @@ var Loader = (function () {
         },
         {
             registeredImporters: {
-                get: function () {
+                get: function() {
                     var importers = [];
-                    $loadFormat.find('>option').each(function () {
+                    $loadFormat.find('>option').each(function() {
                         importers.push($(this).data('pcs-importer'));
                     });
                     return importers;
                 }
             },
             currentImporter: {
-                get: function () {
+                get: function() {
                     return $loadFormat.find('>option:selected').data('pcs-importer') || null;
                 },
-                set: function (value) {
-                    $loadFormat.find('>option').each(function (index) {
+                set: function(value) {
+                    $loadFormat.find('>option').each(function(index) {
                         var importer = $(this).data('pcs-importer');
                         if (importer === value || importer.getName() === value) {
                             $loadFormat
@@ -1562,15 +1562,15 @@ var Loader = (function () {
 function AutoDetectImporter() {
 }
 AutoDetectImporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'Auto-detect';
     },
-    getPlaceholder: function () {
+    getPlaceholder: function() {
         return "Paste here the state in any of the supported formats.\n\nWe'll try to auto-detect its format.";
     },
-    parse: function (serialized) {
+    parse: function(serialized) {
         var state = null;
-        $.each(Loader.registeredImporters, function () {
+        $.each(Loader.registeredImporters, function() {
             if (this instanceof AutoDetectImporter) {
                 return;
             }
@@ -1611,13 +1611,13 @@ function PhpImporter() {
     });
 }
 PhpImporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'PHP';
     },
-    getPlaceholder: function () {
+    getPlaceholder: function() {
         return "Paste here the full contents of your .php_cs / .php_cs.dist files (or just the array with the rules).";
     },
-    getAST: function (serialized) {
+    getAST: function(serialized) {
         var ast;
         ast = this.parser.parseCode(serialized);
         if (ast.children.length === 1 && ast.children[0].kind === 'inline') {
@@ -1625,9 +1625,9 @@ PhpImporter.prototype = {
         }
         return ast;
     },
-    findRelevantValue: function (ast, method) {
+    findRelevantValue: function(ast, method) {
         var methodLC = method.toLowerCase();
-        var walker = function (node) {
+        var walker = function(node) {
             if (!node) {
                 return null;
             }
@@ -1652,7 +1652,7 @@ PhpImporter.prototype = {
                         }
                     }
                     if (result === null && node.arguments) {
-                        $.each(node.arguments, function (index, argument) {
+                        $.each(node.arguments, function(index, argument) {
                             result = walker(argument);
                             if (result !== null) {
                                 return false;
@@ -1681,9 +1681,9 @@ PhpImporter.prototype = {
         }
         return null;
     },
-    parseSetRulesArray: function (setRulesArray) {
+    parseSetRulesArray: function(setRulesArray) {
         var result = {fixerSets: [], fixers: {}},
-            valueToJavascript = function (value) {
+            valueToJavascript = function(value) {
                 var valueKind = value && value.kind ? value.kind : '?';
                 switch (valueKind) {
                     case 'boolean':
@@ -1715,7 +1715,7 @@ PhpImporter.prototype = {
         if (!$.isPlainObject(arr)) {
             throw new Error('Expected dictionary as setRules() array.');
         }
-        $.each(arr, function (key, value) {
+        $.each(arr, function(key, value) {
             if (typeof key !== 'string') {
                 throw new Error('Expected dictionary as setRules() array.');
             }
@@ -1733,7 +1733,7 @@ PhpImporter.prototype = {
         });
         return result;
     },
-    parse: function (serialized) {
+    parse: function(serialized) {
         var ast = this.getAST(serialized),
             setRulesArray = this.findRelevantValue(ast, 'setRules');
         if (setRulesArray === null) {
@@ -1757,10 +1757,10 @@ PhpImporter.prototype = {
 function JsonImporter() {
 }
 JsonImporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'JSON';
     },
-    parse: function (serialized) {
+    parse: function(serialized) {
         var state;
         try {
             state = JSON.parse(serialized);
@@ -1776,10 +1776,10 @@ JsonImporter.prototype = {
 function YamlImporter() {
 }
 YamlImporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'YAML';
     },
-    parse: function (serialized) {
+    parse: function(serialized) {
         var state;
         try {
             state = jsyaml.safeLoad(serialized);
@@ -1793,7 +1793,7 @@ YamlImporter.prototype = {
     }
 };
 
-var Saver = (function () {
+var Saver = (function() {
     var $saveFormat = $('#pcs-save-format'),
         $saveIndent = $('#pcs-save-indent'),
         $saveLineEnding = $('#pcs-save-line-ending'),
@@ -1813,9 +1813,9 @@ var Saver = (function () {
             return state;
         }
         var fixers = 'fixers' in state ? state.fixers : null;
-        state.fixerSets.forEach(function (fixerSetName) {
+        state.fixerSets.forEach(function(fixerSetName) {
             var fixerSet = FixerSets.getByName(fixerSetName);
-            fixerSet.fixers.forEach(function (fixerData) {
+            fixerSet.fixers.forEach(function(fixerData) {
                 if (fixers === null) {
                     fixers = {};
                 }
@@ -1832,12 +1832,12 @@ var Saver = (function () {
             return state;
         }
         var names = [];
-        $.each(fixers, function (name) {
+        $.each(fixers, function(name) {
             names.push(name);
         });
         names.sort();
         state.fixers = {};
-        $.each(names, function (_, name) {
+        $.each(names, function(_, name) {
             state.fixers[name] = fixers[name];
         });
         return state;
@@ -1879,28 +1879,28 @@ var Saver = (function () {
     }
 
     $('#pcs-modal-save')
-        .on('show.bs.modal', function (e) {
+        .on('show.bs.modal', function(e) {
             shown = true;
             resizeOutput();
             $(window).on('resize', resizeOutput);
             refreshOutput();
         })
-        .on('shown.bs.modal', function () {
+        .on('shown.bs.modal', function() {
             if ($(window).height() > 600) {
                 $saveFormat.focus();
             }
         })
-        .on('hidden.bs.modal', function (e) {
+        .on('hidden.bs.modal', function(e) {
             $(window).off('resize', resizeOutput);
             shown = false;
         })
     ;
-    $saveFormat.add($saveIndent).add($saveLineEnding).add($saveExpandSets).add($saveAddComments).on('change', function () {
+    $saveFormat.add($saveIndent).add($saveLineEnding).add($saveExpandSets).add($saveAddComments).on('change', function() {
         if (shown === true) {
             refreshOutput();
         }
     });
-    $outCopy.on('click', function (e) {
+    $outCopy.on('click', function(e) {
         var copied = !false;
         $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
         try {
@@ -1934,22 +1934,22 @@ var Saver = (function () {
         } else {
             $outCopy.removeClass('btn-info btn-success').addClass('btn-danger');
         }
-        setTimeout(function () {
+        setTimeout(function() {
             $outCopy.removeClass('btn-danger btn-success').addClass('btn-info');
         }, 500);
     });
     return Object.defineProperties(
         {
-            initialize: function (exporters) {
+            initialize: function(exporters) {
                 Saver.resetOptions();
                 if (exporters) {
-                    exporters.forEach(function (exporter) {
+                    exporters.forEach(function(exporter) {
                         Saver.registerExporter(exporter);
                     });
                 }
                 delete Saver.initialize;
             },
-            registerExporter: function (exporter, selected) {
+            registerExporter: function(exporter, selected) {
                 $saveFormat.append($('<option />')
                     .text(exporter.getName())
                     .data('pcs-exporter', exporter)
@@ -1962,13 +1962,13 @@ var Saver = (function () {
                     ;
                 }
             },
-            resetOptions: function () {
+            resetOptions: function() {
                 Saver.whitespace = DefaultWhitespaceConfig;
             },
         },
         {
             whitespace: {
-                get: function () {
+                get: function() {
                     var result = {
                         indent: JSON.parse('"' + $saveIndent.find('>option:selected').val() + '"'),
                         lineEnding: JSON.parse('"' + $saveLineEnding.find('>option:selected').val() + '"')
@@ -1981,7 +1981,7 @@ var Saver = (function () {
                     }
                     return result;
                 },
-                set: function (value) {
+                set: function(value) {
                     if (!$.isPlainObject(value)) {
                         throw new Error('Whitespace configuration is not an object');
                     }
@@ -2002,7 +2002,7 @@ var Saver = (function () {
                         errors.add(new Error('Invalid line ending value: ' + JSON.stringify(value.lineEnding)));
                     }
                     delete value.lineEnding;
-                    $.each(value, function (unrecognized) {
+                    $.each(value, function(unrecognized) {
                         errors.add(new Error('Unrecognized whitespace property: ' + unrecognized));
                     });
                     if (errors.has === true) {
@@ -2011,27 +2011,27 @@ var Saver = (function () {
                 }
             },
             expandSets: {
-                get: function () {
+                get: function() {
                     return $saveExpandSets.is(':checked');
                 },
-                set: function (value) {
+                set: function(value) {
                     return $saveExpandSets.prop('checked', !!value);
                 }
             },
             addComments: {
-                get: function () {
+                get: function() {
                     return $saveAddComments.is(':checked');
                 },
-                set: function (value) {
+                set: function(value) {
                     return $saveAddComments.prop('checked', !!value);
                 }
             },
             currentExporter: {
-                get: function () {
+                get: function() {
                     return $saveFormat.find('>option:selected').data('pcs-exporter') || null;
                 },
-                set: function (value) {
-                    $saveFormat.find('>option').each(function (index) {
+                set: function(value) {
+                    $saveFormat.find('>option').each(function(index) {
                         var exporter = $(this).data('pcs-exporter');
                         if (exporter === value || exporter.getName() === value) {
                             $saveFormat
@@ -2044,10 +2044,10 @@ var Saver = (function () {
                 }
             },
             persist: {
-                get: function () {
+                get: function() {
                     return $persist.is(':checked');
                 },
-                set: function (value) {
+                set: function(value) {
                     $persist.prop('checked', !!value);
                 }
             }
@@ -2059,13 +2059,13 @@ var Saver = (function () {
 function PhpCsExporter() {
 }
 PhpCsExporter.prototype = {
-    getName: function () {
+    getName: function() {
         return '.php_cs / .php_cs.dist file';
     },
-    getLanguage: function () {
+    getLanguage: function() {
         return 'php';
     },
-    render: function (state, keepMetadata) {
+    render: function(state, keepMetadata) {
         var lines = [
             '<?php',
             '/*',
@@ -2089,7 +2089,7 @@ PhpCsExporter.prototype = {
         }
         lines.push('    ->setRules([');
         if ('fixerSets' in state) {
-            state.fixerSets.forEach(function (fixerSetName) {
+            state.fixerSets.forEach(function(fixerSetName) {
                 if (fixerSetName.charAt(0) === '-') {
                     lines.push('        ' + toPHP(fixerSetName.substr(1)) + ' => ' + toPHP(false) + ',');
                 } else {
@@ -2099,18 +2099,18 @@ PhpCsExporter.prototype = {
         }
         if ('fixers' in state) {
             var ruleLines = [];
-            $.each(state.fixers, function (fixerName, fixerState) {
+            $.each(state.fixers, function(fixerName, fixerState) {
                 if (state.addComments) {
                     var fixer = Fixers.getByName(fixerName);
                     if (fixer !== null && fixer.summary) {
-                        $.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function (_, line) {
+                        $.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function(_, line) {
                             ruleLines.push('        // ' + line);
                         });
                     }
                 }
                 ruleLines.push('        ' + toPHP(fixerName) + ' => ' + toPHP(fixerState) + ',');
             });
-            ruleLines.forEach(function (ruleLine) {
+            ruleLines.forEach(function(ruleLine) {
                 lines.push(ruleLine);
             });
         }
@@ -2127,13 +2127,13 @@ PhpCsExporter.prototype = {
 function JsonExporter() {
 }
 JsonExporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'JSON';
     },
-    getLanguage: function () {
+    getLanguage: function() {
         return 'json';
     },
-    render: function (state, keepMetadata) {
+    render: function(state, keepMetadata) {
         if (!keepMetadata) {
             state = $.extend({}, state);
             delete state.addComments;
@@ -2145,13 +2145,13 @@ JsonExporter.prototype = {
 function YamlExporter() {
 }
 YamlExporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'YAML';
     },
-    getLanguage: function () {
+    getLanguage: function() {
         return 'yaml';
     },
-    render: function (state, keepMetadata) {
+    render: function(state, keepMetadata) {
         if (!keepMetadata) {
             state = $.extend({}, state);
             delete state.addComments;
@@ -2163,19 +2163,19 @@ YamlExporter.prototype = {
 function StyleCILikeExporter() {
 }
 StyleCILikeExporter.prototype = {
-    getName: function () {
+    getName: function() {
         return 'StyleCI-like';
     },
-    getLanguage: function () {
+    getLanguage: function() {
         return 'yaml';
     },
-    supportsIndent: function () {
+    supportsIndent: function() {
         return false;
     },
-    supportsLineEnding: function () {
+    supportsLineEnding: function() {
         return false;
     },
-    render: function (state, keepMetadata) {
+    render: function(state, keepMetadata) {
         var data = {};
         var preset = null;
         if ('fixerSets' in state) {
@@ -2191,7 +2191,7 @@ StyleCILikeExporter.prototype = {
             data.risky = state.risky;
         }
         if ('fixers' in state) {
-            $.each(state.fixers, function (fixerName, fixerState) {
+            $.each(state.fixers, function(fixerName, fixerState) {
                 if (fixerState === true) {
                     if (data.enabled === undefined) {
                         data.enabled = [];
@@ -2211,9 +2211,9 @@ StyleCILikeExporter.prototype = {
     }
 };
 
-var Persister = (function () {
+var Persister = (function() {
     var KEY = 'php-cs-fixer-configuration.persist.v1';
-    $(window).on('beforeunload', function () {
+    $(window).on('beforeunload', function() {
         try {
             if (Saver.persist) {
                 window.localStorage.setItem(KEY, JSON.stringify(State.get(true)));
@@ -2224,7 +2224,7 @@ var Persister = (function () {
         }
     });
     return {
-        initialize: function () {
+        initialize: function() {
             try {
                 var json = window.localStorage.getItem(KEY);
                 if (json) {
@@ -2241,7 +2241,7 @@ var Persister = (function () {
     };
 })();
 
-var View = (function () {
+var View = (function() {
     var current = 'cards',
         $layers = {
             cards: $('#pcs-cards'),
@@ -2254,7 +2254,7 @@ var View = (function () {
         allViewKeys = [],
         allIcons = '',
         $button = $('#pcs-btn-toggleview');
-    $.each($layers, function (k) {
+    $.each($layers, function(k) {
         allViewKeys.push(k);
         allIcons += (allIcons === '' ? '' : ' ') + icons[k];
     });
@@ -2266,8 +2266,8 @@ var View = (function () {
     }
     return Object.defineProperties(
         {
-            initialize: function () {
-                $button.on('click', function () {
+            initialize: function() {
+                $button.on('click', function() {
                     nextView();
                 });
                 delete View.initialize;
@@ -2275,20 +2275,20 @@ var View = (function () {
         },
         {
             CARDS: {
-                get: function () {
+                get: function() {
                     return 'cards';
                 }
             },
             ROWS: {
-                get: function () {
+                get: function() {
                     return 'rows';
                 }
             },
             current: {
-                get: function () {
+                get: function() {
                     return current;
                 },
-                set: function (value) {
+                set: function(value) {
                     if (current === null || current === value) {
                         return;
                     }
@@ -2296,7 +2296,7 @@ var View = (function () {
                     current = null;
                     $layers[c].hide(
                         'fast',
-                        function () {
+                        function() {
                             current = value;
                             $layers[current].show('fast');
                         }
@@ -2312,26 +2312,26 @@ $.ajax({
     url: 'js/php-cs-fixer-versions.json',
     cache: false,
 })
-.fail(function (xhr, testStatus, errorThrown) {
+.fail(function(xhr, testStatus, errorThrown) {
     window.alert(errorThrown);
 })
-.done(function (data) {
+.done(function(data) {
     Version.initialize(data);
     $.ajax({
         dataType: 'json',
         url: 'js/php-cs-fixer-data-' + Version.current + '.min.json',
         cache: true,
     })
-    .fail(function (xhr, testStatus, errorThrown) {
+    .fail(function(xhr, testStatus, errorThrown) {
         window.alert(errorThrown);
     })
-    .done(function (data) {
+    .done(function(data) {
         DefaultWhitespaceConfig = {
             indent: data.indent,
             lineEnding: data.lineEnding
         };
         $('#pcs-version').text(Version.current);
-        Version.available.forEach(function (version) {
+        Version.available.forEach(function(version) {
             if (version === Version.current) {
                 $('#pcs-versions').append(
                     $('<span class="dropdown-item active" />')
@@ -2356,13 +2356,13 @@ $.ajax({
                 FixerSets.add(new FixerSet(setName, data.sets[setName]));
             }
         }
-        Fixers.getAll().forEach(function (fixer) {
+        Fixers.getAll().forEach(function(fixer) {
             fixer.resolveSets();
             fixer.resolveSubstitutions();
         });
         Search.initialize();
         FixerSet.SelectedList.initialize();
-        Fixers.getAll().forEach(function (fixer) {
+        Fixers.getAll().forEach(function(fixer) {
             fixer.initializeView();
         });
         Loader.initialize([
