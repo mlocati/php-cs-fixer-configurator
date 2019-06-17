@@ -487,8 +487,8 @@ var Templater = (function() {
             $node.find('[data-pcf-show-fixer]').each(function() {
                 var $a = $(this),
                     fixerName = $a.data('pcf-show-fixer'),
-                    fullVersion = $a.data('pcf-show-version');
-                $a.css('cursor', 'help').removeAttr('data-pcf-show-fixer');
+                    fullVersion = $a.data('pcf-show-fixer-for-version');
+                $a.css('cursor', 'help').removeAttr('data-pcf-show-fixer').removeAttr('data-pcf-show-fixer-for-version');
                 $a.on('click', function(e) {
                     e.preventDefault();
                     var version;
@@ -513,8 +513,8 @@ var Templater = (function() {
             $node.find('[data-pcf-show-fixerset]').each(function() {
                 var $a = $(this),
                     fixerSetName = $a.data('pcf-show-fixerset'),
-                    fullVersion = $a.data('pcf-show-version');
-                $a.css('cursor', 'help').removeAttr('data-pcf-show-fixerset');
+                    fullVersion = $a.data('pcf-show-fixerset-for-version');
+                $a.css('cursor', 'help').removeAttr('data-pcf-show-fixerset').removeAttr('data-pcf-show-fixerset-for-version');
                 $a.on('click', function(e) {
                     e.preventDefault();
                     var version;
@@ -2596,7 +2596,7 @@ $.ajax({
             Configurator.enabled = true;
         }
         if (hashState.fixer !== '') {
-            var fixer = currentVersion.getByName(hashState.fixer);
+            var fixer = currentVersion.getFixerByName(hashState.fixer);
             if (fixer === null) {
                 window.console.warn('Fixer non found: ' + hashState.fixer);
             } else {

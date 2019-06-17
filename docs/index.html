@@ -291,7 +291,7 @@
                                     <i class="fa fa-thumbs-down" aria-hidden="true" data-toggle="tooltip" title="Deprecated"></i>
                                 {{/if}}
                             {{/if}}
-                            <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
+                            <a href="#" data-pcf-show-fixer="{{ name }}" data-pcf-show-fixer-for-version="{{ version.fullVersion }}">{{ name }}</a>
                         </h5>
                         <p class="card-text">
                             {{#if summaryHTML }}
@@ -311,7 +311,7 @@
                             {{#if sets.length }}
                                 <div class="pcs-fixer-sets">
                                     {{#each sets}}
-                                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+                                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}" data-pcf-show-fixerset-for-version="{{ version.fullVersion }}">{{ name }}</a>
                                     {{/each}}
                                 <div>
                             {{/if}}
@@ -331,7 +331,7 @@
                     {{/if}}
                 </td>
                 <td>
-                    <a href="#" data-pcf-show-fixer="{{ name }}">{{ name }}</a>
+                    <a href="#" data-pcf-show-fixer="{{ name }}" data-pcf-show-fixer-for-version="{{ version.fullVersion }}">{{ name }}</a>
                     {{#if risky }}
                         {{#if riskyDescriptionHTML}}
                             <i class="fa fa-exclamation-triangle" aria-hidden="true" data-toggle="tooltip" data-html="true" title="{{ riskyDescriptionHTML }}"></i>
@@ -356,7 +356,7 @@
                 </td>
                 <td class="hidden-sm-down">
                     {{#each sets}}
-                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}" data-pcf-show-fixerset-for-version="{{ version.fullVersion }}">{{ name }}</a>
                     {{/each}}
                 </td>
             </tr>
@@ -442,7 +442,7 @@
                                                         Please use
                                                             <ul class="list-unstyled">
                                                                 {{#each deprecated_switchTo }}
-                                                                    <li><a href="#" class="badge badge-info" data-pcf-show-fixer="{{ this }}">{{this}}</a></li>
+                                                                    <li><a href="#" class="badge badge-info" data-pcf-show-fixer="{{ this }}" data-pcf-show-fixer-for-version="{{ ../version.fullVersion }}">{{this}}</a></li>
                                                                 {{/each}}
                                                             </ul>
                                                         {{/if}}
@@ -461,7 +461,7 @@
                                             <dd class="col-sm-9">
                                                 {{#if sets.length}}
                                                     {{#each sets}}
-                                                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}">{{ name }}</a>
+                                                        <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ name }}" data-pcf-show-fixer-for-version="{{ ../version.fullVersion }}">{{ name }}</a>
                                                     {{/each}}
                                                 {{else}}
                                                     <i>none</i>
@@ -472,7 +472,7 @@
                                                 <dd class="col-sm-9">
                                                     <ul class="list-unstyled">
                                                         {{#each substitutes}}
-                                                            <li><li><a href="#" class="badge badge-info" data-pcf-show-fixer="{{ this }}">{{this}}</a></li></li>
+                                                            <li><li><a href="#" class="badge badge-info" data-pcf-show-fixer="{{ this }}" data-pcf-show-fixer-for-version="{{ ../version.fullVersion }}">{{this}}</a></li></li>
                                                         {{/each}}
                                                     </ul>
                                                 </dd>
@@ -609,7 +609,7 @@
                                 <tbody>
                                     {{#each fixers}}
                                         <tr>
-                                            <td><a href="#" class="badge badge-info" <code data-pcf-show-fixer="{{ fixer.name }}">{{fixer.name}}</a></td>
+                                            <td><a href="#" class="badge badge-info" <code data-pcf-show-fixer="{{ fixer.name }}" data-pcf-show-fixer-for-version="{{ fixer.version.fullVersion }}">{{fixer.name}}</a></td>
                                             <td>
                                                 {{#if isConfigured}}
                                                     <dl>
@@ -774,8 +774,8 @@
                                     <tbody>
                                         {{#each fixersAdded}}
                                             <tr>
-                                                <td><code>{{ name }}</code></td>
                                                 <td>
+                                                    <a href="#" data-pcf-show-fixer="{{ name }}" data-pcf-show-fixer-for-version="{{ version.fullVersion }}">{{ name }}</a><br />
                                                     {{#if summaryHTML }}
                                                         {{{ summaryHTML }}}
                                                     {{else}}
@@ -806,8 +806,8 @@
                                     <tbody>
                                         {{#each fixersRemoved}}
                                             <tr>
-                                                <td><code>{{ name }}</code></td>
                                                 <td>
+                                                    <a href="#" data-pcf-show-fixer="{{ name }}" data-pcf-show-fixer-for-version="{{ version.fullVersion }}">{{ name }}</a><br />
                                                     {{#if summaryHTML }}
                                                         {{{ summaryHTML }}}
                                                     {{else}}
@@ -855,7 +855,7 @@
                                     <tbody>
                                         {{#each fixerSetsAdded}}
                                             <tr>
-                                                <td><code>{{ name }}</code></td>
+                                                <td><a href="#" data-pcf-show-fixerset="{{ name }}" data-pcf-show-fixerset-for-version="{{ version.fullVersion }}">{{ name }}</code></td>
                                             </tr>
                                         {{/each}}
                                     </tbody>
@@ -880,7 +880,7 @@
                                     <tbody>
                                         {{#each fixerSetsRemoved}}
                                             <tr>
-                                                <td><code>{{ name }}</code></td>
+                                                <td><a href="#" data-pcf-show-fixerset="{{ name }}" data-pcf-show-fixerset-for-version="{{ version.fullVersion }}">{{ name }}</code></td>
                                             </tr>
                                         {{/each}}
                                     </tbody>
