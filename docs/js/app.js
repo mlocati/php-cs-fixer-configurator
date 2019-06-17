@@ -40,30 +40,48 @@ var textToHtml = (function() {
 })();
 
 var Hasher = (function() {
-    function getCurrent() {
-        var result = {
-            configurator: false,
-            fixer: ''
-        };
-        $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function(_, chunk) {
-            if (chunk === '') {
-                return;
+    var hasher = {};
+    Object.defineProperties(hasher, {
+        current: {
+            get: function() {
+                var result = {
+                    version: null,
+                    configurator: false,
+                    fixer: ''
+                };
+                $.each(window.location.hash.replace(/^#/, '').replace(/%7C/gi, '|').split('|'), function(_, chunk) {
+                    if (chunk === '') {
+                        return;
+                    }
+                    if (chunk === 'configurator') {
+                        result.configurator = true;
+                        return;
+                    }
+                    var match;
+                    match = /^fixer:(.+)$/.exec(chunk);
+                    if (match) {
+                        result.fixer = match[1];
+                        return;
+                    }
+                    match = /^version:(.+)$/.exec(chunk);
+                    if (match) {
+                        result.version = Version.getByMajorMinorVersion(match[1]);
+                        if (result.version === null) {
+                            window.console.warn('Unable to find the version: ' + match[1]);
+                        }
+                        return;
+                    }
+                    window.console.warn('Unknown location hash chunk: ' + chunk);
+                });
+                return result;
             }
-            if (chunk === 'configurator') {
-                result.configurator = true;
-                return;
-            }
-            var match = /^fixer:(.+)$/.exec(chunk);
-            if (match) {
-                result.fixer = match[1];
-                return;
-            }
-            window.console.warn('Unknown location hash chunk: ' + chunk);
-        });
-        return result;
-    }
-    function update() {
+        }
+    });
+    hasher.update = function() {
         var chunks = [];
+        if (Version.current !== null) {
+            chunks.push('version:' + Version.current.majorMinorVersion);
+        }
         if (Configurator.enabled) {
             chunks.push('configurator');
         }
@@ -83,30 +101,8 @@ var Hasher = (function() {
         } else {
             window.location.hash = chunks.join('|');
         }
-    }
-    function initialize() {
-        var state = getCurrent();
-        if (state.configurator === true) {
-            Configurator.enabled = true;
-        }
-        if (state.fixer !== '') {
-            var fixer = Fixers.getByName(state.fixer);
-            if (fixer === null) {
-                window.console.warn('Fixer non found: ' + state.fixer);
-            } else {
-                fixer.showDetails();
-            }
-        }
-        delete Hasher.initialize;
-        Hasher.update = update;
-    }
-    return {
-        initialize: function() {
-            initialize();
-        },
-        update: function() {
-        }
     };
+    return hasher;
 })();
 
 /**
@@ -151,72 +147,195 @@ ErrorList.prototype.add = function(error) {
     this.has = true;
 };
 
-var Version = (function() {
-    var available, current, currentMajorMinor, displayNames;
-    return {
-        initialize: function(availableVersions) {
-            available = availableVersions;
-            displayNames = {};
-            available.forEach(function(v) {
-                var matches = /^(\d+\.\d+)\.\d+$/.exec(v);
-                displayNames[v] = matches === null ? v : matches[1];
-            });
-            current = null;
-            var matches = /(\?|&)version=([^&]+)/.exec(window.location.search);
-            if (matches !== null) {
-                var displayName = window.decodeURIComponent(matches[2]);
-                for (var v in displayNames) {
-                    if (displayNames[v] === displayName) {
-                        current = v;
-                        break;
-                    }
+function Version(fullVersion) {
+    var my = this;
+    my.fullVersion = fullVersion;
+    var matches = /^(\d+\.\d+)\.\d+$/.exec(fullVersion);
+    my.majorMinorVersion = matches === null ? fullVersion : matches[1];
+    $('#pcs-versions').append(
+        $('<a href="#" class="dropdown-item pcs-version" />')
+            .text(my.fullVersion)
+            .data('version', my)
+            .on('click', function(e) {
+                e.preventDefault();
+                if (Version.current === my) {
+                    return;
                 }
-                if (current === null) {
-                    window.console.warn('Version non available: ' + displayName);
+                my.load(function(err) {
+                    if (err) {
+                        window.alert(err);
+                    } else {
+                        Version.current = my;
+                    }
+                });
+            })
+    );
+}
+(function() {
+    var current = null;
+    function setCurrentVersion(version) {
+        $('#pcs-version').text(version ? version.fullVersion : '');
+        $('#pcs-versions>.pcs-version.active').removeClass('active');
+        var state = null;
+        if (current !== null) {
+            try {
+                state = State.get(true);
+            } catch (e) {
+            }
+            current.fixers.forEach(function(fixer) {
+                fixer.disposeFixerView();
+            });
+        }
+        current = version;
+        if (current !== null) {
+            $('#pcs-versions>.pcs-version').each(function() {
+                var $item = $(this);
+                if ($item.data('version') === current) {
+                    $item.addClass('active');
+                    return false;
+                }
+            });
+            current.fixers.forEach(function(fixer) {
+                fixer.initializeFixerView();
+            });
+            if (state !== null) {
+                try {
+                    State.set(state);
+                } catch (e) {
                 }
             }
-            if (current === null) {
-                current = available[0];
+        }
+        Search.versionUpdated(version);
+        Hasher.update();
+        Configurator.refresh();
+        Saver.versionUpdated(version);
+    }
+    Object.defineProperties(Version, {
+        current: {
+            get: function() {
+                return current;
+            },
+            set: function(version) {
+                if (!(version instanceof Version)) {
+                    version = null;
+                }
+                if (current === version) {
+                    return;
+                }
+                if (version === null) {
+                    setCurrentVersion(null);
+                    return;
+                }
+                $('#pcs-version').attr('disabled', 'disabled');
+                version.load(function(err) {
+                    $('#pcs-version').removeAttr('disabled');
+                    if (err) {
+                        window.alert(err);
+                        return;
+                    }
+                    setCurrentVersion(version);
+                });
             }
-            currentMajorMinor = current.split('.').slice(0, 2).join('.');
-            Object.defineProperties(Version, {
-                available: {
-                    get: function() {
-                        return available.slice(0);
-                    },
-                },
-                current: {
-                    get: function() {
-                        return current;
-                    }
-                },
-                currentMajorMinor: {
-                    get: function() {
-                        return currentMajorMinor;
-                    }
-                },
-            });
-            Version.getDisplayName = function(version) {
-                return displayNames.hasOwnProperty(version) ? displayNames[version] : null;
-            };
-            Version.getCurrentMajorMinorOf = function(version) {
-                version = version === null || version === undefined ? '' : version.toString();
-                var match = /^(\d+)\.(\d+)($|\.)/.exec(version);
-                return match ? parseInt(match[1], 10).toString() + '.' + parseInt(match[2], 10).toString() : null;
-            };
-            delete Version.initialize;
-        },
-    };
+        }
+    });
 })();
+Version.prototype = {
+    load: function(cb) {
+        var my = this;
+        $.ajax({
+            dataType: 'json',
+            url: 'js/php-cs-fixer-data-' + my.fullVersion + '.min.json',
+            cache: true
+        })
+        .fail(function(xhr, testStatus, errorThrown) {
+            cb(errorThrown || 'Failed to load data for version ' + my.fullVersion);
+        })
+        .done(function(data) {
+            my.whitespaceConfig = {
+                indent: data.indent,
+                lineEnding: data.lineEnding
+            };
+            my.fixers = [];
+            my.getFixerByName = function(name) {
+                for (var i = 0, n = my.fixers.length; i < n; i++) {
+                    if (my.fixers[i].name === name) {
+                        return my.fixers[i];
+                    }
+                }
+                return null;
+            };
+            for (var fixerName in data.fixers) {
+                if (data.fixers.hasOwnProperty(fixerName)) {
+                    my.fixers.push(new Fixer(my, fixerName, data.fixers[fixerName]));
+                }
+            }
+            my.fixers.sort(function(a, b) {
+                return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+            });
+            my.fixerSets = [];
+            my.getFixerSetByName = function(name) {
+                for (var i = 0, n = my.fixerSets.length; i < n; i++) {
+                    if (my.fixerSets[i].name === name) {
+                        return my.fixerSets[i];
+                    }
+                }
+                return null;
+            };
+            for (var setName in data.sets) {
+                if (data.sets.hasOwnProperty(setName)) {
+                    my.fixerSets.push(new FixerSet(my, setName, data.sets[setName], my));
+                }
+            }
+            my.fixerSets.sort(function(a, b) {
+                return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+            });
+            my.fixers.forEach(function(fixer) {
+                fixer.resolveSets(my.fixerSets);
+                fixer.resolveSubstitutions();
+            });
+            my.load = function(cb) {
+                cb();
+            };
+            cb();
+        });
 
-/**
- * The default white space definitions (indentation, new lines).
- *
- * @namespace
- * @property {string} indent
- * @property {string} lineEnding
- */
-var DefaultWhitespaceConfig;
+    }
+};
+Version.all = [];
+Version.getByFullVersion = function(fullVersion) {
+    for (var i = 0; i < Version.all.length; i++) {
+        if (Version.all[i].fullVersion === fullVersion) {
+            return Version.all[i];
+        }
+    }
+    return null;
+};
+Version.getByMajorMinorVersion = function(majorMinorVersion) {
+    for (var i = 0; i < Version.all.length; i++) {
+        if (Version.all[i].majorMinorVersion === majorMinorVersion) {
+            return Version.all[i];
+        }
+    }
+    return null;
+};
+Version.initialize = function(availableVersions) {
+    Version.all = [];
+    availableVersions.forEach(function(availableVersion) {
+        Version.all.push(new Version(availableVersion));
+    });
+    if (Version.all.length > 1) {
+        $('#pcs-versions')
+            .append($('<div class="dropdown-divider" />'))
+            .append($('<a class="dropdown-item" href="#">Compare versions</a>')
+                .on('click', function(e) {
+                    e.preventDefault();
+                    VersionsComparer.show();
+                })
+            )
+        ;
+    }
+    delete Version.initialize;
+};
 
 var Configurator = (function() {
     var enabled = false,
@@ -224,7 +343,23 @@ var Configurator = (function() {
     $toggle.on('click', function() {
         Configurator.enabled = !Configurator.enabled;
     });
-    return Object.defineProperties({}, {
+    var configurator = {
+        refresh: function() {
+            if (enabled) {
+                $('.pcf-onlyconfiguring-hidden').removeClass('pcf-onlyconfiguring-hidden').addClass('pcf-onlyconfiguring-visible');
+                $(document.body).addClass('pcf-configuring');
+            } else {
+                $('.pcf-onlyconfiguring-visible').removeClass('pcf-onlyconfiguring-visible').addClass('pcf-onlyconfiguring-hidden');
+                $(document.body).removeClass('pcf-configuring');
+            }
+            Version.current.fixers.forEach(function(fixer) {
+                fixer.view.updateClasses();
+            });
+            $toggle.removeClass('btn-default btn-success').addClass(enabled ? 'btn-success' : 'btn-default');
+            Hasher.update();
+        }
+    };
+    return Object.defineProperties(configurator, {
         enabled: {
             get: function() {
                 return enabled;
@@ -235,18 +370,7 @@ var Configurator = (function() {
                     return;
                 }
                 enabled = value;
-                if (enabled) {
-                    $('.pcf-onlyconfiguring-hidden').removeClass('pcf-onlyconfiguring-hidden').addClass('pcf-onlyconfiguring-visible');
-                    $(document.body).addClass('pcf-configuring');
-                } else {
-                    $('.pcf-onlyconfiguring-visible').removeClass('pcf-onlyconfiguring-visible').addClass('pcf-onlyconfiguring-hidden');
-                    $(document.body).removeClass('pcf-configuring');
-                }
-                Fixers.getAll().forEach(function(fixer) {
-                    fixer.view.updateClasses();
-                });
-                $toggle.removeClass('btn-default btn-success').addClass(enabled ? 'btn-success' : 'btn-default');
-                Hasher.update();
+                configurator.refresh();
             }
         }
     });
@@ -361,19 +485,55 @@ var Templater = (function() {
                 Prism.highlightElement(this);
             });
             $node.find('[data-pcf-show-fixer]').each(function() {
-                var $a = $(this), fixerName = $a.data('pcf-show-fixer');
+                var $a = $(this),
+                    fixerName = $a.data('pcf-show-fixer'),
+                    fullVersion = $a.data('pcf-show-version');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixer');
                 $a.on('click', function(e) {
                     e.preventDefault();
-                    Fixers.getByName(fixerName).showDetails();
+                    var version;
+                    if (fullVersion) {
+                        version = Version.getByFullVersion(fullVersion);
+                    } else {
+                        version = Version.current;
+                    }
+                    if (version === null) {
+                        window.alert('Unable to find the version');
+                        return;
+                    }
+                    version.load(function(err) {
+                        if (err) {
+                            window.alert(err);
+                            return;
+                        }
+                        version.getFixerByName(fixerName).showDetails();
+                    });
                 });
             });
             $node.find('[data-pcf-show-fixerset]').each(function() {
-                var $a = $(this), fixerSetName = $a.data('pcf-show-fixerset');
+                var $a = $(this),
+                    fixerSetName = $a.data('pcf-show-fixerset'),
+                    fullVersion = $a.data('pcf-show-version');
                 $a.css('cursor', 'help').removeAttr('data-pcf-show-fixerset');
                 $a.on('click', function(e) {
                     e.preventDefault();
-                    FixerSets.getByName(fixerSetName).showDetails();
+                    var version;
+                    if (fullVersion) {
+                        version = Version.getByFullVersion(fullVersion);
+                    } else {
+                        version = Version.current;
+                    }
+                    if (version === null) {
+                        window.alert('Unable to find the version');
+                        return;
+                    }
+                    version.load(function(err) {
+                        if (err) {
+                            window.alert(err);
+                            return;
+                        }
+                        version.getFixerSetByName(fixerSetName).showDetails();
+                    });
                 });
             });
             $node.find('[data-toggle="tooltip"]').tooltip({
@@ -442,9 +602,14 @@ var ModalManager = (function() {
 })();
 
 var Search = (function() {
-    var lastSearchText = '', lastFixerSets = [], $search, $fixerSetItems, selectedFixerSets = [];
-    function toggleFixerSet(name) {
-        $fixerSetItems.filter('[data-fixerset="' + name + '"]').find('i.fa').toggleClass('fa-check-square-o fa-square-o');
+    var lastSearchText = '',
+        lastFixerSets = [],
+        $search = null,
+        $fixerSetMenu,
+        selectedFixerSets = []
+    ;
+    function updateSelectedFixerSets() {
+        var $fixerSetItems = $fixerSetMenu.find('a[data-fixerset]');
         selectedFixerSets = [];
         $fixerSetItems.find('i.fa-check-square-o').each(function() {
             selectedFixerSets.push($(this).closest('a[data-fixerset]').data('fixerset'));
@@ -452,12 +617,20 @@ var Search = (function() {
         if (selectedFixerSets.length === $fixerSetItems.length) {
             selectedFixerSets = [];
         }
+    }
+    function toggleFixerSet(name) {
+        var $fixerSetItems = $fixerSetMenu.find('a[data-fixerset]');
+        $fixerSetItems.filter('[data-fixerset="' + name + '"]').find('i.fa').toggleClass('fa-check-square-o fa-square-o');
+        updateSelectedFixerSets();
         performSearch();
     }
-    function performSearch() {
+    function performSearch(force) {
+        if (Version.current === null) {
+            return;
+        }
         var searchText = $.trim($search.val()),
             filterSets = [].concat(selectedFixerSets);
-        if (searchText === lastSearchText) {
+        if (!force && searchText === lastSearchText) {
             if (lastFixerSets.length === filterSets.length && lastFixerSets.join('\n') === filterSets.join('\n')) {
                 return;
             }
@@ -465,7 +638,7 @@ var Search = (function() {
         lastSearchText = searchText;
         lastFixerSets = filterSets;
         var searchArray = getSearchableArray(searchText);
-        Fixers.getAll().forEach(function(fixer) {
+        Version.current.fixers.forEach(function(fixer) {
             if (fixer.satisfySearch(searchArray, filterSets) === true) {
                 fixer.view.$views.removeClass('pcs-search-failed');
             } else {
@@ -474,46 +647,37 @@ var Search = (function() {
         });
     }
     return {
-        initialize: function() {
+        versionUpdated: function() {
             $search = $('#pcs-search');
-            var $fixerSetMenu = $('#pcs-filter-sets');
-            FixerSets.getAll().forEach(function(fixerSet) {
-                $fixerSetMenu.append($('<a class="dropdown-item" href="#" />')
-                    .attr('data-fixerset', fixerSet.name)
-                    .text(' ' + fixerSet.name)
-                    .prepend('<i class="fa fa-square-o" aria-hidden="true"></i>')
-                );
-            });
-            $fixerSetItems = $fixerSetMenu.find('a[data-fixerset]');
             $search.on('keydown keyup keypress change blur mousedown mouseup', function() {
                 performSearch();
             });
-            $fixerSetItems.on('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleFixerSet($(this).data('fixerset'));
-            });
-            delete Search.initialize;
-        }
-    };
-})();
-
-var Fixers = (function() {
-    var list = [];
-    return {
-        add: function(fixer) {
-            list.push(fixer);
-        },
-        getAll: function() {
-            return [].concat(list);
-        },
-        getByName: function(name) {
-            for (var i = 0, n = list.length; i < n; i++) {
-                if (list[i].name === name) {
-                    return list[i];
+            $fixerSetMenu = $('#pcs-filter-sets');
+            Search.versionUpdated = function() {
+                $fixerSetMenu.empty();
+                var version = Version.current;
+                if (version !== null) {
+                    $fixerSetMenu
+                        .append($('<a class="dropdown-item" href="#" data-fixerset=""><i class="fa ' + (selectedFixerSets.indexOf('') < 0 ? 'fa-square-o' : 'fa-check-square-o') + '" aria-hidden="true"></i> In no presets</a>'))
+                        .append($('<div role="separator" class="dropdown-divider" />'))
+                    ;
+                    version.fixerSets.forEach(function(fixerSet) {
+                        $fixerSetMenu.append($('<a class="dropdown-item" href="#" />')
+                            .attr('data-fixerset', fixerSet.name)
+                            .text(' ' + fixerSet.name)
+                            .prepend('<i class="fa ' + (selectedFixerSets.indexOf(fixerSet.name) < 0 ? 'fa-square-o' : 'fa-check-square-o') + '" aria-hidden="true"></i>')
+                        );
+                    });
+                    $fixerSetMenu.find('a[data-fixerset]').on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFixerSet($(this).data('fixerset'));
+                    });
+                    updateSelectedFixerSets();
+                    performSearch(true);
                 }
-            }
-            return null;
+            };
+            Search.versionUpdated();
         }
     };
 })();
@@ -521,10 +685,12 @@ var Fixers = (function() {
 /**
  * @class
  * @constructor
+ * @param {Version} version
  * @param {string} name
  * @param {object} def
  */
-function Fixer(name, def) {
+function Fixer(version, name, def) {
+    this.version = version;
     this.name = name;
     this.risky = def.hasOwnProperty('risky') ? def.risky : false;
     this.summary = def.hasOwnProperty('summary') ? def.summary : '';
@@ -602,10 +768,10 @@ Fixer.prototype = {
             }
         });
     },
-    resolveSets: function(fixerSets) {
+    resolveSets: function() {
         var me = this;
         me.sets = [];
-        fixerSets.forEach(function(fixerSet) {
+        me.version.fixerSets.forEach(function(fixerSet) {
             if (fixerSet.hasFixer(me)) {
                 me.sets.push(fixerSet);
             }
@@ -614,14 +780,18 @@ Fixer.prototype = {
     resolveSubstitutions: function() {
         var me = this;
         me.substitutes = [];
-        Fixers.getAll().forEach(function(fixer) {
+        me.version.fixers.forEach(function(fixer) {
             if (fixer.deprecated_switchTo && fixer.deprecated_switchTo.indexOf(me.name) >= 0) {
                 me.substitutes.push(fixer.name);
             }
         });
     },
-    initializeView: function() {
+    initializeFixerView: function() {
         this.view = new Fixer.View(this);
+    },
+    disposeFixerView: function() {
+        this.view.dispose();
+        delete this.view;
     }
 };
 
@@ -656,34 +826,15 @@ Fixer.CodeSample = function(cs) {
     }
 };
 
-var FixerSets = (function() {
-    var list = [];
-    return {
-        add: function(fixerSet) {
-            list.push(fixerSet);
-        },
-        getAll: function() {
-            return [].concat(list);
-        },
-        getByName: function(name) {
-            for (var i = 0, n = list.length; i < n; i++) {
-                if (list[i].name === name) {
-                    return list[i];
-                }
-            }
-            return null;
-        }
-    };
-})();
-
 /**
  * @class
  * @constructor
+ * @param {Version} version
  * @param {string} name
  * @param {object[]} fixerDefs
- * @param {VersionData} versionData
  */
-function FixerSet(name, fixerDefs, versionData) {
+function FixerSet(version, name, fixerDefs) {
+    this.version = version;
     this.name = name;
     this.fixers = [];
     this.risky = false;
@@ -691,7 +842,7 @@ function FixerSet(name, fixerDefs, versionData) {
     for (var fixerName in fixerDefs) {
         if (fixerDefs.hasOwnProperty(fixerName)) {
             var fixerData = {};
-            fixerData.fixer = versionData.getFixerByName(fixerName);
+            fixerData.fixer = this.version.getFixerByName(fixerName);
             if (fixerData.fixer === null) {
                 throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName) + ' for set ' + name);
             }
@@ -750,59 +901,86 @@ FixerSet.SelectedList = (function() {
         $selected = $('#pcs-selected-presets'),
         $unselected = $('#pcs-selected-presets-add');
     function refreshCards() {
-        Fixers.getAll().forEach(function(fixer) {
+        Version.current.fixers.forEach(function(fixer) {
             fixer.view.updateClasses();
         });
     }
     function updateView() {
         $selected.empty();
         $unselected.empty();
-        selected.forEach(function(item, itemIndex) {
-            $selected.append($('<span class="badge ' + (item[1] ? 'badge-success' : 'badge-danger') + '" />')
-                .text(item[0].name + ' ')
-                .append($('<a href="#" class="badge badge-warning"><i class="fa fa-times" aria-hidden="true"></i></a>')
-                    .on('click', function(e) {
-                        e.preventDefault();
-                        selected.splice(itemIndex, 1);
-                        while (selected.length > 0 && selected[0][1] === false) {
-                            selected.splice(0, 1);
-                        }
-                        updateView();
-                        refreshCards();
-                    })
-                )
-            );
-        });
-        FixerSets.getAll().forEach(function(fixerSet) {
-            var isSelected = false, somePlus = false;
+        if (Version.current !== null) {
+            var selectedOk = [];
             selected.forEach(function(item) {
-                if (item[0] === fixerSet) {
-                    isSelected = true;
-                }
-                if (item[1] === true) {
-                    somePlus = true;
+                var fixerSet = Version.current.getFixerSetByName(item[0].name);
+                if (fixerSet !== null) {
+                    item[0] = fixerSet;
+                    selectedOk.push(item);
                 }
             });
-            if (isSelected) {
-                return;
-            }
-            var $item;
-            $unselected
-                .append($item = $('<div class="dropdown-item" />')
-                    .on('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    })
-                    .text(' ' + fixerSet.name)
+            selected = selectedOk;
+            selected.forEach(function(item, itemIndex) {
+                $selected.append($('<span class="badge ' + (item[1] ? 'badge-success' : 'badge-danger') + '" />')
+                    .text(item[0].name + ' ')
+                    .append($('<a href="#" class="badge badge-warning"><i class="fa fa-times" aria-hidden="true"></i></a>')
+                        .on('click', function(e) {
+                            e.preventDefault();
+                            selected.splice(itemIndex, 1);
+                            while (selected.length > 0 && selected[0][1] === false) {
+                                selected.splice(0, 1);
+                            }
+                            updateView();
+                            refreshCards();
+                        })
+                    )
                 );
-            if (somePlus) {
+            });
+            Version.current.fixerSets.forEach(function(fixerSet) {
+                var isSelected = false, somePlus = false;
+                selected.forEach(function(item) {
+                    if (item[0] === fixerSet) {
+                        isSelected = true;
+                    }
+                    if (item[1] === true) {
+                        somePlus = true;
+                    }
+                });
+                if (isSelected) {
+                    return;
+                }
+                var $item;
+                $unselected
+                    .append($item = $('<div class="dropdown-item" />')
+                        .on('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        })
+                        .text(' ' + fixerSet.name)
+                    );
+                if (somePlus) {
+                    $item
+                        .prepend($('<a href="#" class="btn btn-sm btn-danger' + (somePlus ? '' : 'disabled') + '"><i class="fa fa-minus" aria-hidden="true"></i></a>')
+                            .on('click', function(e) {
+                                e.preventDefault();
+                                setTimeout(
+                                    function() {
+                                        selected.push([fixerSet, false]);
+                                        updateView();
+                                        refreshCards();
+                                    },
+                                    20
+                                );
+                            })
+                        )
+                        .prepend(' ')
+                    ;
+                }
                 $item
-                    .prepend($('<a href="#" class="btn btn-sm btn-danger' + (somePlus ? '' : 'disabled') + '"><i class="fa fa-minus" aria-hidden="true"></i></a>')
+                    .prepend($('<a href="#" class="btn btn-sm btn-success"><i class="fa fa-plus" aria-hidden="true"></i></a>')
                         .on('click', function(e) {
                             e.preventDefault();
                             setTimeout(
                                 function() {
-                                    selected.push([fixerSet, false]);
+                                    selected.push([fixerSet, true]);
                                     updateView();
                                     refreshCards();
                                 },
@@ -810,25 +988,9 @@ FixerSet.SelectedList = (function() {
                             );
                         })
                     )
-                    .prepend(' ')
                 ;
-            }
-            $item
-                .prepend($('<a href="#" class="btn btn-sm btn-success"><i class="fa fa-plus" aria-hidden="true"></i></a>')
-                    .on('click', function(e) {
-                        e.preventDefault();
-                        setTimeout(
-                            function() {
-                                selected.push([fixerSet, true]);
-                                updateView();
-                                refreshCards();
-                            },
-                            20
-                        );
-                    })
-                )
-            ;
-        });
+            });
+        }
     }
     return {
         initialize: function() {
@@ -870,7 +1032,7 @@ FixerSet.SelectedList = (function() {
             refreshCards();
         },
         add: function(fixerSetName, substract) {
-            var fixerSet = FixerSets.getByName(fixerSetName);
+            var fixerSet = Version.current.getFixerSetByName(fixerSetName);
             if (fixerSet === null) {
                 throw new Error('Unable to find a preset named ' + JSON.stringify(fixerSetName));
             }
@@ -926,6 +1088,10 @@ Fixer.View = function(fixer) {
     me.updateClasses();
 };
 Fixer.View.prototype = {
+    dispose: function() {
+        this.$card.remove();
+        this.$row.remove();
+    },
     reset: function() {
         this.selected = null;
         this.setConfiguration(null);
@@ -1304,14 +1470,14 @@ var State = (function() {
     return {
         reset: function() {
             FixerSet.SelectedList.reset();
-            Fixers.getAll().forEach(function(fixer) {
+            Version.current.fixers.forEach(function(fixer) {
                 fixer.view.reset();
             });
             Saver.resetOptions();
         },
         get: function(full) {
             var state = {};
-            state.version = Version.current;
+            state.version = Version.current.fullVersion;
             var whitespace = Saver.whitespace;
             if ($.isEmptyObject(whitespace) === false) {
                 state.whitespace = whitespace;
@@ -1326,7 +1492,7 @@ var State = (function() {
                 }
                 state.fixerSets.push((item[1] ? '' : '-') + item[0].name);
             });
-            Fixers.getAll().forEach(function(fixer) {
+            Version.current.fixers.forEach(function(fixer) {
                 var fixerState = fixer.view.getState();
                 if (fixerState !== null) {
                     if (fixerState !== false && fixer.risky === true) {
@@ -1382,7 +1548,7 @@ var State = (function() {
             if ($.isPlainObject(state.fixers)) {
                 $.each(state.fixers, function(fixerName, fixerConfiguration) {
                     try {
-                        var fixer = Fixers.getByName(fixerName);
+                        var fixer = Version.current.getFixerByName(fixerName);
                         if (fixer === null) {
                             throw new Error('Unable to find a fixer named ' + JSON.stringify(fixerName));
                         }
@@ -1457,15 +1623,15 @@ var Loader = (function() {
             var mm = Version.getCurrentMajorMinorOf(state.version);
             if (mm !== null && mm !== Version.currentMajorMinor) {
                 var vCompatible = null;
-                Version.available.forEach(function(v) {
-                    if (Version.getCurrentMajorMinorOf(v) === mm) {
-                        vCompatible = v;
+                Version.all.forEach(function(version) {
+                    if (version.majorMinorVersion === mm) {
+                        vCompatible = version;
                     }
                 });
                 if (vCompatible !== null && window.confirm([
                     'The configuration is for PHP-CS-Fixer version ' + mm + ' but this page is currently configured for PHP-CS-Fixer version ' + Version.currentMajorMinor + '.',
                     '',
-                    'Do you want to reload this page for PHP-CS-Fixer version ' + vCompatible + '?'
+                    'Do you want to reload this page for PHP-CS-Fixer version ' + vCompatible.majorMinorVersion + '?'
                 ].join('\n'))) {
                     window.location.href = '?version=' + mm + '#configurator';
                     return;
@@ -1807,7 +1973,7 @@ var Saver = (function() {
         }
         var fixers = 'fixers' in state ? state.fixers : null;
         state.fixerSets.forEach(function(fixerSetName) {
-            var fixerSet = FixerSets.getByName(fixerSetName);
+            var fixerSet = Version.current.getFixerSetByName(fixerSetName);
             fixerSet.fixers.forEach(function(fixerData) {
                 if (fixers === null) {
                     fixers = {};
@@ -1934,13 +2100,15 @@ var Saver = (function() {
     return Object.defineProperties(
         {
             initialize: function(exporters) {
-                Saver.resetOptions();
                 if (exporters) {
                     exporters.forEach(function(exporter) {
                         Saver.registerExporter(exporter);
                     });
                 }
                 delete Saver.initialize;
+            },
+            versionUpdated: function() {
+                Saver.resetOptions();
             },
             registerExporter: function(exporter, selected) {
                 $saveFormat.append($('<option />')
@@ -1956,8 +2124,8 @@ var Saver = (function() {
                 }
             },
             resetOptions: function() {
-                Saver.whitespace = DefaultWhitespaceConfig;
-            },
+                Saver.whitespace = $.extend(true, {}, Version.current.whitespaceConfig);
+            }
         },
         {
             whitespace: {
@@ -1966,10 +2134,10 @@ var Saver = (function() {
                         indent: JSON.parse('"' + $saveIndent.find('>option:selected').val() + '"'),
                         lineEnding: JSON.parse('"' + $saveLineEnding.find('>option:selected').val() + '"')
                     };
-                    if (result.indent === DefaultWhitespaceConfig.indent) {
+                    if (result.indent === Version.current.whitespaceConfig.indent) {
                         delete result.indent;
                     }
-                    if (result.lineEnding === DefaultWhitespaceConfig.lineEnding) {
+                    if (result.lineEnding === Version.current.whitespaceConfig.lineEnding) {
                         delete result.lineEnding;
                     }
                     return result;
@@ -1979,7 +2147,7 @@ var Saver = (function() {
                         throw new Error('Whitespace configuration is not an object');
                     }
                     var errors = new ErrorList();
-                    value = $.extend({}, DefaultWhitespaceConfig, value || {});
+                    value = $.extend(true, {}, Version.current.whitespaceConfig, value || {});
                     var $option;
                     $option = $saveIndent.find('option[value="' + JSON.stringify(value.indent).replace(/^"|"$/g, '').replace(/\\/g, '\\\\') + '"]');
                     if ($option.length === 1) {
@@ -2094,7 +2262,7 @@ PhpCsExporter.prototype = {
             var ruleLines = [];
             $.each(state.fixers, function(fixerName, fixerState) {
                 if (state.addComments) {
-                    var fixer = Fixers.getByName(fixerName);
+                    var fixer = Version.current.getFixerByName(fixerName);
                     if (fixer !== null && fixer.summary) {
                         $.each(fixer.summary.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\.\s+/g, '.\n').split('\n'), function(_, line) {
                             ruleLines.push('        // ' + line);
@@ -2238,11 +2406,11 @@ var View = (function() {
     var current = 'cards',
         $layers = {
             cards: $('#pcs-cards'),
-            rows: $('#pcs-rows'),
+            rows: $('#pcs-rows')
         },
         icons = {
             cards: 'fa-bars',
-            rows: 'fa-table',
+            rows: 'fa-table'
         },
         allViewKeys = [],
         allIcons = '',
@@ -2300,91 +2468,24 @@ var View = (function() {
     );
 })();
 
-/**
- * @class
- * @constructor
- */
-function VersionData(data) {
-    var my = this;
-    my.whitespaceConfig = {
-        indent: data.indent,
-        lineEnding: data.lineEnding
-    };
-    my.fixers = [];
-    for (var fixerName in data.fixers) {
-        if (data.fixers.hasOwnProperty(fixerName)) {
-            my.fixers.push(new Fixer(fixerName, data.fixers[fixerName]));
-        }
-    }
-    my.fixers.sort(function(a, b) {
-        return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
-    });
-    my.fixerSets = [];
-    for (var setName in data.sets) {
-        if (data.sets.hasOwnProperty(setName)) {
-            my.fixerSets.push(new FixerSet(setName, data.sets[setName], my));
-        }
-    }
-    my.fixerSets.sort(function(a, b) {
-        return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
-    });
-    my.fixers.forEach(function(fixer) {
-        fixer.resolveSets(my.fixerSets);
-        fixer.resolveSubstitutions();
-    });
-}
-VersionData.prototype = {
-    getFixerByName: function(name) {
-        for (var i = 0, n = this.fixers.length; i < n; i++) {
-            if (this.fixers[i].name === name) {
-                return this.fixers[i];
-            }
-        }
-        return null;
-    },
-    getFixerSetByName: function(name) {
-        for (var i = 0, n = this.fixerSets.length; i < n; i++) {
-            if (this.fixerSets[i].name === name) {
-                return this.fixerSets[i];
-            }
-        }
-        return null;
-    }
-};
-VersionData.all = {};
-VersionData.getByVersion = function(version, cb) {
-    if (VersionData.all.hasOwnProperty(version)) {
-        cb(true, VersionData.all[version]);
-        return;
-    }
-    $.ajax({
-        dataType: 'json',
-        url: 'js/php-cs-fixer-data-' + version + '.min.json',
-        cache: true,
-    })
-    .fail(function(xhr, testStatus, errorThrown) {
-        cb(false, errorThrown);
-    })
-    .done(function(data) {
-        VersionData.all[version] = new VersionData(data);
-        cb(true, VersionData.all[version]);
-    });
-};
-
 var VersionsComparer = (function() {
     var $dialog = null, $vFrom, $vTo, $vToAndFrom;
     function refreshChanges() {
         $vToAndFrom.attr('disabled', 'disabled');
         $dialog.find('.modal-body').empty();
-        VersionData.getByVersion($vFrom.val(), function(ok, vFrom) {
-            if (!ok) {
+        var vFrom = Version.getByFullVersion($vFrom.val()),
+            vTo = Version.getByFullVersion($vTo.val());
+        vFrom.load(function(err) {
+            if (err) {
                 $vToAndFrom.removeAttr('disabled');
-                return window.alert(vFrom);
+                window.alert(err);
+                return;
             }
-            VersionData.getByVersion($vTo.val(), function(ok, vTo) {
-                if (!ok) {
+            vTo.load(function(err) {
+                if (err) {
                     $vToAndFrom.removeAttr('disabled');
-                    return window.alert(vFrom);
+                    window.alert(err);
+                    return;
                 }
                 showChanges(vFrom, vTo);
                 $vToAndFrom.removeAttr('disabled');
@@ -2430,7 +2531,7 @@ var VersionsComparer = (function() {
             }
         });
         // @todo: fixerSetPairs -> fixerSetsChanged
-        diff.noChanges = diff.fixersAdded.length === 0 && diff.fixersRemoved.length === 0 && diff.fixersChanged.length === 0 && diff.fixerSetsAdded.length === 0 && diff.fixerSetsRemoved.length === 0 && diff.fixerSetsChanged.length === 0
+        diff.noChanges = diff.fixersAdded.length === 0 && diff.fixersRemoved.length === 0 && diff.fixersChanged.length === 0 && diff.fixerSetsAdded.length === 0 && diff.fixerSetsRemoved.length === 0 && diff.fixerSetsChanged.length === 0;
         $dialog.find('.modal-body')
             .empty()
             .append(Templater.build('compare-versions-body', diff))
@@ -2443,9 +2544,9 @@ var VersionsComparer = (function() {
                 $vFrom = $('#pcs-compare-versions-vfrom');
                 $vTo = $('#pcs-compare-versions-vto');
                 $vToAndFrom = $vFrom.add($vTo);
-                Version.available.forEach(function(version) {
-                    $vToAndFrom.append($('<option />').val(version).text(version));
-                    $vFrom.find('option[value="' + Version.current + '"]').prop('selected', true);
+                Version.all.forEach(function(version) {
+                    $vToAndFrom.append($('<option />').val(version.fullVersion).text(version.fullVersion));
+                    $vFrom.find('option[value="' + Version.current.fullVersion + '"]').prop('selected', true);
                     $vTo.prop('selectedIndex', $vFrom.prop('selectedIndex') === 0 ? 1 : 0);
                     $vToAndFrom.on('change', function() {
                         refreshChanges();
@@ -2461,57 +2562,20 @@ var VersionsComparer = (function() {
 $.ajax({
     dataType: 'json',
     url: 'js/php-cs-fixer-versions.json',
-    cache: false,
+    cache: false
 })
 .fail(function(xhr, testStatus, errorThrown) {
     window.alert(errorThrown);
 })
 .done(function(data) {
     Version.initialize(data);
-    VersionData.getByVersion(Version.current, function(ok, versionData) {
-        if (!ok) {
-            window.alert(versionData);
+    var currentVersion = Hasher.current.version || Version.all[0];
+    currentVersion.load(function(err) {
+        if (err) {
+            window.alert(err);
             return;
         }
-        DefaultWhitespaceConfig = $.extend(true, {}, versionData.whitespaceConfig);
-        $('#pcs-version').text(Version.current);
-        Version.available.forEach(function(version) {
-            if (version === Version.current) {
-                $('#pcs-versions').append(
-                    $('<span class="dropdown-item active" />')
-                        .text(version)
-                );
-            } else {
-                var displayName = Version.getDisplayName(version);
-                $('#pcs-versions').append(
-                    $('<a class="dropdown-item" />')
-                        .text(version)
-                        .attr('href', '?version=' + window.encodeURIComponent(displayName))
-                );
-            }
-        });
-        if (Version.available.length > 1) {
-            $('#pcs-versions')
-                .append($('<div class="dropdown-divider" />'))
-                .append($('<a class="dropdown-item" href="#">Compare versions</a>')
-                    .on('click', function(e) {
-                        e.preventDefault();
-                        VersionsComparer.show();
-                    })
-                )
-            ;
-        }
-        versionData.fixers.forEach(function(fixer) {
-            Fixers.add(fixer);
-        });
-        versionData.fixerSets.forEach(function(fixerSet) {
-            FixerSets.add(fixerSet);
-        });
-        Search.initialize();
-        FixerSet.SelectedList.initialize();
-        Fixers.getAll().forEach(function(fixer) {
-            fixer.initializeView();
-        });
+        var hashState = Hasher.current;
         Loader.initialize([
             new AutoDetectImporter(),
             new PhpImporter(),
@@ -2524,9 +2588,21 @@ $.ajax({
             new YamlExporter(),
             new StyleCILikeExporter()
         ]);
-        Persister.initialize();
         View.initialize();
-        Hasher.initialize();
+        Version.current = currentVersion;
+        FixerSet.SelectedList.initialize();
+        Persister.initialize();
+        if (hashState.configurator === true) {
+            Configurator.enabled = true;
+        }
+        if (hashState.fixer !== '') {
+            var fixer = currentVersion.getByName(hashState.fixer);
+            if (fixer === null) {
+                window.console.warn('Fixer non found: ' + hashState.fixer);
+            } else {
+                fixer.showDetails();
+            }
+        }
     });
 });
 
