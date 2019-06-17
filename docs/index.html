@@ -733,13 +733,13 @@
                                     Compare
                                 </div>
                                 <div class="col-3">
-                                    <select id="pcs-compare-versions-vfrom" class="form-control form-control-sm"></select>
+                                    <select id="pcs-compare-versions-fromversion" class="form-control form-control-sm"></select>
                                 </div>
                                 <div class="col-2 text-right">
                                     with
                                 </div>
                                 <div class="col-3">
-                                    <select id="pcs-compare-versions-vto" class="form-control form-control-sm"></select>
+                                    <select id="pcs-compare-versions-toversion" class="form-control form-control-sm"></select>
                                 </div>
                             </div>
                         </div>
@@ -834,7 +834,27 @@
                         </div>
                         <div id="cgs-compare-versions-fixers-body-changed" class="collapse" aria-labelledby="cgs-compare-versions-fixers-head-changed" data-parent="#template-compare-versions-items">
                             <div class="card-body">
-                                @todo
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {{#each fixersChanged}}
+                                            <tr>
+                                                <td>
+                                                    <b>{{ fromFixer.name }}</b>
+                                                    <a href="#" class="badge badge-info" data-pcf-show-fixer="{{ fromFixer.name }}" data-pcf-show-fixer-for-version="{{ fromFixer.version.fullVersion }}">{{ fromFixer.version.majorMinorVersion}}</a>
+                                                    <a href="#" class="badge badge-info" data-pcf-show-fixer="{{ toFixer.name }}" data-pcf-show-fixer-for-version="{{ toFixer.version.fullVersion }}">{{ toFixer.version.majorMinorVersion}}</a>
+                                                    <br />
+                                                    <ul class="mb-0">
+                                                        {{#each pairDiff }}
+                                                            <li>
+                                                                {{{ this }}}
+                                                            </li>
+                                                        {{/each}}
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -901,7 +921,27 @@
                         </div>
                         <div id="cgs-compare-versions-fixersets-body-changed" class="collapse" aria-labelledby="cgs-compare-versions-fixersets-head-changed" data-parent="#template-compare-versions-items">
                             <div class="card-body">
-                                @todo
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {{#each fixerSetsChanged}}
+                                            <tr>
+                                                <td>
+                                                    <b>{{ fromFixerSet.name }}</b>
+                                                    <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ fromFixerSet.name }}" data-pcf-show-fixerset-for-version="{{ fromFixerSet.version.fullVersion }}">{{ fromFixerSet.version.majorMinorVersion}}</a>
+                                                    <a href="#" class="badge badge-info" data-pcf-show-fixerset="{{ toFixerSet.name }}" data-pcf-show-fixerset-for-version="{{ toFixerSet.version.fullVersion }}">{{ toFixerSet.version.majorMinorVersion}}</a>
+                                                    <br />
+                                                    <ul class="mb-0">
+                                                        {{#each pairDiff }}
+                                                            <li>
+                                                                {{{ this }}}
+                                                            </li>
+                                                        {{/each}}
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

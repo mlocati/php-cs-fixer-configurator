@@ -39,6 +39,35 @@ var textToHtml = (function() {
     };
 })();
 
+// Code from https://stackoverflow.com/a/52645018
+function objectsAreEquals(a, b) {
+    if (a === b) {
+        return true;
+    }
+    if (a instanceof Date && b instanceof Date) {
+        return a.getTime() === b.getTime();
+    }
+    if (!a || !b || (typeof a !== 'object' && typeof b !== 'object')) {
+        return a === b;
+    }
+    if (a === null || a === undefined || b === null || b === undefined) {
+        return false;
+    }
+    if (a.prototype !== b.prototype) {
+        return false;
+    }
+    var keys = Object.keys(a);
+    if (keys.length !== Object.keys(b).length) {
+        return false;
+    }
+    var same = true;
+    $.each(keys, function(_, key) {
+        same = objectsAreEquals(a[key], b[key]);
+        return same;
+    });
+    return same;
+}
+
 var Hasher = (function() {
     var hasher = {};
     Object.defineProperties(hasher, {
@@ -418,7 +447,7 @@ function toPHP(v) {
         case 'string':
             if (/[\x00-\x1f]/.test(v)) {
                 var out = '', map = {};
-                map[0x09] = '\\t';
+                map[0x09] = '\    ';
                 map[0x0a] = '\\n';
                 map[0x0b] = '\\v';
                 map[0x0c] = '\\f';
@@ -2469,30 +2498,113 @@ var View = (function() {
 })();
 
 var VersionsComparer = (function() {
-    var $dialog = null, $vFrom, $vTo, $vToAndFrom;
+    var $dialog = null, $fromVersion, $toVersion, $vToAndFrom;
     function refreshChanges() {
         $vToAndFrom.attr('disabled', 'disabled');
         $dialog.find('.modal-body').empty();
-        var vFrom = Version.getByFullVersion($vFrom.val()),
-            vTo = Version.getByFullVersion($vTo.val());
-        vFrom.load(function(err) {
+        var fromVersion = Version.getByFullVersion($fromVersion.val()),
+            toVersion = Version.getByFullVersion($toVersion.val());
+        fromVersion.load(function(err) {
             if (err) {
                 $vToAndFrom.removeAttr('disabled');
                 window.alert(err);
                 return;
             }
-            vTo.load(function(err) {
+            toVersion.load(function(err) {
                 if (err) {
                     $vToAndFrom.removeAttr('disabled');
                     window.alert(err);
                     return;
                 }
-                showChanges(vFrom, vTo);
+                showChanges(fromVersion, toVersion);
                 $vToAndFrom.removeAttr('disabled');
             });
         });
     }
-    function showChanges(vFrom, vTo) {
+    function compareFixers(fromFixer, toFixer) {
+        var diffs = [];
+        if (fromFixer.risky !== toFixer.risky) {
+            diffs.push(fromFixer.risky ? 'The fixer became risky' : 'The fixer is no more risky');
+        }
+        if ((fromFixer.deprecated_switchTo ? true : false) !== (toFixer.deprecated_switchTo ? true : false)) {
+            diffs.push(fromFixer.deprecated_switchTo ? 'The fixer has been deprecated' : 'The fixer is no more deprecated');
+        }
+        fromFixer.configurationOptions.forEach(function(fromOption) {
+            var toOption = null;
+            $.each(toFixer.configurationOptions, function() {
+                if (this.name === fromOption.name) {
+                    toOption = this;
+                    return false;
+                }
+            });
+            if (toOption === null) {
+                diffs.push('The fixer has the new <code>' + textToHtml(fromOption.name) + '</code> option');
+                return;
+            }
+            if (fromOption.hasDefaultValue !== toOption.hasDefaultValue) {
+                diffs.push(fromOption.hasDefaultValue ? 'The <code>' + textToHtml(fromOption.name) + '</code> option has been assigned a default value' : 'The default value of the <code>' + textToHtml(fromOption.name) + '</code> option has been removed');
+            } else if (fromOption.hasDefaultValue && !objectsAreEquals(fromOption.defaultValue, toOption.defaultValue)) {
+                diffs.push('The default value of the <code>' + textToHtml(fromOption.name) + '</code> option has changed');
+            }
+            if (!objectsAreEquals(fromOption.allowedTypes, toOption.allowedTypes)) {
+                diffs.push('The list of allowed types of the <code>' + textToHtml(fromOption.name) + '</code> option has changed');
+            }
+            if (!objectsAreEquals(fromOption.allowedValues, toOption.allowedValues)) {
+                diffs.push('The list of allowed values of the <code>' + textToHtml(fromOption.name) + '</code> option has changed');
+            }
+        });
+        toFixer.configurationOptions.forEach(function(toOption) {
+            var fromOption = null;
+            $.each(fromFixer.configurationOptions, function() {
+                if (this.name === toOption.name) {
+                    fromOption = this;
+                    return false;
+                }
+            });
+            if (fromOption === null) {
+                diffs.push('The <code>' + textToHtml(toOption.name) + '</code> option has been removed');
+            }
+        });
+        return diffs;
+    }
+    function compareFixerSets(fromFixerSet, toFixerSet) {
+        var diffs = [];
+        if (fromFixerSet.risky !== toFixerSet.risky) {
+            diffs.push(fromFixerSet.risky ? 'The fixer set became risky' : 'The fixer set is no more risky');
+        }
+        fromFixerSet.fixers.forEach(function(fromFixer) {
+            var toFixer = null;
+            $.each(toFixerSet.fixers, function() {
+                if (this.fixer.name === fromFixer.fixer.name) {
+                    toFixer = this;
+                    return false;
+                }
+            });
+            if (toFixer === null) {
+                diffs.push('The fixer <code>' + textToHtml(fromFixer.fixer.name) + '</code> has been added to this set');
+                return;
+            }
+            if (fromFixer.isConfigured !== toFixer.isConfigured) {
+                diffs.push(fromFixer.isConfigured ? 'The fixer <code>' + textToHtml(fromFixer.fixer.name) + '</code> has been configured' : 'The configuration of the fixer <code>' + textToHtml(fromFixer.fixer.name) + '</code> has been removed');
+            } else if (fromFixer.isConfigured && !objectsAreEquals(fromFixer.configuration, toFixer.configuration)) {
+                diffs.push('The configuration of the fixer <code>' + textToHtml(fromFixer.fixer.name) + '</code> has changed');
+            }
+        });
+        toFixerSet.fixers.forEach(function(toFixer) {
+            var fromFixer = null;
+            $.each(fromFixerSet.fixers, function() {
+                if (this.fixer.name === toFixer.fixer.name) {
+                    fromFixer = this;
+                    return false;
+                }
+            });
+            if (fromFixer === null) {
+                diffs.push('The fixer <code>' + textToHtml(toFixer.fixer.name) + '</code> has been removed to this set');
+            }
+        });
+        return diffs;
+    }
+    function showChanges(fromVersion, toVersion) {
         var diff = {
             fixersAdded: [],
             fixersRemoved: [],
@@ -2502,35 +2614,45 @@ var VersionsComparer = (function() {
             fixerSetsChanged: []
         };
         var fixerPairs = [];
-        vFrom.fixers.forEach(function(fFrom) {
-            var fTo = vTo.getFixerByName(fFrom.name);
-            if (fTo === null) {
-                diff.fixersAdded.push(fFrom);
+        fromVersion.fixers.forEach(function(fromFixer) {
+            var toFixer = toVersion.getFixerByName(fromFixer.name);
+            if (toFixer === null) {
+                diff.fixersAdded.push(fromFixer);
             } else {
-                fixerPairs.push({fFrom: fFrom, fTo: fTo});
+                fixerPairs.push({fromFixer: fromFixer, toFixer: toFixer});
             }
         });
-        vTo.fixers.forEach(function(fTo) {
-            if (vFrom.getFixerByName(fTo.name) === null) {
-                diff.fixersRemoved.push(fTo);
+        toVersion.fixers.forEach(function(toFixer) {
+            if (fromVersion.getFixerByName(toFixer.name) === null) {
+                diff.fixersRemoved.push(toFixer);
             }
         });
-        // @todo: fixerPairs -> fixersChanged
+        fixerPairs.forEach(function(fixerPair) {
+            var pairDiff = compareFixers(fixerPair.fromFixer, fixerPair.toFixer);
+            if (pairDiff.length > 0) {
+                diff.fixersChanged.push($.extend({pairDiff: pairDiff}, fixerPair));
+            }
+        });
         var fixerSetPairs = [];
-        vFrom.fixerSets.forEach(function(fsFrom) {
-            var fsTo = vTo.getFixerSetByName(fsFrom.name);
-            if (fsTo === null) {
-                diff.fixerSetsAdded.push(fsFrom);
+        fromVersion.fixerSets.forEach(function(fromFixerSet) {
+            var toFixerSet = toVersion.getFixerSetByName(fromFixerSet.name);
+            if (toFixerSet === null) {
+                diff.fixerSetsAdded.push(fromFixerSet);
             } else {
-                fixerSetPairs.push({fsFrom: fsFrom, fsTo: fsTo});
+                fixerSetPairs.push({fromFixerSet: fromFixerSet, toFixerSet: toFixerSet});
             }
         });
-        vTo.fixerSets.forEach(function(fsTo) {
-            if (vFrom.getFixerSetByName(fsTo.name) === null) {
-                diff.fixerSetsRemoved.push(fsTo);
+        toVersion.fixerSets.forEach(function(toFixerSet) {
+            if (fromVersion.getFixerSetByName(toFixerSet.name) === null) {
+                diff.fixerSetsRemoved.push(toFixerSet);
             }
         });
-        // @todo: fixerSetPairs -> fixerSetsChanged
+        fixerSetPairs.forEach(function(fixerSetPair) {
+            var pairDiff = compareFixerSets(fixerSetPair.fromFixerSet, fixerSetPair.toFixerSet);
+            if (pairDiff.length > 0) {
+                diff.fixerSetsChanged.push($.extend({pairDiff: pairDiff}, fixerSetPair));
+            }
+        });
         diff.noChanges = diff.fixersAdded.length === 0 && diff.fixersRemoved.length === 0 && diff.fixersChanged.length === 0 && diff.fixerSetsAdded.length === 0 && diff.fixerSetsRemoved.length === 0 && diff.fixerSetsChanged.length === 0;
         $dialog.find('.modal-body')
             .empty()
@@ -2541,13 +2663,13 @@ var VersionsComparer = (function() {
         show: function() {
             if ($dialog === null) {
                 $dialog = $('#pcs-compare-versions-dialog');
-                $vFrom = $('#pcs-compare-versions-vfrom');
-                $vTo = $('#pcs-compare-versions-vto');
-                $vToAndFrom = $vFrom.add($vTo);
+                $fromVersion = $('#pcs-compare-versions-fromversion');
+                $toVersion = $('#pcs-compare-versions-toversion');
+                $vToAndFrom = $fromVersion.add($toVersion);
                 Version.all.forEach(function(version) {
                     $vToAndFrom.append($('<option />').val(version.fullVersion).text(version.fullVersion));
-                    $vFrom.find('option[value="' + Version.current.fullVersion + '"]').prop('selected', true);
-                    $vTo.prop('selectedIndex', $vFrom.prop('selectedIndex') === 0 ? 1 : 0);
+                    $fromVersion.find('option[value="' + Version.current.fullVersion + '"]').prop('selected', true);
+                    $toVersion.prop('selectedIndex', $fromVersion.prop('selectedIndex') === 0 ? 1 : 0);
                     $vToAndFrom.on('change', function() {
                         refreshChanges();
                     });
