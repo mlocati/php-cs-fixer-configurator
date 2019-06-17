@@ -2500,6 +2500,7 @@ var View = (function() {
 var VersionsComparer = (function() {
     var $dialog = null, $fromVersion, $toVersion, $vToAndFrom;
     function refreshChanges() {
+        $vToAndFrom.off('change', refreshChanges);
         $vToAndFrom.attr('disabled', 'disabled');
         $dialog.find('.modal-body').empty();
         var fromVersion = Version.getByFullVersion($fromVersion.val()),
@@ -2507,17 +2508,20 @@ var VersionsComparer = (function() {
         fromVersion.load(function(err) {
             if (err) {
                 $vToAndFrom.removeAttr('disabled');
+                $vToAndFrom.on('change', refreshChanges);
                 window.alert(err);
                 return;
             }
             toVersion.load(function(err) {
                 if (err) {
                     $vToAndFrom.removeAttr('disabled');
+                    $vToAndFrom.on('change', refreshChanges);
                     window.alert(err);
                     return;
                 }
                 showChanges(fromVersion, toVersion);
                 $vToAndFrom.removeAttr('disabled');
+                $vToAndFrom.on('change', refreshChanges);
             });
         });
     }
@@ -2670,9 +2674,6 @@ var VersionsComparer = (function() {
                     $vToAndFrom.append($('<option />').val(version.fullVersion).text(version.fullVersion));
                     $fromVersion.find('option[value="' + Version.current.fullVersion + '"]').prop('selected', true);
                     $toVersion.prop('selectedIndex', $fromVersion.prop('selectedIndex') === 0 ? 1 : 0);
-                    $vToAndFrom.on('change', function() {
-                        refreshChanges();
-                    });
                 });
             }
             refreshChanges();
