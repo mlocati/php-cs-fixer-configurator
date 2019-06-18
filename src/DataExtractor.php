@@ -9,6 +9,7 @@ use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
 use PhpCsFixer\Fixer\DefinedFixerInterface;
 use PhpCsFixer\Fixer\DeprecatedFixerInterface;
+use PhpCsFixer\FixerConfiguration\AliasedFixerOption;
 use PhpCsFixer\FixerConfiguration\FixerOptionInterface;
 use PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface;
 use PhpCsFixer\FixerFactory;
@@ -66,6 +67,12 @@ class DataExtractor
                     $o = [
                         'name' => $option->getName(),
                     ];
+                    if ($option instanceof AliasedFixerOption) {
+                        $s = (string) $option->getAlias();
+                        if ($s !== '') {
+                            $o['alias'] = $s;
+                        }
+                    }
                     $s = (string) $option->getDescription();
                     if ($s !== '') {
                         $o['description'] = $s;
