@@ -178,6 +178,7 @@ ErrorList.prototype.add = function(error) {
 
 function Version(fullVersion) {
     var my = this;
+    my.isLoaded = false;
     my.fullVersion = fullVersion;
     var matches = /^(\d+\.\d+)\.\d+$/.exec(fullVersion);
     my.majorMinorVersion = matches === null ? fullVersion : matches[1];
@@ -255,7 +256,9 @@ function Version(fullVersion) {
                     setCurrentVersion(null);
                     return;
                 }
-                $('#pcs-version').attr('disabled', 'disabled');
+                if (!version.isLoaded) {
+                    $('#pcs-version').attr('disabled', 'disabled');
+                }
                 version.load(function(err) {
                     $('#pcs-version').removeAttr('disabled');
                     if (err) {
@@ -325,6 +328,7 @@ Version.prototype = {
             my.load = function(cb) {
                 cb();
             };
+            my.isLoaded = true;
             cb();
         });
 
@@ -2508,28 +2512,38 @@ var View = (function() {
 var VersionsComparer = (function() {
     var $dialog = null, $fromVersion, $toVersion, $vToAndFrom;
     function refreshChanges() {
-        $vToAndFrom.off('change', refreshChanges);
-        $vToAndFrom.attr('disabled', 'disabled');
-        $dialog.find('.modal-body').empty();
         var fromVersion = Version.getByFullVersion($fromVersion.val()),
-            toVersion = Version.getByFullVersion($toVersion.val());
+            toVersion = Version.getByFullVersion($toVersion.val()),
+            restore;
+        $vToAndFrom.off('change', refreshChanges);
+        if (fromVersion.isLoaded && toVersion.isLoaded) {
+            restore = function() {
+                $vToAndFrom.on('change', refreshChanges);
+            };
+        } else {
+            var $focalize = $vToAndFrom.filter(':focus');
+            $vToAndFrom.attr('disabled', 'disabled');
+            restore = function() {
+                $vToAndFrom.removeAttr('disabled');
+                $focalize.focus();
+                $vToAndFrom.on('change', refreshChanges);
+            }
+        }
+        $dialog.find('.modal-body').empty();
         fromVersion.load(function(err) {
             if (err) {
-                $vToAndFrom.removeAttr('disabled');
-                $vToAndFrom.on('change', refreshChanges);
+                restore();
                 window.alert(err);
                 return;
             }
             toVersion.load(function(err) {
                 if (err) {
-                    $vToAndFrom.removeAttr('disabled');
-                    $vToAndFrom.on('change', refreshChanges);
+                    restore();
                     window.alert(err);
                     return;
                 }
                 showChanges(fromVersion, toVersion);
-                $vToAndFrom.removeAttr('disabled');
-                $vToAndFrom.on('change', refreshChanges);
+                restore();
             });
         });
     }
@@ -2677,10 +2691,12 @@ var VersionsComparer = (function() {
                 $vToAndFrom = $fromVersion.add($toVersion);
                 Version.all.forEach(function(version) {
                     $vToAndFrom.append($('<option />').val(version.fullVersion).text(version.fullVersion));
-                    $fromVersion.find('option[value="' + Version.current.fullVersion + '"]').prop('selected', true);
-                    $toVersion.prop('selectedIndex', $fromVersion.prop('selectedIndex') === 0 ? 1 : 0);
                 });
             }
+            $fromVersion.val(Version.current.fullVersion);
+            var selectedIndex = $fromVersion.prop('selectedIndex'),
+                maxSelectedIndex = $toVersion.find('>option').length - 1;
+            $toVersion.prop('selectedIndex', selectedIndex < maxSelectedIndex ? selectedIndex + 1 : selectedIndex - 1);
             refreshChanges();
             ModalManager.show($dialog, null, true);
         }
