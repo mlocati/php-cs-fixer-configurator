@@ -75,7 +75,7 @@ class DataExtractor
                     }
                     $s = (string) $option->getDescription();
                     if ($s !== '') {
-                        $o['description'] = $s;
+                        $o['description'] = str_replace(PHP_EOL, "\n", $s);
                     }
                     if ($option->hasDefault()) {
                         $defaultOptionValue = $option->getDefault();
@@ -113,15 +113,15 @@ class DataExtractor
                 $definition = $fixer->getDefinition();
                 $s = (string) $definition->getSummary();
                 if ($s !== '') {
-                    $fixerData['summary'] = $s;
+                    $fixerData['summary'] = str_replace(PHP_EOL, "\n", $s);
                 }
                 $s = (string) $definition->getDescription();
                 if ($s !== '') {
-                    $fixerData['description'] = $s;
+                    $fixerData['description'] = str_replace(PHP_EOL, "\n", $s);
                 }
                 $s = (string) $definition->getRiskyDescription();
                 if ($s !== '') {
-                    $fixerData['riskyDescription'] = $s;
+                    $fixerData['riskyDescription'] = str_replace(PHP_EOL, "\n", $s);
                 }
                 foreach ($definition->getCodeSamples() as $codeSample) {
                     $old = $codeSample->getCode();
