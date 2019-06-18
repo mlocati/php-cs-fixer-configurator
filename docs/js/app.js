@@ -821,6 +821,15 @@ Fixer.prototype = {
     disposeFixerView: function() {
         this.view.dispose();
         delete this.view;
+    },
+    getConfigurationOptionByName: function (name, excludeAlias) {
+        for (var o, i = 0; i < this.configurationOptions.length; i++) {
+            o = this.configurationOptions[i];
+            if (o.name === name || (!excludeAlias && o.alias !== '' && o.alias === name)) {
+                return o;
+            }
+        }
+        return null;
     }
 };
 
@@ -831,6 +840,7 @@ Fixer.prototype = {
  */
 Fixer.ConfigurationOption = function(co) {
     this.name = co.name;
+    this.alias = typeof co.alias === 'string' ? co.alias : '';
     this.description = co.hasOwnProperty('description') ? co.description : '';
     this.descriptionHTML = textToHtml(this.description, true);
     this.hasDefaultValue = co.hasOwnProperty('defaultValue');
@@ -1184,14 +1194,12 @@ Fixer.View.prototype = {
                 }
             });
             $.each(configuration, function(configurationField) {
-                var found = false;
-                me.fixer.configurationOptions.forEach(function(configurationOption) {
-                    if (configurationField === configurationOption.name) {
-                        found = true;
-                    }
-                });
-                if (found === false) {
+                var option = me.fixer.getConfigurationOptionByName(configurationField);
+                if (option === null) {
                     errors.push(new Error('The fixer "' + me.fixer.name + '" does not defines the option "' + configurationField + '"'));
+                    delete configuration[configurationField];
+                } else if(configurationField === option.alias) {
+                    configuration[option.alias] = configuration[configurationField];
                     delete configuration[configurationField];
                 }
             });
@@ -2534,16 +2542,16 @@ var VersionsComparer = (function() {
             diffs.push(fromFixer.deprecated_switchTo ? 'The fixer has been deprecated' : 'The fixer is no more deprecated');
         }
         fromFixer.configurationOptions.forEach(function(fromOption) {
-            var toOption = null;
-            $.each(toFixer.configurationOptions, function() {
-                if (this.name === fromOption.name) {
-                    toOption = this;
-                    return false;
-                }
-            });
+            var toOption = toFixer.getConfigurationOptionByName(fromOption.name);
+            if (toOption === null && fromOption.alias !== '') {
+                toOption = toFixer.getConfigurationOptionByName(fromOption.alias);
+            }
             if (toOption === null) {
                 diffs.push('The fixer has the new <code>' + textToHtml(fromOption.name) + '</code> option');
                 return;
+            }
+            if (fromOption.name !== toOption.name) {
+                diffs.push('The name of the option <code>' + textToHtml(toOption.name) + '</code> changed to to <code>' + textToHtml(fromOption.name) + '</code> (previous name is still usable)');
             }
             if (fromOption.hasDefaultValue !== toOption.hasDefaultValue) {
                 diffs.push(fromOption.hasDefaultValue ? 'The <code>' + textToHtml(fromOption.name) + '</code> option has been assigned a default value' : 'The default value of the <code>' + textToHtml(fromOption.name) + '</code> option has been removed');
@@ -2558,13 +2566,10 @@ var VersionsComparer = (function() {
             }
         });
         toFixer.configurationOptions.forEach(function(toOption) {
-            var fromOption = null;
-            $.each(fromFixer.configurationOptions, function() {
-                if (this.name === toOption.name) {
-                    fromOption = this;
-                    return false;
-                }
-            });
+            var fromOption = fromFixer.getConfigurationOptionByName(toOption.name);
+            if (fromOption === null && toOption.alias !== '') {
+                fromOption = fromFixer.getConfigurationOptionByName(toOption.alias);
+            }
             if (fromOption === null) {
                 diffs.push('The <code>' + textToHtml(toOption.name) + '</code> option has been removed');
             }

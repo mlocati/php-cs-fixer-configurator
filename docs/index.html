@@ -490,6 +490,10 @@
                                                         <p class="card-text">{{{ descriptionHTML }}}</p>
                                                     {{/if}}
                                                     <dl class="row">
+                                                        {{#if alias}}
+                                                            <dt class="col-sm-3">Alias</dt>
+                                                            <dd class="col-sm-9"><code>{{ alias }}</code></dd>
+                                                        {{/if}}
                                                         <dt class="col-sm-3">Default value</dt>
                                                         <dd class="col-sm-9">
                                                             {{#if hasDefaultValue}}
