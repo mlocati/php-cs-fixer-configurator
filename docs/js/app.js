@@ -69,7 +69,47 @@ function objectsAreEquals(a, b) {
 }
 
 var Hasher = (function() {
-    var hasher = {};
+    var hasher = {},
+        watching = false;
+    function hashChanged() {
+        Hasher.stopWatching();
+        var state = Hasher.current;
+        function checkVersion(cb) {
+            if (state.version === null || Version.current === state.version) {
+                return cb();
+            }
+            state.version.load(function(err) {
+                if (err) {
+                    window.alert(err);
+                } else {
+                    Version.current = state.version;
+                }
+                cb();
+            });
+        }
+        function checkConfigurator(cb) {
+            Configurator.enabled = state.configurator;
+            cb();
+        }
+        function checkFixer(cb) {
+            if (state.version !== null && state.version === Version.current && state.fixer !== '') {
+                var fixer = state.version.getFixerByName(state.fixer);
+                if (fixer === null) {
+                    window.console.warn('Fixer non found: ' + state.fixer);
+                } else if (fixer !== Fixer.TopLevelDetailsFor) {
+                    fixer.showDetails();
+                }
+            }
+            cb();
+        }
+        checkVersion(function() {
+            checkConfigurator(function() {
+                checkFixer(function() {
+                    Hasher.startWatching();
+                });
+            });
+        });
+    }
     Object.defineProperties(hasher, {
         current: {
             get: function() {
@@ -107,7 +147,9 @@ var Hasher = (function() {
         }
     });
     hasher.update = function() {
-        var chunks = [];
+        var chunks = [],
+            wasWatching = watching;
+        Hasher.stopWatching();
         if (Version.current !== null) {
             chunks.push('version:' + Version.current.majorMinorVersion);
         }
@@ -130,6 +172,18 @@ var Hasher = (function() {
         } else {
             window.location.hash = chunks.join('|');
         }
+        if (wasWatching) {
+            Hasher.startWatching();
+        }
+    };
+    hasher.stopWatching = function() {
+        watching = false;
+        $(window).off('hashchange', hashChanged);
+    };
+    hasher.startWatching = function() {
+        Hasher.stopWatching();
+        watching = true;
+        $(window).on('hashchange', hashChanged);
     };
     return hasher;
 })();
@@ -2527,7 +2581,7 @@ var VersionsComparer = (function() {
                 $vToAndFrom.removeAttr('disabled');
                 $focalize.focus();
                 $vToAndFrom.on('change', refreshChanges);
-            }
+            };
         }
         $dialog.find('.modal-body').empty();
         fromVersion.load(function(err) {
@@ -2747,6 +2801,7 @@ $.ajax({
                 fixer.showDetails();
             }
         }
+        Hasher.startWatching();
     });
 });
 
