@@ -234,8 +234,7 @@ function Version(fullVersion) {
     var my = this;
     my.isLoaded = false;
     my.fullVersion = fullVersion;
-    var matches = /^(\d+\.\d+)\.\d+$/.exec(fullVersion);
-    my.majorMinorVersion = matches === null ? fullVersion : matches[1];
+    my.majorMinorVersion = Version.getMajorMinorVersionFrom(my.fullVersion);
     $('#pcs-versions').append(
         $('<a href="#" class="dropdown-item pcs-version" />')
             .text(my.fullVersion)
@@ -404,6 +403,10 @@ Version.getByMajorMinorVersion = function(majorMinorVersion) {
         }
     }
     return null;
+};
+Version.getMajorMinorVersionFrom = function(fullVersion) {
+    var matches = /^(\d+\.\d+)\.\d+$/.exec(fullVersion);
+    return matches === null ? fullVersion : matches[1];
 };
 Version.initialize = function(availableVersions) {
     Version.all = [];
@@ -1699,7 +1702,9 @@ var Loader = (function() {
         $input.attr('placeholder', importer && importer.getPlaceholder ? importer.getPlaceholder() : '');
     });
     function load() {
-        var serialized = $.trim($input.val()), state;
+        var serialized = $.trim($input.val()),
+            state,
+            version = null;
         if (serialized === '') {
             state = {};
         } else {
@@ -1715,37 +1720,38 @@ var Loader = (function() {
             }
         }
         if (state.hasOwnProperty('version')) {
-            var mm = Version.getCurrentMajorMinorOf(state.version);
-            if (mm !== null && mm !== Version.currentMajorMinor) {
-                var vCompatible = null;
-                Version.all.forEach(function(version) {
-                    if (version.majorMinorVersion === mm) {
-                        vCompatible = version;
-                    }
-                });
-                if (vCompatible !== null && window.confirm([
-                    'The configuration is for PHP-CS-Fixer version ' + mm + ' but this page is currently configured for PHP-CS-Fixer version ' + Version.currentMajorMinor + '.',
-                    '',
-                    'Do you want to reload this page for PHP-CS-Fixer version ' + vCompatible.majorMinorVersion + '?'
-                ].join('\n'))) {
-                    window.location.href = '?version=' + mm + '#configurator';
-                    return;
-                }
+            version = Version.getByMajorMinorVersion(Version.getMajorMinorVersionFrom(state.version));
+            if (version === null) {
+                window.alert('Version not found: ' + state.version);
+                return;
             }
             delete state.version;
         }
-        try {
-            State.set(state);
-        } catch (errors) {
-            setTimeout(
-                function() {
-                    window.alert(errors.message);
-                },
-                10
-            );
-            return;
+        if (version === null) {
+            version = Version.current;
+            if (version === null) {
+                window.alert('No current version');
+                return;
+            }
         }
-        $('#pcs-modal-load').modal('hide');
+        version.load(function(err) {
+            if (err) {
+                window.alert(err);
+                return;
+            }
+            try {
+                State.set(state);
+            } catch (errors) {
+                setTimeout(
+                    function() {
+                        window.alert(errors.message);
+                    },
+                    10
+                );
+                return;
+            }
+            $('#pcs-modal-load').modal('hide');
+        });
     }
 
     $('#pcs-modal-load')
@@ -1823,28 +1829,28 @@ AutoDetectImporter.prototype = {
         return "Paste here the state in any of the supported formats.\n\nWe'll try to auto-detect its format.";
     },
     parse: function(serialized) {
-        var state = null;
+        var found = null;
         $.each(Loader.registeredImporters, function() {
             if (this instanceof AutoDetectImporter) {
                 return;
             }
-            var stateFromExporter;
+            var state;
             try {
-                stateFromExporter = this.parse(serialized);
+                state = this.parse(serialized);
             } catch (e) {
                 return;
             }
-            if (state === null) {
-                state = stateFromExporter;
-            } else {
-                state = null;
+            if (found === null || found[0] instanceof YamlImporter) {
+                found = [this, state];
+            } else if (!(this instanceof YamlImporter)) {
+                found = null;
                 return false;
             }
         });
-        if (state === null) {
+        if (found === null) {
             throw new Error('Automatic detection failed. Try to use a specific format.');
         }
-        return state;
+        return found[1];
     }
 };
 function PhpImporter() {
@@ -2326,7 +2332,7 @@ PhpCsExporter.prototype = {
             '<?php',
             '/*',
             ' * This document has been generated with',
-            ' * https://mlocati.github.io/php-cs-fixer-configurator/?version=' + Version.currentMajorMinor + '#configurator',
+            ' * https://mlocati.github.io/php-cs-fixer-configurator/#version:' + Version.current.majorMinorVersion + '|configurator',
             ' * you can change this configuration by importing this file.',
             ' */',
             ''
