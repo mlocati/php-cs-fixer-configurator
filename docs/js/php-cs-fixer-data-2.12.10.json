@@ -470,6 +470,7 @@
             "configuration": [
                 {
                     "name": "multi_line_extends_each_single_line",
+                    "alias": "multiLineExtendsEachSingleLine",
                     "description": "Whether definitions should be multiline.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -478,6 +479,7 @@
                 },
                 {
                     "name": "single_item_single_line",
+                    "alias": "singleItemSingleLine",
                     "description": "Whether definitions should be single line when including a single item.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -486,6 +488,7 @@
                 },
                 {
                     "name": "single_line",
+                    "alias": "singleLine",
                     "description": "Whether definitions should be single line.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -1570,6 +1573,7 @@
             "configuration": [
                 {
                     "name": "comment_type",
+                    "alias": "commentType",
                     "description": "Comment syntax type.",
                     "defaultValue": "comment",
                     "allowedValues": [
@@ -2011,12 +2015,12 @@
             "riskyDescription": "Risky when any of the constants are namespaced or overridden.",
             "codeSamples": [
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\n"
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\r\n"
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, \\MY_CUSTOM_PI);\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, \\MY_CUSTOM_PI);\r\n",
                     "configuration": {
                         "include": [
                             "MY_CUSTOM_PI"
@@ -2024,8 +2028,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
-                    "to": "<?php var_dump(PHP_VERSION, M_PI, \\MY_CUSTOM_PI);\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
+                    "to": "<?php var_dump(PHP_VERSION, M_PI, \\MY_CUSTOM_PI);\r\n",
                     "configuration": {
                         "fix_built_in": false,
                         "include": [
@@ -2034,8 +2038,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
                     "configuration": {
                         "exclude": [
                             "M_PI"
@@ -3037,6 +3041,7 @@
             "configuration": [
                 {
                     "name": "imports_order",
+                    "alias": "importsOrder",
                     "description": "Defines the order of import types.",
                     "defaultValue": null,
                     "allowedTypes": [
@@ -3046,6 +3051,7 @@
                 },
                 {
                     "name": "sort_algorithm",
+                    "alias": "sortAlgorithm",
                     "description": "whether the statements should be sorted alphabetically or by length, or not sorted",
                     "defaultValue": "alpha",
                     "allowedValues": [

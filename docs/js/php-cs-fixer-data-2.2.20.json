@@ -175,6 +175,7 @@
             "configuration": [
                 {
                     "name": "multi_line_extends_each_single_line",
+                    "alias": "multiLineExtendsEachSingleLine",
                     "description": "Whether definitions should be multiline.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -183,6 +184,7 @@
                 },
                 {
                     "name": "single_item_single_line",
+                    "alias": "singleItemSingleLine",
                     "description": "Whether definitions should be single line when including a single item.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -191,6 +193,7 @@
                 },
                 {
                     "name": "single_line",
+                    "alias": "singleLine",
                     "description": "Whether definitions should be single line.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -858,6 +861,7 @@
             "configuration": [
                 {
                     "name": "comment_type",
+                    "alias": "commentType",
                     "description": "Comment syntax type.",
                     "defaultValue": "comment",
                     "allowedValues": [
@@ -1716,6 +1720,7 @@
             "configuration": [
                 {
                     "name": "imports_order",
+                    "alias": "importsOrder",
                     "description": "Defines the order of import types.",
                     "defaultValue": null,
                     "allowedTypes": [
@@ -1725,6 +1730,7 @@
                 },
                 {
                     "name": "sort_algorithm",
+                    "alias": "sortAlgorithm",
                     "description": "whether the statements should be sorted alphabetically or by length",
                     "defaultValue": "alpha",
                     "allowedValues": [
