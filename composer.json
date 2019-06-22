@@ -4,7 +4,7 @@
 	],
 	"autoload" : {
 		"psr-4" : {
-			"MLocati\\PhpCsFixerConfigurator\\" : "src"
+			"MLocati\\PhpCsFixerConfigurator\\" : "php"
 		}
 	},
 	"name" : "mlocati/php-cs-fixer-configurator",
