@@ -71,11 +71,13 @@ $data = [
 ];
 fprintf(STDOUT, "done.\n");
 
-$jsDir = dirname(__DIR__) . '/docs/js';
-
+$jsDir = dirname(__DIR__) . '/docs/data';
+if (!is_dir($jsDir)) {
+    mkdir($jsDir);
+}
 fprintf(STDOUT, 'Saving data... ');
-if (is_file("{$jsDir}/php-cs-fixer-versions.json")) {
-    $versions = @json_decode(@file_get_contents("{$jsDir}/php-cs-fixer-versions.json"));
+if (is_file("{$jsDir}/versions.json")) {
+    $versions = @json_decode(@file_get_contents("{$jsDir}/versions.json"));
     if (!is_array($versions)) {
         fprintf(STDERR, "Error loading versions file!\n");
     }
@@ -88,16 +90,16 @@ if (!in_array($version, $versions, true)) {
     usort($versions, function ($versionA, $versionB) {
         return version_compare($versionB, $versionA);
     });
-    if (@file_put_contents("{$jsDir}/php-cs-fixer-versions.json", json_encode($versions, JSON_PRETTY_PRINT)) === false) {
+    if (@file_put_contents("{$jsDir}/versions.json", json_encode($versions, JSON_PRETTY_PRINT)) === false) {
         fprintf(STDERR, "Error saving versions file!\n");
         exit(1);
     }
 }
-if (@file_put_contents("{$jsDir}/php-cs-fixer-data-{$version}.json", $encoder->setPrettyPrint(true)->stringify($data)) === false) {
+if (@file_put_contents("{$jsDir}/{$version}.json", $encoder->setPrettyPrint(true)->stringify($data)) === false) {
     fprintf(STDERR, "Error saving data!\n");
     exit(1);
 }
-if (@file_put_contents("{$jsDir}/php-cs-fixer-data-{$version}.min.json", $encoder->setPrettyPrint(false)->stringify($data)) === false) {
+if (@file_put_contents("{$jsDir}/{$version}.min.json", $encoder->setPrettyPrint(false)->stringify($data)) === false) {
     fprintf(STDERR, "Error saving compressed data!\n");
     exit(1);
 }

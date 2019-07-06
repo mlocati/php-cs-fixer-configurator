@@ -75,9 +75,9 @@ class PCFCWorker
     /**
      * @return string
      */
-    public function getJSDir()
+    public function getJsonDataDir()
     {
-        return $this->getRootDir() . '/docs/js';
+        return $this->getRootDir() . '/docs/data';
     }
 
     /**
@@ -85,7 +85,7 @@ class PCFCWorker
      */
     public function getCurrentVersionsFile()
     {
-        return $this->getJSDir() . '/php-cs-fixer-versions.json';
+        return $this->getJsonDataDir() . '/versions.json';
     }
 
     /**
@@ -134,14 +134,16 @@ class PCFCWorker
     private function getCurrentVersionsFromDataFiles(array &$currentVersions)
     {
         $matches = null;
-        $jsDir = $this->getJSDir();
-        foreach (scandir($jsDir) as $jsFile) {
-            if (preg_match('/^php-cs-fixer-data-(\d+(?:\.\d+)*)(?:\.min)?.json$/', $jsFile, $matches)) {
-                $version = $matches[1];
-                if (!isset($currentVersions[$version])) {
-                    $currentVersions[$version] = new PCFCCurrentVersion();
+        $jsDir = $this->getJsonDataDir();
+        if (is_dir($jsDir)) {
+            foreach (scandir($jsDir) as $jsFile) {
+                if (preg_match('/^(\d+(?:\.\d+)*)(?:\.min)?.json$/', $jsFile, $matches)) {
+                    $version = $matches[1];
+                    if (!isset($currentVersions[$version])) {
+                        $currentVersions[$version] = new PCFCCurrentVersion();
+                    }
+                    $currentVersions[$version]->addJSDataFile($jsDir . '/' . $jsFile);
                 }
-                $currentVersions[$version]->addJSDataFile($jsDir . '/' . $jsFile);
             }
         }
     }
@@ -151,13 +153,16 @@ class PCFCWorker
      */
     private function getCurrentVersionsFromVersionsFile(array &$currentVersions)
     {
-        $versions = json_decode(file_get_contents($this->getCurrentVersionsFile()), true);
-        foreach ($versions as $version)
-        {
-            if (!isset($currentVersions[$version])) {
-                $currentVersions[$version] = new PCFCCurrentVersion();
+        $versionsFile = $this->getCurrentVersionsFile();
+        if (is_file($versionsFile)) {
+            $versions = json_decode(file_get_contents($versionsFile), true);
+            foreach ($versions as $version)
+            {
+                if (!isset($currentVersions[$version])) {
+                    $currentVersions[$version] = new PCFCCurrentVersion();
+                }
+                $currentVersions[$version]->setInVersionsFile(true);
             }
-            $currentVersions[$version]->setInVersionsFile(true);
         }
     }
 
