@@ -1,0 +1,72 @@
+@import "~bootstrap/scss/bootstrap.scss";
+
+@import "~@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~@fortawesome/fontawesome-free/scss/regular";
+@import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~@fortawesome/fontawesome-free/scss/brands";
+
+@import "~prismjs/themes/prism.css";
+
+#loading {
+  position: fixed;
+  color: #ddd;
+  left: 50%;
+  top: 50%;
+  font-size: 12rem;
+  margin: -6rem 0 0 -6rem;
+}
+
+.modal-backdrop {
+  opacity: 0.8;
+}
+
+.configure-selected-fixer-sets {
+  display: inline-block;
+  overflow: auto;
+}
+
+.fixer-selected-by-fixerset {
+  background-color: #ace8b7;
+}
+.fixer-selected-by-user,
+.fixer-selected-by-user-configured {
+  background-color: #5cb85c;
+}
+.fixer-unselected-by-user {
+  background-color: #eca6a4;
+}
+
+pre.prism {
+  padding: 0.3em;
+  .token.tab:not(:empty),
+  .token.cr,
+  .token.lf,
+  .token.space {
+    position: relative;
+  }
+  &.show-invisibles {
+    .token.tab:not(:empty):before,
+    .token.cr:before,
+    .token.lf:before,
+    .token.space:before {
+      color: #808080;
+      opacity: 0.4;
+      position: absolute;
+    }
+    .token.tab:not(:empty):before {
+      content: "\21E5";
+    }
+    .token.cr:before {
+      content: "\240D";
+    }
+    .token.crlf:before {
+      content: "\240D\240A";
+    }
+    .token.lf:before {
+      content: "\240A";
+    }
+    .token.space:before {
+      content: "\00B7";
+    }
+  }
+}

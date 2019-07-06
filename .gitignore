@@ -1,4 +1,6 @@
-/vendor/
 /.php_cs
 /.php_cs.cache
 /composer.lock
+/docs/mix-manifest.json
+/node_modules/
+/vendor/
