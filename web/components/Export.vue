@@ -24,7 +24,7 @@
                 v-model="configuration.indent"
                 v-bind:options="indents"
                 v-bind:disabled="!exporter.supportConfiguringWhitespace"
-                v-on:input="refreshOutput"
+                v-on:input="refreshOutput(true)"
             ></b-form-select>
         </b-form-group>
         <b-form-group
@@ -37,7 +37,7 @@
                 v-model="configuration.lineEnding"
                 v-bind:options="lineEndings"
                 v-bind:disabled="!exporter.supportConfiguringWhitespace"
-                v-on:input="refreshOutput"
+                v-on:input="refreshOutput(true)"
             ></b-form-select>
         </b-form-group>
         <b-form-group
@@ -78,6 +78,7 @@
 <script lang="ts">
 import Configuration from '../Configuration';
 import { copyToClipboard } from '../Utils';
+import EventBus from '../EventBus';
 import ExporterInterface from '../Export/ExporterInterface';
 import Exporters from '../Export/Exporters';
 import * as PersistentStorage from '../PersistentStorage';
@@ -114,7 +115,7 @@ export default Vue.extend({
         };
     },
     mounted: function() {
-        this.refreshOutput();
+        this.refreshOutput(false);
     },
     computed: {
         exporter: function(): ExporterInterface {
@@ -134,13 +135,13 @@ export default Vue.extend({
     watch: {
         exporterHandle: function(exporterHandle) {
             PersistentStorage.setString('exporter', exporterHandle);
-            this.refreshOutput();
+            this.refreshOutput(false);
         },
         expandFixerSets: function() {
-            this.refreshOutput();
+            this.refreshOutput(false);
         },
         exportFixerDescriptions: function() {
-            this.refreshOutput();
+            this.refreshOutput(false);
         },
     },
     methods: {
@@ -153,7 +154,10 @@ export default Vue.extend({
             copyButton.className = copyButton.className.replace(/\bbtn-secondary\b/, copied ? 'btn-success' : 'btn-danger');
             setTimeout(() => (copyButton.className = copyButton.className.replace(/\bbtn-(success|danger)\b/, 'btn-secondary')), 500);
         },
-        refreshOutput: function() {
+        refreshOutput: function(forConfigurationChanges: boolean): void {
+            if (forConfigurationChanges) {
+                EventBus.$emit('configuration-changed');
+            }
             try {
                 const serializedConfiguration = this.expandFixerSets ? this.configuration.flatten().serialize() : this.configuration.serialize();
                 this.output = this.exporter.render(serializedConfiguration, {
