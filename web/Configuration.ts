@@ -678,7 +678,7 @@ export default class Configuration {
                 if (fixerConfiguration === false) {
                     result.excludeFixer(fixer);
                 } else if (fixerConfiguration === true || (fixerConfiguration !== null && typeof fixerConfiguration === 'object')) {
-                    fixerConfiguration = fixer.validateConfiguration({ configuration: fixerConfiguration, warnings });
+                    fixerConfiguration = fixer.validateConfiguration(fixerConfiguration, warnings);
                     if (fixerConfiguration === true) {
                         result.includeFixer(fixer);
                     } else {
