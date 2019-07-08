@@ -42,7 +42,7 @@
                     </b-button>
                     <template v-else>
                         <span
-                            v-if="fixer.configuration.length === 0"
+                            v-if="fixer.options.length === 0"
                             v-b-tooltip
                             title="This fixer is not configurable"
                         >

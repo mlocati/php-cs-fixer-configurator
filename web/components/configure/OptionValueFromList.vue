@@ -3,7 +3,7 @@
         v-model="selectedIndex"
         v-bind:options="options"
         stacked
-        name="fixer-configuration-value-from-list"
+        name="fixer-option-value-from-list"
     ></b-form-radio-group>
 </template>
 

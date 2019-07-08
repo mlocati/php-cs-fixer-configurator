@@ -111,7 +111,7 @@ function compareFixers(newerFixer: Fixer, olderFixer: Fixer): string[] {
     if ((newerFixer.deprecated_switchTo.length !== 0) !== (olderFixer.deprecated_switchTo.length !== 0)) {
         differences.push(newerFixer.deprecated_switchTo.length !== 0 ? 'The fixer has been deprecated' : 'The fixer is no more deprecated');
     }
-    newerFixer.configuration.forEach((newerOption): void => {
+    newerFixer.options.forEach((newerOption): void => {
         let olderOption = olderFixer.getOptionByName(newerOption.name, null);
         if (olderOption === null && newerOption.alias !== undefined) {
             olderOption = olderFixer.getOptionByName(newerOption.alias, null);
@@ -134,7 +134,7 @@ function compareFixers(newerFixer: Fixer, olderFixer: Fixer): string[] {
             differences.push(`The list of allowed types of the \`${newerOption.name}\` option has changed`);
         }
     });
-    olderFixer.configuration.forEach((olderOption): void => {
+    olderFixer.options.forEach((olderOption): void => {
         var newerOption = newerFixer.getOptionByName(olderOption.name, null);
         if (newerOption === null && olderOption.alias !== undefined) {
             newerOption = newerFixer.getOptionByName(olderOption.alias, null);

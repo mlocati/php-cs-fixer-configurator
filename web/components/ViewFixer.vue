@@ -103,13 +103,13 @@
                             </ul>
                         </dd>
                     </template>
-                    <template v-if="fixer.configuration.length === 0">
+                    <template v-if="fixer.options.length === 0">
                         <dt class="col-sm-3">Configuration</dt>
                         <dd class="col-sm-9">This fixer is not configurable</dd>
                     </template>
                 </dl>
                 <div
-                    v-for="(option, optionIndex) in fixer.configuration"
+                    v-for="(option, optionIndex) in fixer.options"
                     v-bind:key="optionIndex"
                     class="row"
                 >
@@ -168,7 +168,7 @@
                     class="tab-pane"
                     v-bind:class="tab === 'codesample-' + codeSampleIndex ? 'active' : ''"
                 >
-                    <template v-if="fixer.configuration.length">
+                    <template v-if="fixer.options.length">
                         <b-card
                             header="Configuration"
                             class="w-100"

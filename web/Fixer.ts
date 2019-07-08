@@ -58,7 +58,7 @@ export default class Fixer implements FixerOrSetInterface {
      */
     public readonly riskyDescriptionHtml: string;
 
-    public readonly configuration: PFCFixerOption[];
+    public readonly options: PFCFixerOption[];
 
     public readonly codeSamples: PFCFixerCodeSample[];
 
@@ -162,7 +162,7 @@ export default class Fixer implements FixerOrSetInterface {
         this.risky = data.risky ? true : false;
         this.riskyDescription = data.riskyDescription === undefined ? '' : <string>data.riskyDescription;
         this.riskyDescriptionHtml = textToHtml(this.riskyDescription, true);
-        this.configuration = data.configuration === undefined ? [] : data.configuration;
+        this.options = data.configuration === undefined ? [] : data.configuration;
         this.codeSamples = data.codeSamples === undefined ? [] : data.codeSamples;
         if (data.deprecated_switchTo === undefined) {
             this.deprecated_switchToNames = [];
@@ -234,14 +234,8 @@ export default class Fixer implements FixerOrSetInterface {
      * @return null in case of errors (invalid option name, invalid option value)
      */
     public validateOptionValue(optionName: string, value: any, warnings: string[]): [string, any] | null {
-        let option: PFCFixerOption | undefined;
-        this.configuration.some((o: PFCFixerOption): boolean => {
-            if (o.name === optionName || o.alias === optionName) {
-                option = o;
-            }
-            return option !== undefined;
-        });
-        if (option === undefined) {
+        let option: PFCFixerOption | null = this.getOptionByName(optionName);
+        if (option === null) {
             warnings.push(`The fixer ${this.name} does not have an option named ${optionName} for version ${this.version.fullVersion}: it has been removed`);
             return null;
         }
@@ -307,9 +301,9 @@ export default class Fixer implements FixerOrSetInterface {
      * 
      * @returns -1 if not found
      */
-    public getOptionIndexByName(name: string, alias: boolean | null): number {
-        for (let index = this.configuration.length - 1; index >= 0; index--) {
-            let option = this.configuration[index];
+    public getOptionIndexByName(name: string, alias: boolean | null = null): number {
+        for (let index = this.options.length - 1; index >= 0; index--) {
+            let option = this.options[index];
             if (alias !== true && option.name === name) {
                 return index;
             }
@@ -327,8 +321,8 @@ export default class Fixer implements FixerOrSetInterface {
      * 
      * @returns null if not found
      */
-    public getOptionByName(name: string, alias: boolean | null): PFCFixerOption | null {
+    public getOptionByName(name: string, alias: boolean | null = null): PFCFixerOption | null {
         const index = this.getOptionIndexByName(name, alias);
-        return index === -1 ? null : this.configuration[index];
+        return index === -1 ? null : this.options[index];
     }
 }

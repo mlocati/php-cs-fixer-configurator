@@ -69,13 +69,10 @@ export default Vue.extend({
                 fixerSet: null,
                 value: undefined,
             };
-            this.fixer.configuration.some((option): boolean => {
-                if (option.name !== this.optionName) {
-                    return false;
-                }
+            const option = this.fixer.getOptionByName(this.optionName);
+            if (option !== null) {
                 result.value = option.defaultValue;
-                return true;
-            });
+            }
             return result;
         },
     },

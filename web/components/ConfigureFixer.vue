@@ -109,7 +109,7 @@ export default Vue.extend({
     },
     mounted: function() {
         let options: Object[] = [];
-        this.fixer.configuration.forEach((option): void => {
+        this.fixer.options.forEach((option): void => {
             options.push({ value: options.length, text: option.name });
         });
         this.options = options;
@@ -126,7 +126,7 @@ export default Vue.extend({
                 break;
         }
         this.newConfigurationCustomFor.splice(0, this.newConfigurationCustomFor.length);
-        this.fixer.configuration.forEach((option): void => {
+        this.fixer.options.forEach((option): void => {
             let currentOptionValue;
             if (currentConfiguration.hasOwnProperty(option.name)) {
                 currentOptionValue = currentConfiguration[option.name];
@@ -144,7 +144,7 @@ export default Vue.extend({
     },
     computed: {
         option: function(): PFCFixerOption {
-            return this.fixer.configuration[this.optionIndex];
+            return this.fixer.options[this.optionIndex];
         },
         optionWithCustomValue: function(): boolean {
             return this.newConfigurationCustomFor.indexOf(this.option.name) >= 0;
@@ -233,13 +233,7 @@ export default Vue.extend({
                             }
                         }
                         if (error !== null) {
-                            this.fixer.configuration.some((option, optionIndex): boolean => {
-                                if (option.name === optionName) {
-                                    this.optionIndex = optionIndex;
-                                    return true;
-                                }
-                                return false;
-                            });
+                            this.optionIndex = this.fixer.getOptionIndexByName(optionName);
                             throw new Error(error);
                         }
                     }
