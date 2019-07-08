@@ -1,3 +1,5 @@
+[![TravisCI Build Status](https://travis-ci.org/mlocati/php-cs-fixer-configurator.svg?branch=master)](https://travis-ci.org/mlocati/php-cs-fixer-configurator)
+
 # PHP-CS-Fixer Configurator
 
 This project lets you check all the available fixers and presets built in [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) in a visual way.
@@ -65,3 +67,15 @@ npm run prod
 ```sh
 npm run watch
 ```
+
+
+## Submitting pull requests
+
+Because of security reasons and to reduce merge conflicts, the following files are generated automatically:
+
+- `docs/css/*`
+- `docs/fonts/*`
+- `docs/js/*`
+- `docs/index.html`
+
+So, please don't add these files to your commits when submitting pull requests.
