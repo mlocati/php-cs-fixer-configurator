@@ -158,6 +158,14 @@
         </fieldset>
 
         <b-alert
+            variant="info"
+            show
+        >
+            This tool uses some great open source tools.
+            You can find their licenses <a href="https://github.com/mlocati/php-cs-fixer-configurator/tree/master/licenses" target="_blank" rel="noopener noreferrer">here</a>.
+        </b-alert>
+
+        <b-alert
             variant="success"
             show
         >
@@ -166,10 +174,10 @@
                 rel="noopener noreferrer"
                 target="_blank"
             >
-                Say Thank you to the
-                author
+                Say Thank you to the author of PHP-CS-Fixer Configurator
             </a>
         </b-alert>
+
     </div>
 </template>
 

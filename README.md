@@ -79,3 +79,10 @@ Because of security reasons and to reduce merge conflicts, the following files a
 - `docs/index.html`
 
 So, please don't add these files to your commits when submitting pull requests.
+
+
+## Credits
+
+[PHP-CS-Fixer Configurator](https://mlocati.github.io/php-cs-fixer-configurator/) uses some great open source tools.
+
+You can find their licenses in the [licenses](https://github.com/mlocati/php-cs-fixer-configurator/tree/master/licenses) directory.
