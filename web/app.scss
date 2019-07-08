@@ -70,3 +70,14 @@ pre.prism {
     }
   }
 }
+
+textarea.code {
+  font-family: $font-family-monospace;
+  white-space: pre;
+  overflow-wrap: normal;
+  &::placeholder {
+    font-family: $font-family-sans-serif;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+}

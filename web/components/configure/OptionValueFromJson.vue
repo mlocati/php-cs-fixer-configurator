@@ -12,7 +12,7 @@
                 <code>{{ allowedTypesDisplayNames.join(' ') }}</code>
             </p>
         </div>
-        <b-textarea v-model.trim="newJson"></b-textarea>
+        <b-textarea v-model.trim="newJson" class="code"></b-textarea>
     </div>
 </template>
 

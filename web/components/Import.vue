@@ -19,6 +19,7 @@
             v-model.trim="importText"
             v-bind:placeholder="importer.pastePlaceholder"
             v-bind:autofocus="true"
+            class="code"
         ></b-textarea>
         <p class="text-muted">By leaving the text empty (or by entering the representation of an empty object), the state will be reset.</p>
     </div>
@@ -63,12 +64,3 @@ export default Vue.extend({
     },
 });
 </script>
-
-<style scoped>
-textarea {
-    font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    white-space: pre;
-    overflow-wrap: normal;
-    overflow: auto;
-}
-</style>
