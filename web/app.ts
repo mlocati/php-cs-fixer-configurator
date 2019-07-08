@@ -13,7 +13,7 @@ Version.getVersions().then((versions: Version[]) => {
     if (versions.length === 0) {
         throw new Error('No versions found');
     }
-    const initialSerializedConfiguration : SerializedConfigurationInterface|undefined = PersistentStorage.getObject('configuration');
+    const initialSerializedConfiguration: SerializedConfigurationInterface | undefined = PersistentStorage.getObject('configuration');
     let wantedVersion: Version | null = null;
     let hash = LocationHash.fromWindowLocation();
     if (wantedVersion === null && hash.majorMinorVersion.length !== 0) {

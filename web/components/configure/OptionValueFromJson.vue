@@ -12,7 +12,10 @@
                 <code>{{ allowedTypesDisplayNames.join(' ') }}</code>
             </p>
         </div>
-        <b-textarea v-model.trim="newJson" class="code"></b-textarea>
+        <b-textarea
+            v-model.trim="newJson"
+            class="code"
+        ></b-textarea>
     </div>
 </template>
 
@@ -45,9 +48,9 @@ export default Vue.extend({
     data: function() {
         return {
             newJson: '',
-        }
+        };
     },
-    beforeMount: function() : void {
+    beforeMount: function(): void {
         this.newJson = this.json || '';
     },
     computed: {
