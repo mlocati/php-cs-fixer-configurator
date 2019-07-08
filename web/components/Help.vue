@@ -4,6 +4,7 @@
             <legend>Toolbar</legend>
             <dl class="row">
                 <dt class="col-3">
+                    <div style="width: 100%; height: 100%; z-index:1; position:absolute"></div>
                     <b-input-group size="sm">
                         <b-form-input placeholder="Search"></b-form-input>
                         <b-dropdown
@@ -15,6 +16,7 @@
                 <dd class="col-9">Show only the fixers corresponding to the search text or to the selected fixer sets</dd>
                 <template v-if="configuring">
                     <dt class="col-3">
+                        <div style="width: 100%; height: 100%; z-index:1; position:absolute"></div>
                         <b-input-group size="sm">
                             <span class="form-control configure-selected-fixer-sets"></span>
                             <b-dropdown
