@@ -616,7 +616,11 @@ export default class Configuration {
             if (!result.hasOwnProperty('fixers')) {
                 result.fixers = {};
             }
-            (<{ [fixerName: string]: boolean | object }>result.fixers)[fixerName] = fixerState.configuration === null ? true : fixerState.configuration;
+            if (fixerState.state === FixerState.MANUALLY_EXCLUDED) {
+                (<{ [fixerName: string]: boolean | object }>result.fixers)[fixerName] = false;
+            } else {
+                (<{ [fixerName: string]: boolean | object }>result.fixers)[fixerName] = fixerState.configuration === null ? true : fixerState.configuration;
+            }
         });
 
         return result;
