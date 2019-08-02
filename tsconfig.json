@@ -10,7 +10,8 @@
             "dom",
             "es5",
             "es2015.promise"
-        ]
+        ],
+        "noImplicitAny": true
     },
     "include": [
         "./web/**/*"
