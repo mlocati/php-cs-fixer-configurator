@@ -192,8 +192,71 @@
                             <i v-else>Default configuration</i>
                         </b-card>
                     </template>
+                    <div class="d-none d-xl-block">
+                        <b-button
+                            v-bind:variant="sideBySideIO ? 'success' : 'default'"
+                            size="sm"
+                            style="position: absolute; right:31px; margin-top: 10px"
+                            v-on:click.prevent="sideBySideIO = !sideBySideIO"
+                        >
+                            <i class="fas fa-columns"></i>
+                        </b-button>
+                        <b-tabs
+                            v-if="!sideBySideIO"
+                            class="mt-3"
+                            content-class="mt-3"
+                            no-fade
+                        >
+                            <b-tab
+                                title="Input"
+                                active
+                            >
+                                <prism
+                                    language="php"
+                                    v-bind:code="codeSample.from"
+                                    show-invisibles
+                                ></prism>
+                            </b-tab>
+                            <b-tab title="Output">
+                                <prism
+                                    language="php"
+                                    v-bind:code="codeSample.to"
+                                    show-invisibles
+                                ></prism>
+                            </b-tab>
+                        </b-tabs>
+                        <table
+                            v-else
+                            class="table"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Input</th>
+                                    <th>Output</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <prism
+                                            language="php"
+                                            v-bind:code="codeSample.from"
+                                            show-invisibles
+                                        ></prism>
+                                    </td>
+                                    <td>
+                                        <prism
+                                            language="php"
+                                            v-bind:code="codeSample.to"
+                                            show-invisibles
+                                        ></prism>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <b-tabs
-                        class="mt-3"
+                        class="mt-3 d-xl-none"
                         content-class="mt-3"
                         no-fade
                     >
@@ -225,6 +288,7 @@
 import Fixer from '../Fixer';
 import FixerLink from './FixerLink.vue';
 import FixerSetLink from './FixerSetLink.vue';
+import * as PersistentStorage from '../PersistentStorage';
 import Prism from './Prism.vue';
 import { textToHtml, toPhp } from '../Utils';
 import Vue from 'vue';
@@ -238,6 +302,7 @@ export default Vue.extend({
     data: function() {
         return {
             tab: 'general',
+            sideBySideIO: PersistentStorage.getBoolean('fixer-sidebyside-io'),
         };
     },
     props: {
@@ -264,6 +329,11 @@ export default Vue.extend({
         },
         toPhp: function(value: any): string {
             return toPhp(value, true);
+        },
+    },
+    watch: {
+        sideBySideIO: function(newValue: boolean): void {
+            PersistentStorage.setBoolean('fixer-sidebyside-io', newValue);
         },
     },
 });
