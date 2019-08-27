@@ -1,5 +1,5 @@
 {
-    "version": "2.14.4",
+    "version": "2.14.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -1578,10 +1578,14 @@
             ]
         },
         "function_typehint_space": {
-            "summary": "Add missing space between function's argument and its typehint.",
+            "summary": "Ensure single space between function's argument and its typehint.",
             "codeSamples": [
                 {
                     "from": "<?php\nfunction sample(array$a)\n{}\n",
+                    "to": "<?php\nfunction sample(array $a)\n{}\n"
+                },
+                {
+                    "from": "<?php\nfunction sample(array  $a)\n{}\n",
                     "to": "<?php\nfunction sample(array $a)\n{}\n"
                 }
             ]
@@ -4174,7 +4178,7 @@
                 }
             ],
             "summary": "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name.",
-            "riskyDescription": "This fixer may change your class name, which will break the code that is depended on old name.",
+            "riskyDescription": "This fixer may change your class name, which will break the code that depends on the old name.",
             "codeSamples": [
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
@@ -4192,7 +4196,7 @@
         "psr4": {
             "risky": true,
             "summary": "Class names should match the file name.",
-            "riskyDescription": "This fixer may change your class name, which will break the code that is depended on old name.",
+            "riskyDescription": "This fixer may change your class name, which will break the code that depends on the old name.",
             "codeSamples": [
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
@@ -4814,9 +4818,7 @@
             "class_definition": {
                 "single_line": true
             },
-            "concat_space": {
-                "spacing": "none"
-            },
+            "concat_space": null,
             "declare_equal_normalize": null,
             "function_typehint_space": null,
             "include": null,
@@ -4845,9 +4847,7 @@
             },
             "no_leading_import_slash": null,
             "no_leading_namespace_whitespace": null,
-            "no_mixed_echo_print": {
-                "use": "echo"
-            },
+            "no_mixed_echo_print": null,
             "no_multiline_whitespace_around_double_arrow": null,
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
@@ -4970,9 +4970,7 @@
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": false
-            },
+            "non_printable_character": null,
             "php_unit_construct": null,
             "psr4": null,
             "self_accessor": null,
@@ -5051,9 +5049,7 @@
             "class_definition": {
                 "single_line": true
             },
-            "concat_space": {
-                "spacing": "none"
-            },
+            "concat_space": null,
             "declare_equal_normalize": null,
             "function_typehint_space": null,
             "include": null,
@@ -5071,9 +5067,7 @@
             "no_empty_statement": null,
             "no_leading_import_slash": null,
             "no_leading_namespace_whitespace": null,
-            "no_mixed_echo_print": {
-                "use": "echo"
-            },
+            "no_mixed_echo_print": null,
             "no_multiline_whitespace_around_double_arrow": null,
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
@@ -5205,9 +5199,7 @@
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": false
-            },
+            "non_printable_character": null,
             "php_unit_construct": null,
             "psr4": null,
             "self_accessor": null,
@@ -5310,9 +5302,7 @@
             }
         },
         "@PHPUnit50Migration:risky": {
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
+            "php_unit_dedicate_assert": null,
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -5324,9 +5314,7 @@
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
+            "php_unit_dedicate_assert": null,
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -5341,9 +5329,7 @@
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
+            "php_unit_dedicate_assert": null,
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -5358,9 +5344,7 @@
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
+            "php_unit_dedicate_assert": null,
             "php_unit_namespaced": {
                 "target": "4.8"
             },
