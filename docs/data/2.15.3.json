@@ -1,5 +1,5 @@
 {
-    "version": "2.12.11",
+    "version": "2.15.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -115,6 +115,7 @@
                         "align_single_space",
                         "align_single_space_minimal",
                         "single_space",
+                        "no_space",
                         null
                     ]
                 },
@@ -158,6 +159,15 @@
                     "configuration": {
                         "operators": {
                             "===": "align_single_space_minimal"
+                        }
+                    }
+                },
+                {
+                    "from": "<?php\n$foo = \\json_encode($bar, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT);\n",
+                    "to": "<?php\n$foo = \\json_encode($bar, JSON_PRESERVE_ZERO_FRACTION|JSON_PRETTY_PRINT);\n",
+                    "configuration": {
+                        "operators": {
+                            "|": "no_space"
                         }
                     }
                 }
@@ -553,6 +563,17 @@
                 {
                     "from": "<?php\nunset($a); unset($b);\n",
                     "to": "<?php\nunset($a, $b); \n"
+                }
+            ]
+        },
+        "combine_nested_dirname": {
+            "risky": true,
+            "summary": "Replace multiple nested calls of `dirname` by only one call with second `$level` parameter. Requires PHP >= 7.0.",
+            "riskyDescription": "Risky when the function `dirname` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\ndirname(dirname(dirname($path)));\n",
+                    "to": "<?php\ndirname($path,3);\n"
                 }
             ]
         },
@@ -1396,6 +1417,18 @@
                 }
             ]
         },
+        "final_class": {
+            "risky": true,
+            "summary": "All classes must be final, except abstract ones and Doctrine entities.",
+            "description": "No exception and no configuration are intentional. Beside Doctrine entities and of course abstract classes, there is no single reason not to declare all classes final. If you want to subclass a class, mark the parent class as abstract and create two child classes, one empty if necessary: you'll gain much more fine grained type-hinting. If you need to mock a standalone class, create an interface, or maybe it's a value-object that shouldn't be mocked at all. If you need to extend a standalone class, create an interface and use the Composite pattern. If you aren't ready yet for serious OOP, go with FinalInternalClassFixer, it's fine.",
+            "riskyDescription": "Risky when subclassing non-abstract classes.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass MyApp {}\n",
+                    "to": "<?php\nfinal class MyApp {}\n"
+                }
+            ]
+        },
         "final_internal_class": {
             "risky": true,
             "configuration": [
@@ -1405,7 +1438,7 @@
                     "defaultValue": [
                         "@final",
                         "@Entity",
-                        "@ORM"
+                        "@ORM\\Entity"
                     ],
                     "allowedTypes": [
                         "array"
@@ -1419,6 +1452,14 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ]
+                },
+                {
+                    "name": "consider-absent-docblock-as-internal-class",
+                    "description": "Should classes without any DocBlock be fixed to final?",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
                     ]
                 }
             ],
@@ -1437,6 +1478,38 @@
                             "@Custom"
                         ]
                     }
+                }
+            ]
+        },
+        "fopen_flag_order": {
+            "risky": true,
+            "summary": "Order the flags in `fopen` calls, `b` and `t` must be last.",
+            "riskyDescription": "Risky when the function `fopen` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$a = fopen($foo, 'br+');\n",
+                    "to": "<?php\n$a = fopen($foo, 'r+b');\n"
+                }
+            ]
+        },
+        "fopen_flags": {
+            "risky": true,
+            "configuration": [
+                {
+                    "name": "b_mode",
+                    "description": "The `b` flag must be used (`true`) or omitted (`false`).",
+                    "defaultValue": true,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
+            "summary": "The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently.",
+            "riskyDescription": "Risky when the function `fopen` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$a = fopen($foo, 'rwt');\n",
+                    "to": "<?php\n$a = fopen($foo, 'rwb');\n"
                 }
             ]
         },
@@ -1643,12 +1716,40 @@
                 }
             ]
         },
+        "heredoc_indentation": {
+            "summary": "Heredoc\/nowdoc content must be properly indented. Requires PHP >= 7.3.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n    $a = <<<EOD\nabc\n    def\nEOD;\n",
+                    "to": "<?php\n    $a = <<<EOD\n        abc\n            def\n        EOD;\n"
+                },
+                {
+                    "from": "<?php\n    $a = <<<'EOD'\nabc\n    def\nEOD;\n",
+                    "to": "<?php\n    $a = <<<'EOD'\n        abc\n            def\n        EOD;\n"
+                }
+            ]
+        },
         "heredoc_to_nowdoc": {
             "summary": "Convert `heredoc` to `nowdoc` where possible.",
             "codeSamples": [
                 {
                     "from": "<?php $a = <<<\"TEST\"\nFoo\nTEST;\n",
                     "to": "<?php $a = <<<'TEST'\nFoo\nTEST;\n"
+                }
+            ]
+        },
+        "implode_call": {
+            "risky": true,
+            "summary": "Function `implode` must be called with 2 arguments in the documented order.",
+            "riskyDescription": "Risky when the function `implode` is overridden.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nimplode($pieces, '');\n",
+                    "to": "<?php\nimplode('', $pieces);\n"
+                },
+                {
+                    "from": "<?php\nimplode($pieces);\n",
+                    "to": "<?php\nimplode('', $pieces);\n"
                 }
             ]
         },
@@ -1823,6 +1924,19 @@
                 }
             ]
         },
+        "magic_method_casing": {
+            "summary": "Magic method definitions and calls must be using the correct casing.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass Foo\n{\n    public function __Sleep()\n    {\n    }\n}\n",
+                    "to": "<?php\nclass Foo\n{\n    public function __sleep()\n    {\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\n$foo->__INVOKE(1);\n",
+                    "to": "<?php\n$foo->__invoke(1);\n"
+                }
+            ]
+        },
         "mb_str_functions": {
             "risky": true,
             "summary": "Replace non multibyte-safe functions with corresponding mb function.",
@@ -1836,6 +1950,14 @@
         },
         "method_argument_space": {
             "configuration": [
+                {
+                    "name": "after_heredoc",
+                    "description": "Whether the whitespace between heredoc end and comma should be removed.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                },
                 {
                     "name": "ensure_fully_multiline",
                     "description": "ensure every argument of a multiline argument list is on its own line",
@@ -1911,6 +2033,13 @@
                     "configuration": {
                         "on_multiline": "ensure_fully_multiline",
                         "keep_multiple_spaces_after_comma": false
+                    }
+                },
+                {
+                    "from": "<?php\nsample(\n    <<<EOD\n        foo\n        EOD\n    ,\n    'bar'\n);\n",
+                    "to": "<?php\nsample(\n    <<<EOD\n        foo\n        EOD,\n    'bar'\n);\n",
+                    "configuration": {
+                        "after_heredoc": true
                     }
                 }
             ]
@@ -2013,6 +2142,15 @@
                     "allowedTypes": [
                         "array"
                     ]
+                },
+                {
+                    "name": "scope",
+                    "description": "Only fix constant invocations that are made within a namespace or fix all.",
+                    "defaultValue": "all",
+                    "allowedValues": [
+                        "all",
+                        "namespaced"
+                    ]
                 }
             ],
             "summary": "Add leading `\\` before constant invocation of internal constant to speed up resolving. Constant name match is case-sensitive, except for `null`, `false` and `true`.",
@@ -2021,6 +2159,13 @@
                 {
                     "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
                     "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\r\n"
+                },
+                {
+                    "from": "<?php\nnamespace space1 {\n    echo PHP_VERSION;\n}\nnamespace {\n    echo M_PI;\n}\n",
+                    "to": "<?php\nnamespace space1 {\n    echo \\PHP_VERSION;\n}\nnamespace {\n    echo M_PI;\n}\n",
+                    "configuration": {
+                        "scope": "namespaced"
+                    }
                 },
                 {
                     "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
@@ -2089,6 +2234,14 @@
                     "allowedValues": [
                         "all",
                         "namespaced"
+                    ]
+                },
+                {
+                    "name": "strict",
+                    "description": "Whether leading `\\` of function call not meant to have it should be removed.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
                     ]
                 }
             ],
@@ -2160,6 +2313,27 @@
                 }
             ]
         },
+        "native_function_type_declaration_casing": {
+            "summary": "Native type hints for functions should use the correct case.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass Bar {\n    public function Foo(CALLABLE $bar)\n    {\n        return 1;\n    }\n}\n",
+                    "to": "<?php\nclass Bar {\n    public function Foo(callable $bar)\n    {\n        return 1;\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\nfunction Foo(INT $a): Bool\n{\n    return true;\n}\n",
+                    "to": "<?php\nfunction Foo(int $a): bool\n{\n    return true;\n}\n"
+                },
+                {
+                    "from": "<?php\nfunction Foo(Iterable $a): VOID\n{\n    echo 'Hello world';\n}\n",
+                    "to": "<?php\nfunction Foo(iterable $a): void\n{\n    echo 'Hello world';\n}\n"
+                },
+                {
+                    "from": "<?php\nfunction Foo(Object $a)\n{\n    return 'hi!';\n}\n",
+                    "to": "<?php\nfunction Foo(object $a)\n{\n    return 'hi!';\n}\n"
+                }
+            ]
+        },
         "new_with_braces": {
             "summary": "All instances created with new keyword must be followed by braces.",
             "codeSamples": [
@@ -2171,12 +2345,34 @@
         },
         "no_alias_functions": {
             "risky": true,
+            "configuration": [
+                {
+                    "name": "sets",
+                    "description": "List of sets to fix. Defined sets are `@internal` (native functions), `@IMAP` (IMAP functions), `@mbreg` (from `ext-mbstring`) `@all` (all listed sets).",
+                    "defaultValue": [
+                        "@internal",
+                        "@IMAP"
+                    ],
+                    "allowedTypes": [
+                        "array"
+                    ]
+                }
+            ],
             "summary": "Master functions shall be used instead of aliases.",
             "riskyDescription": "Risky when any of the alias functions are overridden.",
             "codeSamples": [
                 {
-                    "from": "<?php\n$a = chop($b);\nclose($b);\n$a = doubleval($b);\n$a = fputs($b, $c);\nini_alter($b, $c);\n$a = is_double($b);\n$a = is_integer($b);\n$a = is_long($b);\n$a = is_real($b);\n$a = is_writeable($b);\n$a = join($glue, $pieces);\n$a = key_exists($key, $array);\nmagic_quotes_runtime($new_setting);\n$a = pos($array);\n$a = show_source($filename, true);\n$a = sizeof($b);\n$a = strchr($haystack, $needle);\n",
-                    "to": "<?php\n$a = rtrim($b);\nclosedir($b);\n$a = floatval($b);\n$a = fwrite($b, $c);\nini_set($b, $c);\n$a = is_float($b);\n$a = is_int($b);\n$a = is_int($b);\n$a = is_float($b);\n$a = is_writable($b);\n$a = implode($glue, $pieces);\n$a = array_key_exists($key, $array);\nset_magic_quotes_runtime($new_setting);\n$a = current($array);\n$a = highlight_file($filename, true);\n$a = count($b);\n$a = strstr($haystack, $needle);\n"
+                    "from": "<?php\n$a = chop($b);\nclose($b);\n$a = doubleval($b);\n$a = fputs($b, $c);\n$a = get_required_files();\nini_alter($b, $c);\n$a = is_double($b);\n$a = is_integer($b);\n$a = is_long($b);\n$a = is_real($b);\n$a = is_writeable($b);\n$a = join($glue, $pieces);\n$a = key_exists($key, $array);\nmagic_quotes_runtime($new_setting);\n$a = pos($array);\n$a = show_source($filename, true);\n$a = sizeof($b);\n$a = strchr($haystack, $needle);\n$a = imap_header($imap_stream, 1);\nuser_error($message);\nmbereg_search_getregs();\n",
+                    "to": "<?php\n$a = rtrim($b);\nclosedir($b);\n$a = floatval($b);\n$a = fwrite($b, $c);\n$a = get_included_files();\nini_set($b, $c);\n$a = is_float($b);\n$a = is_int($b);\n$a = is_int($b);\n$a = is_float($b);\n$a = is_writable($b);\n$a = implode($glue, $pieces);\n$a = array_key_exists($key, $array);\nset_magic_quotes_runtime($new_setting);\n$a = current($array);\n$a = highlight_file($filename, true);\n$a = count($b);\n$a = strstr($haystack, $needle);\n$a = imap_headerinfo($imap_stream, 1);\ntrigger_error($message);\nmbereg_search_getregs();\n"
+                },
+                {
+                    "from": "<?php\n$a = is_double($b);\nmbereg_search_getregs();\n",
+                    "to": "<?php\n$a = is_double($b);\nmb_ereg_search_getregs();\n",
+                    "configuration": {
+                        "sets": [
+                            "@mbreg"
+                        ]
+                    }
                 }
             ]
         },
@@ -2740,15 +2936,32 @@
             ]
         },
         "no_superfluous_phpdoc_tags": {
+            "configuration": [
+                {
+                    "name": "allow_mixed",
+                    "description": "Whether type `mixed` without description is allowed (`true`) or considered superfluous (`false`)",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "Removes `@param` and `@return` tags that don't provide any useful information.",
             "codeSamples": [
                 {
-                    "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     *\/\n    public function doFoo(Bar $bar) {}\n}\n",
-                    "to": "<?php\nclass Foo {\n    \/**\n     *\/\n    public function doFoo(Bar $bar) {}\n}\n"
+                    "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n",
+                    "to": "<?php\nclass Foo {\n    \/**\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n"
                 },
                 {
-                    "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     *\n     * @return Baz\n     *\/\n    public function doFoo(Bar $bar): Baz {}\n}\n",
-                    "to": "<?php\nclass Foo {\n    \/**\n     *\n     *\/\n    public function doFoo(Bar $bar): Baz {}\n}\n"
+                    "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n",
+                    "to": "<?php\nclass Foo {\n    \/**\n     * @param mixed $baz\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n",
+                    "configuration": {
+                        "allow_mixed": true
+                    }
+                },
+                {
+                    "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     *\n     * @return Baz\n     *\/\n    public function doFoo(Bar $bar, $baz): Baz {}\n}\n",
+                    "to": "<?php\nclass Foo {\n    \/**\n     *\n     *\/\n    public function doFoo(Bar $bar, $baz): Baz {}\n}\n"
                 }
             ]
         },
@@ -2858,6 +3071,15 @@
                 }
             ]
         },
+        "no_unset_cast": {
+            "summary": "Variables must be set `null` instead of using `(unset)` casting.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$a = (unset) $b;\n",
+                    "to": "<?php\n$a =  null;\n"
+                }
+            ]
+        },
         "no_unset_on_property": {
             "risky": true,
             "summary": "Properties should be set to `null` instead of using `unset`.",
@@ -2897,11 +3119,28 @@
             ]
         },
         "no_whitespace_before_comma_in_array": {
+            "configuration": [
+                {
+                    "name": "after_heredoc",
+                    "description": "Whether the whitespace between heredoc end and comma should be removed.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "In array declaration, there MUST NOT be a whitespace before each comma.",
             "codeSamples": [
                 {
                     "from": "<?php $x = array(1 , \"2\");\n",
                     "to": "<?php $x = array(1, \"2\");\n"
+                },
+                {
+                    "from": "<?php\n    $x = [<<<EOD\nfoo\nEOD\n        , 'bar'\n    ];\n",
+                    "to": "<?php\n    $x = [<<<EOD\nfoo\nEOD, 'bar'\n    ];\n",
+                    "configuration": {
+                        "after_heredoc": true
+                    }
                 }
             ]
         },
@@ -3120,6 +3359,59 @@
                 }
             ]
         },
+        "ordered_interfaces": {
+            "risky": true,
+            "configuration": [
+                {
+                    "name": "direction",
+                    "description": "Which direction the interfaces should be ordered",
+                    "defaultValue": "ascend",
+                    "allowedValues": [
+                        "ascend",
+                        "descend"
+                    ]
+                },
+                {
+                    "name": "order",
+                    "description": "How the interfaces should be ordered",
+                    "defaultValue": "alpha",
+                    "allowedValues": [
+                        "alpha",
+                        "length"
+                    ]
+                }
+            ],
+            "summary": "Orders the interfaces in an `implements` or `interface extends` clause.",
+            "riskyDescription": "Risky for `implements` when specifying both an interface and its parent interface, because PHP doesn't break on `parent, child` but does on `child, parent`.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n\nfinal class ExampleA implements Gamma, Alpha, Beta {}\n\ninterface ExampleB extends Gamma, Alpha, Beta {}\n",
+                    "to": "<?php\n\nfinal class ExampleA implements Alpha, Beta, Gamma {}\n\ninterface ExampleB extends Alpha, Beta, Gamma {}\n"
+                },
+                {
+                    "from": "<?php\n\nfinal class ExampleA implements Gamma, Alpha, Beta {}\n\ninterface ExampleB extends Gamma, Alpha, Beta {}\n",
+                    "to": "<?php\n\nfinal class ExampleA implements Gamma, Beta, Alpha {}\n\ninterface ExampleB extends Gamma, Beta, Alpha {}\n",
+                    "configuration": {
+                        "direction": "descend"
+                    }
+                },
+                {
+                    "from": "<?php\n\nfinal class ExampleA implements MuchLonger, Short, Longer {}\n\ninterface ExampleB extends MuchLonger, Short, Longer {}\n",
+                    "to": "<?php\n\nfinal class ExampleA implements Short, Longer, MuchLonger {}\n\ninterface ExampleB extends Short, Longer, MuchLonger {}\n",
+                    "configuration": {
+                        "order": "length"
+                    }
+                },
+                {
+                    "from": "<?php\n\nfinal class ExampleA implements MuchLonger, Short, Longer {}\n\ninterface ExampleB extends MuchLonger, Short, Longer {}\n",
+                    "to": "<?php\n\nfinal class ExampleA implements MuchLonger, Longer, Short {}\n\ninterface ExampleB extends MuchLonger, Longer, Short {}\n",
+                    "configuration": {
+                        "order": "length",
+                        "direction": "descend"
+                    }
+                }
+            ]
+        },
         "php_unit_construct": {
             "risky": true,
             "configuration": [
@@ -3200,6 +3492,31 @@
                 }
             ]
         },
+        "php_unit_dedicate_assert_internal_type": {
+            "risky": true,
+            "configuration": [
+                {
+                    "name": "target",
+                    "description": "Target version of PHPUnit.",
+                    "defaultValue": "newest",
+                    "allowedTypes": [
+                        "string"
+                    ],
+                    "allowedValues": [
+                        "7.5",
+                        "newest"
+                    ]
+                }
+            ],
+            "summary": "PHPUnit assertions like `assertIsArray` should be used over `assertInternalType`.",
+            "riskyDescription": "Risky when PHPUnit methods are overridden or when project has PHPUnit incompatibilities.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testMe()\n    {\n        $this->assertInternalType(\"array\", $var);\n        $this->assertInternalType(\"boolean\", $var);\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testMe()\n    {\n        $this->assertIsArray($var);\n        $this->assertIsBool($var);\n    }\n}\n"
+                }
+            ]
+        },
         "php_unit_expectation": {
             "risky": true,
             "configuration": [
@@ -3271,6 +3588,33 @@
                 }
             ]
         },
+        "php_unit_method_casing": {
+            "configuration": [
+                {
+                    "name": "case",
+                    "description": "Apply camel or snake case to test methods",
+                    "defaultValue": "camel_case",
+                    "allowedValues": [
+                        "camel_case",
+                        "snake_case"
+                    ]
+                }
+            ],
+            "summary": "Enforce camel (or snake) case for PHPUnit test methods, following configuration.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_my_code() {}\n}\n",
+                    "to": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMyCode() {}\n}\n"
+                },
+                {
+                    "from": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMyCode() {}\n}\n",
+                    "to": "<?php\nclass MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_my_code() {}\n}\n",
+                    "configuration": {
+                        "case": "snake_case"
+                    }
+                }
+            ]
+        },
         "php_unit_mock": {
             "risky": true,
             "configuration": [
@@ -3301,6 +3645,17 @@
                     "configuration": {
                         "target": "5.4"
                     }
+                }
+            ]
+        },
+        "php_unit_mock_short_will_return": {
+            "risky": true,
+            "summary": "Usage of PHPUnit's mock e.g. `->will($this->returnValue(..))` must be replaced by its shorter equivalent such as `->willReturn(...)`.",
+            "riskyDescription": "Risky when PHPUnit classes are overridden or not accessible, or when project has PHPUnit incompatibilities.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $someMock = $this->createMock(Some::class);\n        $someMock->method(\"some\")->will($this->returnSelf());\n        $someMock->method(\"some\")->will($this->returnValue(\"example\"));\n        $someMock->method(\"some\")->will($this->returnArgument(2));\n        $someMock->method(\"some\")->will($this->returnCallback(\"str_rot13\"));\n        $someMock->method(\"some\")->will($this->returnValueMap([\"a\",\"b\",\"c\"]));\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $someMock = $this->createMock(Some::class);\n        $someMock->method(\"some\")->willReturnSelf();\n        $someMock->method(\"some\")->willReturn(\"example\");\n        $someMock->method(\"some\")->willReturnArgument(2);\n        $someMock->method(\"some\")->willReturnCallback(\"str_rot13\");\n        $someMock->method(\"some\")->willReturnMap([\"a\",\"b\",\"c\"]);\n    }\n}\n"
                 }
             ]
         },
@@ -3390,6 +3745,28 @@
                 {
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    private $hello;\n    public function setUp()\n    {\n        $this->hello = \"hello\";\n    }\n\n    public function tearDown()\n    {\n        $this->hello = null;\n    }\n}\n",
                     "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    private $hello;\n    protected function setUp()\n    {\n        $this->hello = \"hello\";\n    }\n\n    protected function tearDown()\n    {\n        $this->hello = null;\n    }\n}\n"
+                }
+            ]
+        },
+        "php_unit_size_class": {
+            "configuration": [
+                {
+                    "name": "group",
+                    "description": "Define a specific group to be used in case no group is already in use",
+                    "defaultValue": "small",
+                    "allowedValues": [
+                        "small",
+                        "medium",
+                        "large"
+                    ]
+                }
+            ],
+            "summary": "All PHPUnit test cases should have `@small`, `@medium` or `@large` annotation to enable run time limits.",
+            "description": "The special groups [small, medium, large] provides a way to identify tests that are taking long to be executed.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass MyTest extends TestCase {}\n",
+                    "to": "<?php\n\/**\n * @small\n *\/\nclass MyTest extends TestCase {}\n"
                 }
             ]
         },
@@ -3929,6 +4306,15 @@
                 }
             ]
         },
+        "phpdoc_var_annotation_correct_order": {
+            "summary": "`@var` and `@type` annotations must have type and name in the correct order.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n\/** @var $foo int *\/\n$foo = 2 + 2;\n",
+                    "to": "<?php\n\/** @var int $foo *\/\n$foo = 2 + 2;\n"
+                }
+            ]
+        },
         "phpdoc_var_without_name": {
             "summary": "`@var` and `@type` annotations should not contain the variable name.",
             "codeSamples": [
@@ -4141,6 +4527,20 @@
                 "error_suppression"
             ]
         },
+        "simple_to_complex_string_variable": {
+            "summary": "Converts explicit variables in double-quoted strings and heredoc syntax from simple to complex format (`${` to `{$`).",
+            "description": "Doesn't touch implicit variables. Works together nicely with `explicit_string_variable`.",
+            "codeSamples": [
+                {
+                    "from": "<?php\n$name = 'World';\necho \"Hello ${name}!\";\n",
+                    "to": "<?php\n$name = 'World';\necho \"Hello {$name}!\";\n"
+                },
+                {
+                    "from": "<?php\n$name = 'World';\necho <<<TEST\nHello ${name}!\nTEST;\n",
+                    "to": "<?php\n$name = 'World';\necho <<<TEST\nHello {$name}!\nTEST;\n"
+                }
+            ]
+        },
         "simplified_null_return": {
             "summary": "A return statement wishing to return `void` should not return `null`.",
             "codeSamples": [
@@ -4295,6 +4695,15 @@
                 }
             ]
         },
+        "single_trait_insert_per_statement": {
+            "summary": "Each trait `use` must be done as single statement.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nfinal class Example\n{\n    use Foo, Bar;\n}\n",
+                    "to": "<?php\nfinal class Example\n{\n    use Foo;use Bar;\n}\n"
+                }
+            ]
+        },
         "space_after_semicolon": {
             "configuration": [
                 {
@@ -4425,11 +4834,28 @@
             ]
         },
         "trailing_comma_in_multiline_array": {
+            "configuration": [
+                {
+                    "name": "after_heredoc",
+                    "description": "Whether a trailing comma should also be placed after heredoc end.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "PHP multi-line arrays should have a trailing comma.",
             "codeSamples": [
                 {
                     "from": "<?php\narray(\n    1,\n    2\n);\n",
                     "to": "<?php\narray(\n    1,\n    2,\n);\n"
+                },
+                {
+                    "from": "<?php\n    $x = [\n        'foo',\n        <<<EOD\n            bar\n            EOD\n    ];\n",
+                    "to": "<?php\n    $x = [\n        'foo',\n        <<<EOD\n            bar\n            EOD,\n    ];\n",
+                    "configuration": {
+                        "after_heredoc": true
+                    }
                 }
             ]
         },
@@ -4631,8 +5057,10 @@
             "lowercase_cast": null,
             "lowercase_static_reference": null,
             "magic_constant_casing": null,
+            "magic_method_casing": null,
             "method_argument_space": null,
             "native_function_casing": null,
+            "native_function_type_declaration_casing": null,
             "new_with_braces": null,
             "no_blank_lines_after_class_opening": null,
             "no_blank_lines_after_phpdoc": null,
@@ -4694,6 +5122,10 @@
             "phpdoc_to_comment": null,
             "phpdoc_trim": null,
             "phpdoc_types": null,
+            "phpdoc_types_order": {
+                "null_adjustment": "always_last",
+                "sort_algorithm": "none"
+            },
             "phpdoc_var_without_name": null,
             "protected_to_private": null,
             "return_type_declaration": null,
@@ -4707,6 +5139,7 @@
                 ]
             },
             "single_quote": null,
+            "single_trait_insert_per_statement": null,
             "space_after_semicolon": {
                 "remove_in_empty_for_expressions": true
             },
@@ -4744,7 +5177,12 @@
             "dir_constant": null,
             "ereg_to_preg": null,
             "error_suppression": null,
+            "fopen_flag_order": null,
+            "fopen_flags": {
+                "b_mode": false
+            },
             "function_to_constant": null,
+            "implode_call": null,
             "is_null": null,
             "modernize_types_casting": null,
             "native_constant_invocation": {
@@ -4753,12 +5191,21 @@
                     "DIRECTORY_SEPARATOR",
                     "PHP_SAPI",
                     "PHP_VERSION_ID"
-                ]
+                ],
+                "scope": "namespaced"
+            },
+            "native_function_invocation": {
+                "include": [
+                    "@compiler_optimized"
+                ],
+                "scope": "namespaced",
+                "strict": true
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
             "non_printable_character": null,
             "php_unit_construct": null,
+            "php_unit_mock_short_will_return": null,
             "psr4": null,
             "self_accessor": null,
             "set_type_to_cast": null
@@ -4806,18 +5253,22 @@
             "no_superfluous_elseif": null,
             "no_unneeded_curly_braces": null,
             "no_unneeded_final_method": null,
+            "no_unset_cast": null,
             "no_useless_else": null,
             "no_useless_return": null,
             "ordered_class_elements": null,
             "ordered_imports": null,
             "php_unit_internal_class": null,
+            "php_unit_method_casing": null,
             "php_unit_ordered_covers": null,
             "php_unit_test_class_requires_covers": null,
             "phpdoc_add_missing_param_annotation": null,
             "phpdoc_order": null,
             "phpdoc_trim_consecutive_blank_line_separation": null,
             "phpdoc_types_order": null,
+            "phpdoc_var_annotation_correct_order": null,
             "return_assignment": null,
+            "simple_to_complex_string_variable": null,
             "single_line_comment_style": null,
             "binary_operator_spaces": null,
             "blank_line_after_opening_tag": null,
@@ -4841,7 +5292,9 @@
             "lowercase_cast": null,
             "lowercase_static_reference": null,
             "magic_constant_casing": null,
+            "magic_method_casing": null,
             "native_function_casing": null,
+            "native_function_type_declaration_casing": null,
             "new_with_braces": null,
             "no_blank_lines_after_class_opening": null,
             "no_blank_lines_after_phpdoc": null,
@@ -4899,6 +5352,7 @@
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
             "single_quote": null,
+            "single_trait_insert_per_statement": null,
             "space_after_semicolon": {
                 "remove_in_empty_for_expressions": true
             },
@@ -4945,12 +5399,6 @@
                 ]
             },
             "logical_operators": null,
-            "native_function_invocation": {
-                "include": [
-                    "@compiler_optimized"
-                ],
-                "scope": "namespaced"
-            },
             "no_unreachable_default_argument_value": null,
             "no_unset_on_property": null,
             "php_unit_set_up_tear_down_visibility": null,
@@ -4963,6 +5411,11 @@
             "dir_constant": null,
             "ereg_to_preg": null,
             "error_suppression": null,
+            "fopen_flag_order": null,
+            "fopen_flags": {
+                "b_mode": false
+            },
+            "implode_call": null,
             "is_null": null,
             "modernize_types_casting": null,
             "native_constant_invocation": {
@@ -4971,12 +5424,21 @@
                     "DIRECTORY_SEPARATOR",
                     "PHP_SAPI",
                     "PHP_VERSION_ID"
-                ]
+                ],
+                "scope": "namespaced"
+            },
+            "native_function_invocation": {
+                "include": [
+                    "@compiler_optimized"
+                ],
+                "scope": "namespaced",
+                "strict": true
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
             "non_printable_character": null,
             "php_unit_construct": null,
+            "php_unit_mock_short_will_return": null,
             "psr4": null,
             "self_accessor": null,
             "set_type_to_cast": null
@@ -4999,6 +5461,7 @@
             "ternary_to_null_coalescing": null
         },
         "@PHP70Migration:risky": {
+            "combine_nested_dirname": null,
             "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
@@ -5023,6 +5486,7 @@
         },
         "@PHP71Migration:risky": {
             "void_return": null,
+            "combine_nested_dirname": null,
             "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
@@ -5034,6 +5498,17 @@
                 }
             },
             "pow_to_exponentiation": null
+        },
+        "@PHP73Migration": {
+            "heredoc_indentation": null,
+            "visibility_required": {
+                "elements": [
+                    "const",
+                    "method",
+                    "property"
+                ]
+            },
+            "ternary_to_null_coalescing": null
         },
         "@PHPUnit30Migration:risky": {
             "php_unit_dedicate_assert": {
@@ -5161,6 +5636,26 @@
             }
         },
         "@PHPUnit60Migration:risky": {
+            "php_unit_namespaced": {
+                "target": "6.0"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "5.6"
+            },
+            "php_unit_expectation": {
+                "target": "5.6"
+            },
+            "php_unit_mock": {
+                "target": "5.5"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
+        "@PHPUnit75Migration:risky": {
+            "php_unit_dedicate_assert_internal_type": {
+                "target": "7.5"
+            },
             "php_unit_namespaced": {
                 "target": "6.0"
             },
