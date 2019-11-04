@@ -1,5 +1,5 @@
 {
-    "version": "2.15.3",
+    "version": "2.15.4",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -1559,6 +1559,13 @@
                     "configuration": {
                         "closure_function_spacing": "none"
                     }
+                },
+                {
+                    "from": "<?php\n$f = fn () => null;\n",
+                    "to": "*** Tokens::fromCode() failed with ParseError: syntax error, unexpected '=>' (T_DOUBLE_ARROW) *** ",
+                    "configuration": {
+                        "closure_function_spacing": "none"
+                    }
                 }
             ]
         },
@@ -1881,6 +1888,10 @@
                 {
                     "from": "<?php\n    $a = (BOOLEAN) $b;\n    $a = (BOOL) $b;\n    $a = (INTEGER) $b;\n    $a = (INT) $b;\n    $a = (DOUBLE) $b;\n    $a = (FLoaT) $b;\n    $a = (reaL) $b;\n    $a = (flOAT) $b;\n    $a = (sTRING) $b;\n    $a = (ARRAy) $b;\n    $a = (OBJect) $b;\n    $a = (UNset) $b;\n    $a = (Binary) $b;\n",
                     "to": "<?php\n    $a = (boolean) $b;\n    $a = (bool) $b;\n    $a = (integer) $b;\n    $a = (int) $b;\n    $a = (double) $b;\n    $a = (float) $b;\n    $a = (real) $b;\n    $a = (float) $b;\n    $a = (string) $b;\n    $a = (array) $b;\n    $a = (object) $b;\n    $a = (unset) $b;\n    $a = (binary) $b;\n"
+                },
+                {
+                    "from": "<?php\n    $a = (BOOLEAN) $b;\n    $a = (BOOL) $b;\n    $a = (INTEGER) $b;\n    $a = (INT) $b;\n    $a = (DOUBLE) $b;\n    $a = (FLoaT) $b;\n    $a = (flOAT) $b;\n    $a = (sTRING) $b;\n    $a = (ARRAy) $b;\n    $a = (OBJect) $b;\n    $a = (UNset) $b;\n    $a = (Binary) $b;\n",
+                    "to": "<?php\n    $a = (boolean) $b;\n    $a = (bool) $b;\n    $a = (integer) $b;\n    $a = (int) $b;\n    $a = (double) $b;\n    $a = (float) $b;\n    $a = (float) $b;\n    $a = (string) $b;\n    $a = (array) $b;\n    $a = (object) $b;\n    $a = (unset) $b;\n    $a = (binary) $b;\n"
                 }
             ]
         },
@@ -2157,8 +2168,8 @@
             "riskyDescription": "Risky when any of the constants are namespaced or overridden.",
             "codeSamples": [
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\r\n"
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\n"
                 },
                 {
                     "from": "<?php\nnamespace space1 {\n    echo PHP_VERSION;\n}\nnamespace {\n    echo M_PI;\n}\n",
@@ -2168,8 +2179,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, \\MY_CUSTOM_PI);\r\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, \\MY_CUSTOM_PI);\n",
                     "configuration": {
                         "include": [
                             "MY_CUSTOM_PI"
@@ -2177,8 +2188,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(PHP_VERSION, M_PI, \\MY_CUSTOM_PI);\r\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(PHP_VERSION, M_PI, \\MY_CUSTOM_PI);\n",
                     "configuration": {
                         "fix_built_in": false,
                         "include": [
@@ -2187,8 +2198,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
                     "configuration": {
                         "exclude": [
                             "M_PI"
@@ -2818,7 +2829,7 @@
             ]
         },
         "no_null_property_initialization": {
-            "summary": "Properties MUST not be explicitly initialized with `null`.",
+            "summary": "Properties MUST not be explicitly initialized with `null` except when they have a type declaration (PHP 7.4).",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Foo {\n    public $foo = null;\n}\n",
@@ -3083,7 +3094,7 @@
         "no_unset_on_property": {
             "risky": true,
             "summary": "Properties should be set to `null` instead of using `unset`.",
-            "riskyDescription": "Changing variables to `null` instead of unsetting them will mean they still show up when looping over class variables.",
+            "riskyDescription": "Changing variables to `null` instead of unsetting them will mean they still show up when looping over class variables. With PHP 7.4, this rule might introduce `null` assignments to property whose type declaration does not allow it.",
             "codeSamples": [
                 {
                     "from": "<?php\nunset($this->a);\n",
@@ -4510,6 +4521,10 @@
                 {
                     "from": "<?php\n$a = (boolean) $b;\n$a = (integer) $b;\n$a = (double) $b;\n$a = (real) $b;\n\n$a = (binary) $b;\n",
                     "to": "<?php\n$a = (bool) $b;\n$a = (int) $b;\n$a = (float) $b;\n$a = (float) $b;\n\n$a = (string) $b;\n"
+                },
+                {
+                    "from": "<?php\n$a = (boolean) $b;\n$a = (integer) $b;\n$a = (double) $b;\n\n$a = (binary) $b;\n",
+                    "to": "<?php\n$a = (bool) $b;\n$a = (int) $b;\n$a = (float) $b;\n\n$a = (string) $b;\n"
                 }
             ]
         },
@@ -4910,7 +4925,7 @@
         },
         "void_return": {
             "risky": true,
-            "summary": "Add void return type to functions with missing or empty return statements, but priority is given to `@return` annotations. Requires PHP >= 7.1.",
+            "summary": "Add `void` return type to functions with missing or empty return statements, but priority is given to `@return` annotations. Requires PHP >= 7.1.",
             "riskyDescription": "Modifies the signature of functions.",
             "codeSamples": [
                 {
@@ -5030,6 +5045,9 @@
             "full_opening_tag": null
         },
         "@Symfony": {
+            "array_syntax": {
+                "syntax": "short"
+            },
             "binary_operator_spaces": null,
             "blank_line_after_opening_tag": null,
             "blank_line_before_statement": {
@@ -5084,6 +5102,9 @@
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
             "no_spaces_around_offset": null,
+            "no_superfluous_phpdoc_tags": {
+                "allow_mixed": true
+            },
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
             "no_unneeded_control_parentheses": null,
@@ -5094,6 +5115,7 @@
             "no_whitespace_in_blank_line": null,
             "normalize_index_brace": null,
             "object_operator_without_whitespace": null,
+            "ordered_imports": null,
             "php_unit_fqcn_annotation": null,
             "phpdoc_align": {
                 "tags": [
@@ -5111,7 +5133,6 @@
             "phpdoc_inline_tag": null,
             "phpdoc_no_access": null,
             "phpdoc_no_alias_tag": null,
-            "phpdoc_no_empty_return": null,
             "phpdoc_no_package": null,
             "phpdoc_no_useless_inheritdoc": null,
             "phpdoc_return_self_reference": null,
@@ -5121,13 +5142,13 @@
             "phpdoc_summary": null,
             "phpdoc_to_comment": null,
             "phpdoc_trim": null,
+            "phpdoc_trim_consecutive_blank_line_separation": null,
             "phpdoc_types": null,
             "phpdoc_types_order": {
                 "null_adjustment": "always_last",
                 "sort_algorithm": "none"
             },
             "phpdoc_var_without_name": null,
-            "protected_to_private": null,
             "return_type_declaration": null,
             "semicolon_after_instruction": null,
             "short_scalar_cast": null,
@@ -5213,9 +5234,6 @@
         "@PhpCsFixer": {
             "align_multiline_comment": null,
             "array_indentation": null,
-            "array_syntax": {
-                "syntax": "short"
-            },
             "blank_line_before_statement": null,
             "combine_consecutive_issets": null,
             "combine_consecutive_unsets": null,
@@ -5257,19 +5275,22 @@
             "no_useless_else": null,
             "no_useless_return": null,
             "ordered_class_elements": null,
-            "ordered_imports": null,
             "php_unit_internal_class": null,
             "php_unit_method_casing": null,
             "php_unit_ordered_covers": null,
             "php_unit_test_class_requires_covers": null,
             "phpdoc_add_missing_param_annotation": null,
+            "phpdoc_no_empty_return": null,
             "phpdoc_order": null,
-            "phpdoc_trim_consecutive_blank_line_separation": null,
             "phpdoc_types_order": null,
             "phpdoc_var_annotation_correct_order": null,
+            "protected_to_private": null,
             "return_assignment": null,
             "simple_to_complex_string_variable": null,
             "single_line_comment_style": null,
+            "array_syntax": {
+                "syntax": "short"
+            },
             "binary_operator_spaces": null,
             "blank_line_after_opening_tag": null,
             "braces": {
@@ -5308,6 +5329,9 @@
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
             "no_spaces_around_offset": null,
+            "no_superfluous_phpdoc_tags": {
+                "allow_mixed": true
+            },
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
             "no_unneeded_control_parentheses": null,
@@ -5316,6 +5340,7 @@
             "no_whitespace_in_blank_line": null,
             "normalize_index_brace": null,
             "object_operator_without_whitespace": null,
+            "ordered_imports": null,
             "php_unit_fqcn_annotation": null,
             "phpdoc_align": {
                 "tags": [
@@ -5333,7 +5358,6 @@
             "phpdoc_inline_tag": null,
             "phpdoc_no_access": null,
             "phpdoc_no_alias_tag": null,
-            "phpdoc_no_empty_return": null,
             "phpdoc_no_package": null,
             "phpdoc_no_useless_inheritdoc": null,
             "phpdoc_return_self_reference": null,
@@ -5343,9 +5367,9 @@
             "phpdoc_summary": null,
             "phpdoc_to_comment": null,
             "phpdoc_trim": null,
+            "phpdoc_trim_consecutive_blank_line_separation": null,
             "phpdoc_types": null,
             "phpdoc_var_without_name": null,
-            "protected_to_private": null,
             "return_type_declaration": null,
             "semicolon_after_instruction": null,
             "short_scalar_cast": null,
