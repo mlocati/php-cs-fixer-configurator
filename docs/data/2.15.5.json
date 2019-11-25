@@ -1,5 +1,5 @@
 {
-    "version": "2.16.0",
+    "version": "2.15.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -579,16 +579,6 @@
         },
         "comment_to_phpdoc": {
             "risky": true,
-            "configuration": [
-                {
-                    "name": "ignored_tags",
-                    "description": "List of ignored tags",
-                    "defaultValue": [],
-                    "allowedTypes": [
-                        "array"
-                    ]
-                }
-            ],
             "summary": "Comments with annotation should be docblock when used on structural elements.",
             "riskyDescription": "Risky as new docblocks might mean more, e.g. a Doctrine entity might have a new column in database",
             "codeSamples": [
@@ -639,26 +629,6 @@
                     "configuration": {
                         "spacing": "one"
                     }
-                }
-            ]
-        },
-        "constant_case": {
-            "configuration": [
-                {
-                    "name": "case",
-                    "description": "Whether to use the `upper` or `lower` case syntax.",
-                    "defaultValue": "lower",
-                    "allowedValues": [
-                        "upper",
-                        "lower"
-                    ]
-                }
-            ],
-            "summary": "The PHP constants `true`, `false`, and `null` MUST be written using the correct casing.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n$a = FALSE;\n$b = True;\n$c = nuLL;\n",
-                    "to": "<?php\n$a = false;\n$b = true;\n$c = null;\n"
                 }
             ]
         },
@@ -1511,27 +1481,6 @@
                 }
             ]
         },
-        "final_public_method_for_abstract_class": {
-            "risky": true,
-            "summary": "All public methods of abstract classes should be final.",
-            "description": "Enforce API encapsulation in an inheritance architecture. If you want to override a method, use the Template method pattern.",
-            "riskyDescription": "Risky when overriding public methods of abstract classes",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\nabstract class AbstractMachine\n{\n    public function start()\n    {}\n}\n",
-                    "to": "<?php\n\nabstract class AbstractMachine\n{\n    final public function start()\n    {}\n}\n"
-                }
-            ]
-        },
-        "final_static_access": {
-            "summary": "Converts `static` access to `self` access in final classes.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfinal class Sample\n{\n    public function getFoo()\n    {\n        return static::class;\n    }\n}\n",
-                    "to": "<?php\nfinal class Sample\n{\n    public function getFoo()\n    {\n        return self::class;\n    }\n}\n"
-                }
-            ]
-        },
         "fopen_flag_order": {
             "risky": true,
             "summary": "Order the flags in `fopen` calls, `b` and `t` must be last.",
@@ -1688,65 +1637,6 @@
                         "annotations": [
                             "author"
                         ]
-                    }
-                }
-            ]
-        },
-        "global_namespace_import": {
-            "configuration": [
-                {
-                    "name": "import_classes",
-                    "description": "Whether to import, not import or ignore global classes.",
-                    "defaultValue": true,
-                    "allowedValues": [
-                        true,
-                        false,
-                        null
-                    ]
-                },
-                {
-                    "name": "import_constants",
-                    "description": "Whether to import, not import or ignore global constants.",
-                    "defaultValue": null,
-                    "allowedValues": [
-                        true,
-                        false,
-                        null
-                    ]
-                },
-                {
-                    "name": "import_functions",
-                    "description": "Whether to import, not import or ignore global functions.",
-                    "defaultValue": null,
-                    "allowedValues": [
-                        true,
-                        false,
-                        null
-                    ]
-                }
-            ],
-            "summary": "Imports or fully qualifies global classes\/functions\/constants.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\nnamespace Foo;\n\n$d = new \\DateTimeImmutable();\n",
-                    "to": "<?php\n\nnamespace Foo;\nuse DateTimeImmutable;\n\n$d = new DateTimeImmutable();\n"
-                },
-                {
-                    "from": "<?php\n\nnamespace Foo;\n\nif (\\count($x)) {\n    \/** @var \\DateTimeImmutable $d *\/\n    $d = new \\DateTimeImmutable();\n    $p = \\M_PI;\n}\n",
-                    "to": "<?php\n\nnamespace Foo;\nuse DateTimeImmutable;\nuse function count;\nuse const M_PI;\n\nif (count($x)) {\n    \/** @var DateTimeImmutable $d *\/\n    $d = new DateTimeImmutable();\n    $p = M_PI;\n}\n",
-                    "configuration": {
-                        "import_classes": true,
-                        "import_constants": true,
-                        "import_functions": true
-                    }
-                },
-                {
-                    "from": "<?php\n\nnamespace Foo;\n\nuse DateTimeImmutable;\nuse function count;\nuse const M_PI;\n\nif (count($x)) {\n    \/** @var DateTimeImmutable $d *\/\n    $d = new DateTimeImmutable();\n    $p = M_PI;\n}\n",
-                    "to": "<?php\n\nnamespace Foo;\n\nuse DateTimeImmutable;\nuse function count;\nuse const M_PI;\n\nif (\\count($x)) {\n    \/** @var \\DateTimeImmutable $d *\/\n    $d = new \\DateTimeImmutable();\n    $p = \\M_PI;\n}\n",
-                    "configuration": {
-                        "import_classes": false,
-                        "import_constants": false,
-                        "import_functions": false
                     }
                 }
             ]
@@ -2012,9 +1902,6 @@
                     "from": "<?php\n$a = FALSE;\n$b = True;\n$c = nuLL;\n",
                     "to": "<?php\n$a = false;\n$b = true;\n$c = null;\n"
                 }
-            ],
-            "deprecated_switchTo": [
-                "constant_case"
             ]
         },
         "lowercase_keywords": {
@@ -3068,22 +2955,6 @@
                     "allowedTypes": [
                         "bool"
                     ]
-                },
-                {
-                    "name": "allow_unused_params",
-                    "description": "Whether `param` annontation without actual signature is allowed (`true`) or considered superfluous (`false`)",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "remove_inheritdoc",
-                    "description": "Remove `@inheritDoc` tags",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
                 }
             ],
             "summary": "Removes `@param` and `@return` tags that don't provide any useful information.",
@@ -3102,20 +2973,6 @@
                 {
                     "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     *\n     * @return Baz\n     *\/\n    public function doFoo(Bar $bar, $baz): Baz {}\n}\n",
                     "to": "<?php\nclass Foo {\n    \/**\n     *\n     *\/\n    public function doFoo(Bar $bar, $baz): Baz {}\n}\n"
-                },
-                {
-                    "from": "<?php\nclass Foo {\n    \/**\n     * @inheritDoc\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n",
-                    "to": "<?php\nclass Foo {\n    \/**\n     *\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n",
-                    "configuration": {
-                        "remove_inheritdoc": true
-                    }
-                },
-                {
-                    "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     * @param string|int|null $qux\n     *\/\n    public function doFoo(Bar $bar, $baz \/*, $qux = null *\/) {}\n}\n",
-                    "to": "<?php\nclass Foo {\n    \/**\n     * @param string|int|null $qux\n     *\/\n    public function doFoo(Bar $bar, $baz \/*, $qux = null *\/) {}\n}\n",
-                    "configuration": {
-                        "allow_unused_params": true
-                    }
                 }
             ]
         },
@@ -3359,33 +3216,6 @@
                 {
                     "from": "<?php\n\nif (!$bar) {\n    echo \"Help!\";\n}\n",
                     "to": "<?php\n\nif (! $bar) {\n    echo \"Help!\";\n}\n"
-                }
-            ]
-        },
-        "nullable_type_declaration_for_default_null_value": {
-            "configuration": [
-                {
-                    "name": "use_nullable_type_declaration",
-                    "description": "Whether to add or remove `?` before type declarations for parameters with a default `null` value.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                }
-            ],
-            "summary": "Adds or removes `?` before type declarations for parameters with a default `null` value.",
-            "description": "Rule is applied only in a PHP 7.1+ environment.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfunction sample(string $str = null)\n{}\n",
-                    "to": "<?php\nfunction sample(?string $str = null)\n{}\n"
-                },
-                {
-                    "from": "<?php\nfunction sample(?string $str = null)\n{}\n",
-                    "to": "<?php\nfunction sample(string $str = null)\n{}\n",
-                    "configuration": {
-                        "use_nullable_type_declaration": false
-                    }
                 }
             ]
         },
@@ -4178,51 +4008,6 @@
                 }
             ]
         },
-        "phpdoc_line_span": {
-            "configuration": [
-                {
-                    "name": "const",
-                    "description": "Whether const blocks should be single or multi line",
-                    "defaultValue": "multi",
-                    "allowedValues": [
-                        "single",
-                        "multi"
-                    ]
-                },
-                {
-                    "name": "method",
-                    "description": "Whether method doc blocks should be single or multi line",
-                    "defaultValue": "multi",
-                    "allowedValues": [
-                        "single",
-                        "multi"
-                    ]
-                },
-                {
-                    "name": "property",
-                    "description": "Whether property doc blocks should be single or multi line",
-                    "defaultValue": "multi",
-                    "allowedValues": [
-                        "single",
-                        "multi"
-                    ]
-                }
-            ],
-            "summary": "Changes doc blocks from single to multi line, or reversed. Works for class constants, properties and methods only.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\nclass Foo{\n    \/** @var bool *\/\n    public $var;\n}\n",
-                    "to": "<?php\n\nclass Foo{\n    \/**\n     * @var bool\n     *\/\n    public $var;\n}\n"
-                },
-                {
-                    "from": "<?php\n\nclass Foo{\n    \/**\n    * @var bool\n    *\/\n    public $var;\n}\n",
-                    "to": "<?php\n\nclass Foo{\n    \/** @var bool *\/\n    public $var;\n}\n",
-                    "configuration": {
-                        "property": "single"
-                    }
-                }
-            ]
-        },
         "phpdoc_no_access": {
             "summary": "`@access` annotations should be omitted from PHPDoc.",
             "codeSamples": [
@@ -4399,31 +4184,6 @@
                 {
                     "from": "<?php\n$first = true;\/\/ needed because by default first docblock is never fixed.\n\n\/** This should not be a docblock *\/\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n",
                     "to": "<?php\n$first = true;\/\/ needed because by default first docblock is never fixed.\n\n\/* This should not be a docblock *\/\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n"
-                }
-            ]
-        },
-        "phpdoc_to_param_type": {
-            "risky": true,
-            "configuration": [
-                {
-                    "name": "scalar_types",
-                    "description": "Fix also scalar types; may have unexpected behaviour due to PHP bad type coercion system.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                }
-            ],
-            "summary": "EXPERIMENTAL: Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.",
-            "riskyDescription": "[1] This rule is EXPERIMENTAL and is not covered with backward compatibility promise. [2] `@param` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. [3] Manual actions are required if inherited signatures are not properly documented.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\n\/** @param string $bar *\/\nfunction my_foo($bar)\n{}\n",
-                    "to": "<?php\n\n\/** @param string $bar *\/\nfunction my_foo(string $bar)\n{}\n"
-                },
-                {
-                    "from": "<?php\n\n\/** @param string|null $bar *\/\nfunction my_foo($bar)\n{}\n",
-                    "to": "<?php\n\n\/** @param string|null $bar *\/\nfunction my_foo(?string $bar)\n{}\n"
                 }
             ]
         },
@@ -4735,27 +4495,6 @@
                 }
             ]
         },
-        "self_static_accessor": {
-            "summary": "Inside a final class or anonymous class `self` should be preferred to `static`.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfinal class Sample\n{\n    private static $A = 1;\n\n    public function getBar()\n    {\n        return static::class.static::test().static::$A;\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n",
-                    "to": "<?php\nfinal class Sample\n{\n    private static $A = 1;\n\n    public function getBar()\n    {\n        return self::class.self::test().self::$A;\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n"
-                },
-                {
-                    "from": "<?php\nfinal class Foo\n{\n    public function bar()\n    {\n        return new static();\n    }\n}\n",
-                    "to": "<?php\nfinal class Foo\n{\n    public function bar()\n    {\n        return new self();\n    }\n}\n"
-                },
-                {
-                    "from": "<?php\nfinal class Foo\n{\n    public function isBar()\n    {\n        return $foo instanceof static;\n    }\n}\n",
-                    "to": "<?php\nfinal class Foo\n{\n    public function isBar()\n    {\n        return $foo instanceof self;\n    }\n}\n"
-                },
-                {
-                    "from": "<?php\n$a = new class() {\n    public function getBar()\n    {\n        return static::class;\n    }\n};\n",
-                    "to": "<?php\n$a = new class() {\n    public function getBar()\n    {\n        return self::class;\n    }\n};\n"
-                }
-            ]
-        },
         "semicolon_after_instruction": {
             "summary": "Instructions must be terminated with a semicolon.",
             "codeSamples": [
@@ -4942,15 +4681,6 @@
                             "hash"
                         ]
                     }
-                }
-            ]
-        },
-        "single_line_throw": {
-            "summary": "Throwing exception must be done in single line.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nthrow new Exception(\n    'Error',\n    500\n);\n",
-                    "to": "<?php\nthrow new Exception('Error', 500);\n"
                 }
             ]
         },
@@ -5285,11 +5015,11 @@
             "blank_line_after_namespace": null,
             "braces": null,
             "class_definition": null,
-            "constant_case": null,
             "elseif": null,
             "function_declaration": null,
             "indentation_type": null,
             "line_ending": null,
+            "lowercase_constants": null,
             "lowercase_keywords": null,
             "method_argument_space": {
                 "on_multiline": "ensure_fully_multiline"
@@ -5373,8 +5103,7 @@
             "no_singleline_whitespace_before_semicolons": null,
             "no_spaces_around_offset": null,
             "no_superfluous_phpdoc_tags": {
-                "allow_mixed": true,
-                "allow_unused_params": true
+                "allow_mixed": true
             },
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
@@ -5430,7 +5159,6 @@
                     "hash"
                 ]
             },
-            "single_line_throw": null,
             "single_quote": null,
             "single_trait_insert_per_statement": null,
             "space_after_semicolon": {
@@ -5445,11 +5173,11 @@
             "whitespace_after_comma_in_array": null,
             "yoda_style": null,
             "blank_line_after_namespace": null,
-            "constant_case": null,
             "elseif": null,
             "function_declaration": null,
             "indentation_type": null,
             "line_ending": null,
+            "lowercase_constants": null,
             "lowercase_keywords": null,
             "no_break_comment": null,
             "no_closing_tag": null,
@@ -5602,8 +5330,7 @@
             "no_singleline_whitespace_before_semicolons": null,
             "no_spaces_around_offset": null,
             "no_superfluous_phpdoc_tags": {
-                "allow_mixed": true,
-                "allow_unused_params": true
+                "allow_mixed": true
             },
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
@@ -5662,11 +5389,11 @@
             "whitespace_after_comma_in_array": null,
             "yoda_style": null,
             "blank_line_after_namespace": null,
-            "constant_case": null,
             "elseif": null,
             "function_declaration": null,
             "indentation_type": null,
             "line_ending": null,
+            "lowercase_constants": null,
             "lowercase_keywords": null,
             "no_break_comment": null,
             "no_closing_tag": null,
