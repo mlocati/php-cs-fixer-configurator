@@ -109,7 +109,22 @@ function compareFixers(newerFixer: Fixer, olderFixer: Fixer): string[] {
         differences.push(newerFixer.risky ? 'The fixer became risky' : 'The fixer is no more risky');
     }
     if ((newerFixer.deprecated_switchTo.length !== 0) !== (olderFixer.deprecated_switchTo.length !== 0)) {
-        differences.push(newerFixer.deprecated_switchTo.length !== 0 ? 'The fixer has been deprecated' : 'The fixer is no more deprecated');
+        switch (newerFixer.deprecated_switchTo.length) {
+            case 0:
+                differences.push('The fixer is no more deprecated');
+                break;
+            case 1:
+                differences.push(`The fixer has been deprecated in favor of \`${newerFixer.deprecated_switchTo[0].name}\``);
+                break;
+            default:
+                let newFixerNames: string[] = [];
+                newerFixer.deprecated_switchTo.forEach((fixer: Fixer): void => {
+                    newFixerNames.push(fixer.name);
+                });
+                differences.push('The fixer has been deprecated in favor of `' + newFixerNames.join('`, `') + '`');
+                break;
+        }
+
     }
     newerFixer.options.forEach((newerOption): void => {
         let olderOption = olderFixer.getOptionByName(newerOption.name, null);
