@@ -86,3 +86,8 @@ So, please don't add these files to your commits when submitting pull requests.
 [PHP-CS-Fixer Configurator](https://mlocati.github.io/php-cs-fixer-configurator/) uses some great open source tools.
 
 You can find their licenses in the [licenses](https://github.com/mlocati/php-cs-fixer-configurator/tree/master/licenses) directory.
+
+
+## Do you want to really say thank you?
+
+You can offer me a [monthly coffee](https://github.com/sponsors/mlocati) or a [one-time coffee](https://paypal.me/mlocati) :wink:
