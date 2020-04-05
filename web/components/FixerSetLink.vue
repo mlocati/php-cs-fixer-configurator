@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import EventBus from '../EventBus';
+import Fixer from '../FixerSet';
 import FixerSet from '../FixerSet';
 import Vue from 'vue';
 
@@ -27,10 +28,17 @@ export default Vue.extend({
             type: String,
             required: false,
         },
+        highlightFixer: {
+             type: Object as (() => Fixer),
+             required: false,
+        }
     },
     methods: {
         view: function() {
-            EventBus.$emit('fixerset-clicked', this.fixerSet);
+            EventBus.$emit('fixerset-clicked', {
+                fixerOrSet: this.fixerSet,
+                highlightFixer: this.highlightFixer || null,
+            });
         },
     },
 });
