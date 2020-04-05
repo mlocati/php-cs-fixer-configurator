@@ -87,6 +87,7 @@
                                 v-for="fixerSet in fixer.fixerSets"
                                 v-bind:key="fixerSet.uniqueKey"
                                 v-bind:fixer-set="fixerSet"
+                                v-bind:highlight-fixer="fixer"
                             ></fixer-set-link>
                         </dd>
                     </template>

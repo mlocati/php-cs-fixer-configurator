@@ -251,23 +251,24 @@
         </b-modal>
 
         <b-modal
-            v-if="viewingFixerOrSet"
+            v-if="viewingFixerOrSetAndFixer"
             ref="viewingFixerOrSetModal"
             size="xl"
             no-fade
             scrollable
-            v-bind:title-html="'&lt;code&gt;' + viewingFixerOrSet.name + '&lt;/code&gt; ' + viewingFixerOrSet.type"
+            v-bind:title-html="'&lt;code&gt;' + viewingFixerOrSetAndFixer.fixerOrSet.name + '&lt;/code&gt; ' + viewingFixerOrSetAndFixer.fixerOrSet.type"
             ok-only
-            v-bind:ok-title="viewingFixerOrSetPrevious.length === 0 ? 'Close' : 'Back'"
+            v-bind:ok-title="viewingFixerOrSetAndFixerPrevious.length === 0 ? 'Close' : 'Back'"
             v-on:hide="viewPreviousFixerOrSet"
         >
             <view-fixer
-                v-if="viewingFixerOrSet.type === 'fixer'"
-                v-bind:fixer="viewingFixerOrSet"
+                v-if="viewingFixerOrSetAndFixer.fixerOrSet.type === 'fixer'"
+                v-bind:fixer="viewingFixerOrSetAndFixer.fixerOrSet"
             ></view-fixer>
             <view-fixer-set
-                v-else-if="viewingFixerOrSet.type === 'fixer set'"
-                v-bind:fixer-set="viewingFixerOrSet"
+                v-else-if="viewingFixerOrSetAndFixer.fixerOrSet.type === 'fixer set'"
+                v-bind:fixer-set="viewingFixerOrSetAndFixer.fixerOrSet"
+                v-bind:highlight-fixer="viewingFixerOrSetAndFixer.highlightFixer"
             ></view-fixer-set>
         </b-modal>
 
@@ -298,6 +299,7 @@ import EventBus from '../EventBus';
 import Fixer from '../Fixer';
 import FixerOrSetInterface from '../FixerOrSetInterface';
 import FixerSet from '../FixerSet';
+import FixerOrSetAndFixerInterface from '../FixerOrSetAndFixerInterface';
 import { getSearchableArray } from '../Utils';
 import GridView from './GridView.vue';
 import Export from './Export.vue';
@@ -365,8 +367,8 @@ export default Vue.extend({
                 },
             },
             view: PersistentStorage.getString('view', 'GRID', ['GRID', 'TABLE']),
-            viewingFixerOrSet: <FixerOrSetInterface | null>null,
-            viewingFixerOrSetPrevious: <FixerOrSetInterface[]>[],
+            viewingFixerOrSetAndFixer: <FixerOrSetAndFixerInterface | null>null,
+            viewingFixerOrSetAndFixerPrevious: <FixerOrSetAndFixerInterface[]>[],
             configuringFixer: <Fixer | null>null,
             rememberConfiguration: PersistentStorage.getBoolean('remember-configuration', true),
         };
@@ -378,10 +380,10 @@ export default Vue.extend({
             this.configuration = new Configuration(this.initialVersion);
         }
         EventBus.$on('fixer-clicked', (fixer: Fixer) => {
-            this.viewFixerOrSet(fixer);
+            this.viewFixerOrSet({fixerOrSet: fixer});
         });
-        EventBus.$on('fixerset-clicked', (fixerSet: FixerSet) => {
-            this.viewFixerOrSet(fixerSet);
+        EventBus.$on('fixerset-clicked', (data: FixerOrSetAndFixerInterface) => {
+            this.viewFixerOrSet(data);
         });
         EventBus.$on('fixer-configure', (fixer: Fixer) => {
             this.configureFixer(fixer);
@@ -411,7 +413,7 @@ export default Vue.extend({
         if (fixerOrSet === null) {
             this.refreshLocationHash();
         } else {
-            this.viewFixerOrSet(fixerOrSet);
+            this.viewFixerOrSet({fixerOrSet});
         }
     },
     computed: {
@@ -547,24 +549,24 @@ export default Vue.extend({
             }
             this.versionChanged();
         },
-        viewFixerOrSet: function(fixerOrSet: FixerOrSetInterface) {
-            if (this.viewingFixerOrSet !== null) {
-                this.viewingFixerOrSetPrevious.push(this.viewingFixerOrSet);
+        viewFixerOrSet: function(data: FixerOrSetAndFixerInterface) {
+            if (this.viewingFixerOrSetAndFixer !== null) {
+                this.viewingFixerOrSetAndFixerPrevious.push(this.viewingFixerOrSetAndFixer);
             }
-            this.viewingFixerOrSet = fixerOrSet;
+            this.viewingFixerOrSetAndFixer = data;
             this.$nextTick(() => {
                 (<BModal>this.$refs.viewingFixerOrSetModal).show();
             });
         },
         viewPreviousFixerOrSet: function(e: Event) {
-            this.viewingFixerOrSet = this.viewingFixerOrSetPrevious.pop() || null;
-            if (this.viewingFixerOrSet === null) {
+            this.viewingFixerOrSetAndFixer = this.viewingFixerOrSetAndFixerPrevious.pop() || null;
+            if (this.viewingFixerOrSetAndFixer === null) {
                 return;
             }
             e.preventDefault();
         },
         refreshLocationHash: function() {
-            LocationHash.toWindowLocation(LocationHash.HashData.create(this.configuration.version, this.configuring, this.viewingFixerOrSet));
+            LocationHash.toWindowLocation(LocationHash.HashData.create(this.configuration.version, this.configuring, this.viewingFixerOrSetAndFixer ? this.viewingFixerOrSetAndFixer.fixerOrSet : null));
         },
         configureFixer: function(fixer: Fixer) {
             this.configuringFixer = fixer;
@@ -621,7 +623,7 @@ export default Vue.extend({
         view: function(view: string): void {
             PersistentStorage.setString('view', view);
         },
-        viewingFixerOrSet: function() {
+        viewingFixerOrSetAndFixer: function() {
             this.refreshLocationHash();
         },
         configuring: function() {

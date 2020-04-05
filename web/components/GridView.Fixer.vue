@@ -72,6 +72,7 @@
                         v-for="fixerSet in fixer.fixerSets"
                         v-bind:key="fixerSet.uniqueKey"
                         v-bind:fixer-set="fixerSet"
+                        v-bind:highlight-fixer="fixer"
                         link-class="ml-1"
                     ></fixer-set-link>
                 </div>
