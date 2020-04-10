@@ -1,5 +1,5 @@
 {
-    "version": "2.15.5",
+    "version": "2.15.6",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -573,14 +573,14 @@
             "codeSamples": [
                 {
                     "from": "<?php\ndirname(dirname(dirname($path)));\n",
-                    "to": "<?php\ndirname($path,3);\n"
+                    "to": "<?php\ndirname($path, 3);\n"
                 }
             ]
         },
         "comment_to_phpdoc": {
             "risky": true,
             "summary": "Comments with annotation should be docblock when used on structural elements.",
-            "riskyDescription": "Risky as new docblocks might mean more, e.g. a Doctrine entity might have a new column in database",
+            "riskyDescription": "Risky as new docblocks might mean more, e.g. a Doctrine entity might have a new column in database.",
             "codeSamples": [
                 {
                     "from": "<?php \/* header *\/ $x = true; \/* @var bool $isFoo *\/ $isFoo = true;\n",
@@ -1409,7 +1409,7 @@
         },
         "explicit_string_variable": {
             "summary": "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax.",
-            "description": "The reasoning behind this rule is the following:\n- When there are two valid ways of doing the same thing, using both is confusing, there should be a coding standard to follow\n- PHP manual marks `\"$var\"` syntax as implicit and `\"${var}\"` syntax as explicit: explicit code should always be preferred\n- Explicit syntax allows word concatenation inside strings, e.g. `\"${var}IsAVar\"`, implicit doesn't\n- Explicit syntax is easier to detect for IDE\/editors and therefore has colors\/hightlight with higher contrast, which is easier to read\nBacktick operator is skipped because it is harder to handle; you can use `backtick_to_shell_exec` fixer to normalize backticks to strings",
+            "description": "The reasoning behind this rule is the following:\n- When there are two valid ways of doing the same thing, using both is confusing, there should be a coding standard to follow\n- PHP manual marks `\"$var\"` syntax as implicit and `\"${var}\"` syntax as explicit: explicit code should always be preferred\n- Explicit syntax allows word concatenation inside strings, e.g. `\"${var}IsAVar\"`, implicit doesn't\n- Explicit syntax is easier to detect for IDE\/editors and therefore has colors\/highlight with higher contrast, which is easier to read\nBacktick operator is skipped because it is harder to handle; you can use `backtick_to_shell_exec` fixer to normalize backticks to strings",
             "codeSamples": [
                 {
                     "from": "<?php\n$a = \"My name is $name !\";\n$b = \"I live in $state->country !\";\n$c = \"I have $farm[0] chickens !\";\n",
@@ -1438,7 +1438,9 @@
                     "defaultValue": [
                         "@final",
                         "@Entity",
-                        "@ORM\\Entity"
+                        "@ORM\\Entity",
+                        "@ORM\\Mapping\\Entity",
+                        "@Mapping\\Entity"
                     ],
                     "allowedTypes": [
                         "array"
@@ -1510,6 +1512,13 @@
                 {
                     "from": "<?php\n$a = fopen($foo, 'rwt');\n",
                     "to": "<?php\n$a = fopen($foo, 'rwb');\n"
+                },
+                {
+                    "from": "<?php\n$a = fopen($foo, 'rwt');\n",
+                    "to": "<?php\n$a = fopen($foo, 'rw');\n",
+                    "configuration": {
+                        "b_mode": false
+                    }
                 }
             ]
         },
@@ -1562,7 +1571,7 @@
                 },
                 {
                     "from": "<?php\n$f = fn () => null;\n",
-                    "to": "*** Tokens::fromCode() failed with ParseError: syntax error, unexpected '=>' (T_DOUBLE_ARROW) *** ",
+                    "to": "<?php\n$f = fn() => null;\n",
                     "configuration": {
                         "closure_function_spacing": "none"
                     }
@@ -1590,14 +1599,16 @@
             "riskyDescription": "Risky when any of the configured functions to replace are overridden.",
             "codeSamples": [
                 {
-                    "from": "<?php\necho phpversion();\necho pi();\necho php_sapi_name();\n",
-                    "to": "<?php\necho PHP_VERSION;\necho M_PI;\necho PHP_SAPI;\n"
+                    "from": "<?php\necho phpversion();\necho pi();\necho php_sapi_name();\nclass Foo\n{\n    public function Bar()\n    {\n        echo get_class();\n        echo get_called_class();\n    }\n}\n",
+                    "to": "<?php\necho PHP_VERSION;\necho M_PI;\necho PHP_SAPI;\nclass Foo\n{\n    public function Bar()\n    {\n        echo __CLASS__;\n        echo get_called_class();\n    }\n}\n"
                 },
                 {
-                    "from": "<?php\necho phpversion();\necho pi();\n",
-                    "to": "<?php\necho PHP_VERSION;\necho pi();\n",
+                    "from": "<?php\necho phpversion();\necho pi();\nclass Foo\n{\n    public function Bar()\n    {\n        echo get_class();\n        get_class($this);\n        echo get_called_class();\n    }\n}\n",
+                    "to": "<?php\necho PHP_VERSION;\necho pi();\nclass Foo\n{\n    public function Bar()\n    {\n        echo get_class();\n        static::class;\n        echo static::class;\n    }\n}\n",
                     "configuration": {
                         "functions": [
+                            "get_called_class",
+                            "get_class_this",
                             "phpversion"
                         ]
                     }
@@ -2465,6 +2476,13 @@
                 {
                     "from": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    case 2:\n        bar();\n        \/\/ no break\n        break;\n    case 3:\n        baz();\n}\n",
                     "to": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        \/\/ no break\n    case 2:\n        bar();\n        break;\n    case 3:\n        baz();\n}\n"
+                },
+                {
+                    "from": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    case 2:\n        foo();\n}\n",
+                    "to": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        \/\/ some comment\n    case 2:\n        foo();\n}\n",
+                    "configuration": {
+                        "comment_text": "some comment"
+                    }
                 }
             ]
         },
@@ -2957,7 +2975,7 @@
                     ]
                 }
             ],
-            "summary": "Removes `@param` and `@return` tags that don't provide any useful information.",
+            "summary": "Removes `@param`, `@return` and `@var` tags that don't provide any useful information.",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     *\/\n    public function doFoo(Bar $bar, $baz) {}\n}\n",
@@ -2973,6 +2991,10 @@
                 {
                     "from": "<?php\nclass Foo {\n    \/**\n     * @param Bar $bar\n     * @param mixed $baz\n     *\n     * @return Baz\n     *\/\n    public function doFoo(Bar $bar, $baz): Baz {}\n}\n",
                     "to": "<?php\nclass Foo {\n    \/**\n     *\n     *\/\n    public function doFoo(Bar $bar, $baz): Baz {}\n}\n"
+                },
+                {
+                    "from": "<?php\nclass Foo {\n    \/**\n     * @var Bar\n     *\/\n    private Bar $bar;\n}\n",
+                    "to": "<?php\nclass Foo {\n    \/**\n     *\/\n    private Bar $bar;\n}\n"
                 }
             ]
         },
@@ -3050,24 +3072,39 @@
             ]
         },
         "no_unneeded_curly_braces": {
+            "configuration": [
+                {
+                    "name": "namespaces",
+                    "description": "Remove unneeded curly braces from bracketed namespaces.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "Removes unneeded curly braces that are superfluous and aren't part of a control structure's body.",
             "codeSamples": [
                 {
                     "from": "<?php {\n    echo 1;\n}\n\nswitch ($b) {\n    case 1: {\n        break;\n    }\n}\n",
                     "to": "<?php \n    echo 1;\n\n\nswitch ($b) {\n    case 1: \n        break;\n    \n}\n"
+                },
+                {
+                    "from": "<?php\nnamespace Foo {\n    function Bar(){}\n}\n",
+                    "to": "<?php\nnamespace Foo;\n    function Bar(){}\n\n",
+                    "configuration": {
+                        "namespaces": true
+                    }
                 }
             ]
         },
         "no_unneeded_final_method": {
-            "summary": "A final class must not have final methods.",
+            "risky": true,
+            "summary": "A `final` class must not have `final` methods and `private` methods must not be `final`.",
+            "riskyDescription": "Risky when child class overrides a `private` method.",
             "codeSamples": [
                 {
-                    "from": "<?php\nfinal class Foo {\n    final public function foo() {}\n    final protected function bar() {}\n    final private function baz() {}\n}\n",
-                    "to": "<?php\nfinal class Foo {\n    public function foo() {}\n    protected function bar() {}\n    private function baz() {}\n}\n"
-                },
-                {
-                    "from": "<?php\nclass Foo {\n    final private function bar() {}\n}\n",
-                    "to": "<?php\nclass Foo {\n    private function bar() {}\n}\n"
+                    "from": "<?php\nfinal class Foo\n{\n    final public function foo1() {}\n    final protected function bar() {}\n    final private function baz() {}\n}\n\nclass Bar\n{\n    final private function bar1() {}\n}\n",
+                    "to": "<?php\nfinal class Foo\n{\n    public function foo1() {}\n    protected function bar() {}\n    private function baz() {}\n}\n\nclass Bar\n{\n    private function bar1() {}\n}\n"
                 }
             ]
         },
@@ -3778,6 +3815,13 @@
                 {
                     "from": "<?php\nclass MyTest extends TestCase {}\n",
                     "to": "<?php\n\/**\n * @small\n *\/\nclass MyTest extends TestCase {}\n"
+                },
+                {
+                    "from": "<?php\nclass MyTest extends TestCase {}\n",
+                    "to": "<?php\n\/**\n * @medium\n *\/\nclass MyTest extends TestCase {}\n",
+                    "configuration": {
+                        "group": "medium"
+                    }
                 }
             ]
         },
@@ -4327,7 +4371,7 @@
             ]
         },
         "phpdoc_var_without_name": {
-            "summary": "`@var` and `@type` annotations should not contain the variable name.",
+            "summary": "`@var` and `@type` annotations of classy properties should not contain the name.",
             "codeSamples": [
                 {
                     "from": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int $bar\n     *\/\n    public $bar;\n\n    \/**\n     * @type $baz float\n     *\/\n    public $baz;\n}\n",
@@ -4575,6 +4619,10 @@
                 {
                     "from": "<?php\n$a = 1;",
                     "to": "<?php\n$a = 1;\n"
+                },
+                {
+                    "from": "<?php\n$a = 1;\n\n",
+                    "to": "<?php\n$a = 1;\n"
                 }
             ]
         },
@@ -4770,7 +4818,7 @@
         "static_lambda": {
             "risky": true,
             "summary": "Lambdas not (indirect) referencing `$this` must be declared `static`.",
-            "riskyDescription": "Risky when using \"->bindTo\" on lambdas without referencing to `$this`.",
+            "riskyDescription": "Risky when using `->bindTo` on lambdas without referencing to `$this`.",
             "codeSamples": [
                 {
                     "from": "<?php\n$a = function () use ($b)\n{   echo $b;\n};\n",
@@ -5108,8 +5156,9 @@
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
             "no_unneeded_control_parentheses": null,
-            "no_unneeded_curly_braces": null,
-            "no_unneeded_final_method": null,
+            "no_unneeded_curly_braces": {
+                "namespaces": true
+            },
             "no_unused_imports": null,
             "no_whitespace_before_comma_in_array": null,
             "no_whitespace_in_blank_line": null,
@@ -5202,7 +5251,16 @@
             "fopen_flags": {
                 "b_mode": false
             },
-            "function_to_constant": null,
+            "function_to_constant": {
+                "functions": [
+                    "get_called_class",
+                    "get_class",
+                    "get_class_this",
+                    "php_sapi_name",
+                    "phpversion",
+                    "pi"
+                ]
+            },
             "implode_call": null,
             "is_null": null,
             "modernize_types_casting": null,
@@ -5224,6 +5282,7 @@
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
+            "no_unneeded_final_method": null,
             "non_printable_character": null,
             "php_unit_construct": null,
             "php_unit_mock_short_will_return": null,
@@ -5269,8 +5328,6 @@
             "no_null_property_initialization": null,
             "no_short_echo_tag": null,
             "no_superfluous_elseif": null,
-            "no_unneeded_curly_braces": null,
-            "no_unneeded_final_method": null,
             "no_unset_cast": null,
             "no_useless_else": null,
             "no_useless_return": null,
@@ -5335,6 +5392,9 @@
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
             "no_unneeded_control_parentheses": null,
+            "no_unneeded_curly_braces": {
+                "namespaces": true
+            },
             "no_unused_imports": null,
             "no_whitespace_before_comma_in_array": null,
             "no_whitespace_in_blank_line": null,
@@ -5413,15 +5473,6 @@
         "@PhpCsFixer:risky": {
             "comment_to_phpdoc": null,
             "final_internal_class": null,
-            "function_to_constant": {
-                "functions": [
-                    "get_called_class",
-                    "get_class",
-                    "php_sapi_name",
-                    "phpversion",
-                    "pi"
-                ]
-            },
             "logical_operators": null,
             "no_unreachable_default_argument_value": null,
             "no_unset_on_property": null,
@@ -5438,6 +5489,16 @@
             "fopen_flag_order": null,
             "fopen_flags": {
                 "b_mode": false
+            },
+            "function_to_constant": {
+                "functions": [
+                    "get_called_class",
+                    "get_class",
+                    "get_class_this",
+                    "php_sapi_name",
+                    "phpversion",
+                    "pi"
+                ]
             },
             "implode_call": null,
             "is_null": null,
@@ -5460,6 +5521,7 @@
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
+            "no_unneeded_final_method": null,
             "non_printable_character": null,
             "php_unit_construct": null,
             "php_unit_mock_short_will_return": null,
