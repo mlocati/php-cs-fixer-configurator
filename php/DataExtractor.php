@@ -129,7 +129,7 @@ class DataExtractor
                     $configuration = $originalConfiguration === null ? [] : $originalConfiguration;
                     $new = null;
                     try {
-                        $tokens = Tokens::fromCode($old);
+                        $tokens = $this->extractTokens($old);
                     } catch (Exception $x) {
                         $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
                     } catch (Throwable $x) {
@@ -250,5 +250,19 @@ class DataExtractor
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \PhpCsFixer\Tokenizer\Tokens
+     */
+    private function extractTokens($code)
+    {
+        set_error_handler(function() {}, E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING | E_USER_WARNING | E_USER_NOTICE | E_STRICT | E_RECOVERABLE_ERROR | E_DEPRECATED | E_USER_DEPRECATED);
+        $tokens = Tokens::fromCode($code);
+        restore_error_handler();
+
+        return $tokens;
     }
 }
