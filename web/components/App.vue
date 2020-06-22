@@ -482,7 +482,8 @@ export default Vue.extend({
             this.persistConfiguration();
         },
         unsetFixerSet: function(fixerSetName: string): void {
-            const fixerSet = this.configuration.version.getFixerSetByName(fixerSetName);
+            const actualFixerSetName = fixerSetName.charAt(0) === '-' ? fixerSetName.substr(1) : fixerSetName;
+            const fixerSet = this.configuration.version.getFixerSetByName(actualFixerSetName);
             this.configuration.unsetFixerSet(<FixerSet>fixerSet);
             this.persistConfiguration();
         },
