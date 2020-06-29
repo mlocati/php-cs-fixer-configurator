@@ -1,5 +1,5 @@
 {
-    "version": "2.15.7",
+    "version": "2.15.8",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -313,8 +313,8 @@
                     }
                 },
                 {
-                    "from": "<?php\nif (null === $a) {\n    $foo->bar();\n    throw new \\UnexpectedValueException(\"A cannot be null\");\n}\n",
-                    "to": "<?php\nif (null === $a) {\n    $foo->bar();\n\n    throw new \\UnexpectedValueException(\"A cannot be null\");\n}\n",
+                    "from": "<?php\nif (null === $a) {\n    $foo->bar();\n    throw new \\UnexpectedValueException(\"A cannot be null.\");\n}\n",
+                    "to": "<?php\nif (null === $a) {\n    $foo->bar();\n\n    throw new \\UnexpectedValueException(\"A cannot be null.\");\n}\n",
                     "configuration": {
                         "statements": [
                             "throw"
@@ -1255,6 +1255,14 @@
                 {
                     "from": "<?php\n\/**\n * @Foo ( )\n *\/\nclass Bar {}\n\n\/**\n * @Foo(\"bar\" ,\"baz\")\n *\/\nclass Bar2 {}\n\n\/**\n * @Foo(foo = \"foo\", bar = {\"foo\":\"foo\", \"bar\"=\"bar\"})\n *\/\nclass Bar3 {}\n",
                     "to": "<?php\n\/**\n * @Foo()\n *\/\nclass Bar {}\n\n\/**\n * @Foo(\"bar\", \"baz\")\n *\/\nclass Bar2 {}\n\n\/**\n * @Foo(foo=\"foo\", bar={\"foo\" : \"foo\", \"bar\" = \"bar\"})\n *\/\nclass Bar3 {}\n"
+                },
+                {
+                    "from": "<?php\n\/**\n * @Foo(foo = \"foo\", bar = {\"foo\":\"foo\", \"bar\"=\"bar\"})\n *\/\nclass Bar {}\n",
+                    "to": "<?php\n\/**\n * @Foo(foo=\"foo\", bar={\"foo\" : \"foo\", \"bar\"=\"bar\"})\n *\/\nclass Bar {}\n",
+                    "configuration": {
+                        "after_array_assignments_equals": false,
+                        "before_array_assignments_equals": false
+                    }
                 }
             ]
         },
@@ -1434,7 +1442,7 @@
             "configuration": [
                 {
                     "name": "annotation-black-list",
-                    "description": "Class level annotations tags that must be omitted to fix the class, even if all of the white list ones are used as well. (case insensitive)",
+                    "description": "Class level annotations tags that must be omitted to fix the class, even if all of the excluded ones are used as well. (case insensitive)",
                     "defaultValue": [
                         "@final",
                         "@Entity",
@@ -1642,11 +1650,21 @@
             "summary": "Configured annotations should be omitted from PHPDoc.",
             "codeSamples": [
                 {
-                    "from": "<?php\n\/**\n * @internal\n * @author someone\n *\/\nfunction foo() {}\n",
+                    "from": "<?php\n\/**\n * @internal\n * @author John Doe\n *\/\nfunction foo() {}\n",
                     "to": "<?php\n\/**\n * @internal\n *\/\nfunction foo() {}\n",
                     "configuration": {
                         "annotations": [
                             "author"
+                        ]
+                    }
+                },
+                {
+                    "from": "<?php\n\/**\n * @author John Doe\n * @package ACME API\n * @subpackage Authorization\n * @version 1.0\n *\/\nfunction foo() {}\n",
+                    "to": "<?php\n\/**\n * @author John Doe\n * @version 1.0\n *\/\nfunction foo() {}\n",
+                    "configuration": {
+                        "annotations": [
+                            "package",
+                            "subpackage"
                         ]
                     }
                 }
@@ -3633,6 +3651,15 @@
                 {
                     "from": "<?php\nclass MyTest extends TestCase {}\n",
                     "to": "<?php\n\/**\n * @internal\n *\/\nclass MyTest extends TestCase {}\n"
+                },
+                {
+                    "from": "<?php\nclass MyTest extends TestCase {}\nfinal class FinalTest extends TestCase {}\nabstract class AbstractTest extends TestCase {}\n",
+                    "to": "<?php\nclass MyTest extends TestCase {}\n\/**\n * @internal\n *\/\nfinal class FinalTest extends TestCase {}\nabstract class AbstractTest extends TestCase {}\n",
+                    "configuration": {
+                        "types": [
+                            "final"
+                        ]
+                    }
                 }
             ]
         },
@@ -3730,8 +3757,15 @@
             "riskyDescription": "Risky when PHPUnit classes are overridden or not accessible, or when project has PHPUnit incompatibilities.",
             "codeSamples": [
                 {
-                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n}\n",
-                    "to": "<?php\nfinal class MyTest extends \\PHPUnit\\Framework\\TestCase\n{\n}\n"
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomething()\n    {\n        PHPUnit_Framework_Assert::assertTrue(true);\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testSomething()\n    {\n        PHPUnit\\Framework\\Assert::assertTrue(true);\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomething()\n    {\n        PHPUnit_Framework_Assert::assertTrue(true);\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testSomething()\n    {\n        PHPUnit_Framework_Assert::assertTrue(true);\n    }\n}\n",
+                    "configuration": {
+                        "target": "4.8"
+                    }
                 }
             ]
         },
@@ -3929,6 +3963,13 @@
                 {
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testMe()\n    {\n        $this->assertSame(1, 2);\n        self::assertSame(1, 2);\n        static::assertSame(1, 2);\n    }\n}\n",
                     "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testMe()\n    {\n        static::assertSame(1, 2);\n        static::assertSame(1, 2);\n        static::assertSame(1, 2);\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testMe()\n    {\n        $this->assertSame(1, 2);\n        self::assertSame(1, 2);\n        static::assertSame(1, 2);\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testMe()\n    {\n        $this->assertSame(1, 2);\n        $this->assertSame(1, 2);\n        $this->assertSame(1, 2);\n    }\n}\n",
+                    "configuration": {
+                        "call_type": "this"
+                    }
                 }
             ]
         },
@@ -4192,6 +4233,15 @@
                 {
                     "from": "<?php\n\/**\n * @param integer $a\n * @param boolean $b\n * @param real $c\n *\n * @return double\n *\/\nfunction sample($a, $b, $c)\n{\n    return sample2($a, $b, $c);\n}\n",
                     "to": "<?php\n\/**\n * @param int $a\n * @param bool $b\n * @param float $c\n *\n * @return float\n *\/\nfunction sample($a, $b, $c)\n{\n    return sample2($a, $b, $c);\n}\n"
+                },
+                {
+                    "from": "<?php\n\/**\n * @param integer $a\n * @param boolean $b\n * @param real $c\n *\/\nfunction sample($a, $b, $c)\n{\n    return sample2($a, $b, $c);\n}\n",
+                    "to": "<?php\n\/**\n * @param integer $a\n * @param bool $b\n * @param real $c\n *\/\nfunction sample($a, $b, $c)\n{\n    return sample2($a, $b, $c);\n}\n",
+                    "configuration": {
+                        "types": [
+                            "boolean"
+                        ]
+                    }
                 }
             ]
         },
@@ -4244,7 +4294,7 @@
                 }
             ],
             "summary": "EXPERIMENTAL: Takes `@return` annotation of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.",
-            "riskyDescription": "[1] This rule is EXPERIMENTAL and is not covered with backward compatibility promise. [2] `@return` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. [3] Manual actions are required if inherited signatures are not properly documented. [4] `@inheritdocs` support is under construction.",
+            "riskyDescription": "This rule is EXPERIMENTAL and [1] is not covered with backward compatibility promise. [2] `@return` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. [3] Manual actions are required if inherited signatures are not properly documented. [4] `@inheritdocs` support is under construction.",
             "codeSamples": [
                 {
                     "from": "<?php\n\n\/** @return \\My\\Bar *\/\nfunction my_foo()\n{}\n",
@@ -4257,6 +4307,13 @@
                 {
                     "from": "<?php\n\n\/** @return object *\/\nfunction my_foo()\n{}\n",
                     "to": "<?php\n\n\/** @return object *\/\nfunction my_foo(): object\n{}\n"
+                },
+                {
+                    "from": "<?php\n\/** @return Foo *\/\nfunction foo() {}\n\/** @return string *\/\nfunction bar() {}\n",
+                    "to": "<?php\n\/** @return Foo *\/\nfunction foo(): Foo {}\n\/** @return string *\/\nfunction bar() {}\n",
+                    "configuration": {
+                        "scalar_types": false
+                    }
                 }
             ]
         },
@@ -4298,6 +4355,16 @@
                 {
                     "from": "<?php\n\/**\n * @param STRING|String[] $bar\n *\n * @return inT[]\n *\/\n",
                     "to": "<?php\n\/**\n * @param string|string[] $bar\n *\n * @return int[]\n *\/\n"
+                },
+                {
+                    "from": "<?php\n\/**\n * @param BOOL $foo\n *\n * @return MIXED\n *\/\n",
+                    "to": "<?php\n\/**\n * @param bool $foo\n *\n * @return MIXED\n *\/\n",
+                    "configuration": {
+                        "groups": [
+                            "simple",
+                            "alias"
+                        ]
+                    }
                 }
             ]
         },
