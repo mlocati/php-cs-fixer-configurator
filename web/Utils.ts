@@ -142,6 +142,19 @@ export function toPhp(value: any, pretty: boolean = false, indentLevel: number =
     return valueToPhp(value, pretty, indentLevel);
 }
 
+export function underscoreToCamelCase(text: string): string {
+    return text.replace(/([-_][a-z])/ig, ($1: string) => {
+        return $1.toUpperCase()
+          .replace('-', '')
+          .replace('_', '');
+      });
+}
+
+export function camelCaseToUnderscore(text: string): string {
+    return text.trim().split(/(?=[A-Z])/).join('_').toLowerCase();
+
+}
+
 export function copyToClipboard(text: string): boolean {
     let textDiv: HTMLDivElement = document.createElement('div');
     document.body.appendChild(textDiv);
