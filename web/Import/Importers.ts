@@ -2,13 +2,13 @@ import AutoDetectImporter from "./AutoDetectImporter";
 import ImporterInterface from "./ImporterInterface";
 import JsonImporter from "./JsonImporter";
 import PhpImporter from "./PhpImporter";
-import PHPECSImporter from "./PHPECSImporter";
+import PhpECSImporter from "./PhpECSImporter";
 import YamlImporter from "./YamlImporter";
 import PhpECSExporter from "../Export/PhpECSExporter";
 
 const ActualImporters = [
     new PhpImporter(),
-    new PHPECSImporter(),
+    new PhpECSImporter(),
     new JsonImporter(),
     new YamlImporter(),
 ];
