@@ -30,8 +30,8 @@ export default class PhpECSExporter implements ExporterInterface {
             ' * you can change this configuration by importing this file.',
             ' */',
             '',
-            'use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;',
-            'use Symplify\EasyCodingStandard\Configuration\Option;',
+            'use Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ContainerConfigurator;',
+            'use Symplify\\EasyCodingStandard\\Configuration\\Option;',
             '',
             'return static function (ContainerConfigurator $containerConfigurator): void {',
             INDENT + '$parameters = $containerConfigurator->parameters();',
@@ -64,9 +64,9 @@ export default class PhpECSExporter implements ExporterInterface {
             lines.push(INDENT + INDENT + '// must be done manually, as names differ');
             configuration.fixerSets.forEach((fixerSetName: string): void => {
                 if (fixerSetName.charAt(0) === '-') {
-                    lines.push(INDENT + INDENT + '// exclude: SetList::' + fixerSetName.substr(1) + ',');
+                    lines.push(INDENT + INDENT + '// exclude: SetList::' + fixerSetName.substr(2) + ',');
                 } else {
-                    lines.push(INDENT + INDENT + '// include SetList::' + fixerSetName.substr(2) + ',');
+                    lines.push(INDENT + INDENT + '// include SetList::' + fixerSetName.substr(1) + ',');
                 }
             });
             lines.push(INDENT + ']);');
