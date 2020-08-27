@@ -16,9 +16,6 @@ export default class PhpECSExporter implements ExporterInterface {
 
     /**
      * Generate the text representing the configuration
-     * @param version
-     * @param configuration
-     * @param keepMetadata
      */
     render(configuration: SerializedConfigurationInterface, options: RenderOptions): string {
         const INDENT = '    ';
