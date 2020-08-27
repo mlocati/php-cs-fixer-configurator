@@ -44,10 +44,10 @@ export default class PhpECSExporter implements ExporterInterface {
         }
         if (configuration.whitespace !== undefined) {
             if (configuration.whitespace.indent !== undefined) {
-                lines.push(INDENT + '$parameters->set(Option::INDENTATION,' + toPhp(configuration.whitespace.indent) + ')');
+                lines.push(INDENT + '$parameters->set(Option::INDENTATION,' + toPhp(configuration.whitespace.indent) + ');');
             }
             if (configuration.whitespace.lineEnding !== undefined) {
-                lines.push(INDENT + '$parameters->set(Option::LINE_ENDING,' + toPhp(configuration.whitespace.lineEnding) + ')');
+                lines.push(INDENT + '$parameters->set(Option::LINE_ENDING,' + toPhp(configuration.whitespace.lineEnding) + ');');
             }
         }
 
