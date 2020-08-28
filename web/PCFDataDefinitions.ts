@@ -71,6 +71,11 @@ export interface PFCFixer {
      * Not empty if present.
      */
     codeSamples?: PFCFixerCodeSample[],
+
+    /**
+     * The full class name of the fixer including the namespace.
+     */
+    fullClassName: string,
 }
 
 /**

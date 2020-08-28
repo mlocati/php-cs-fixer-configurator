@@ -62,6 +62,8 @@ export default class Fixer implements FixerOrSetInterface {
 
     public readonly codeSamples: PFCFixerCodeSample[];
 
+    public readonly fullClassName: string;
+
     private _fixerSets?: FixerSet[];
 
     public get fixerSets(): FixerSet[] {
@@ -164,6 +166,7 @@ export default class Fixer implements FixerOrSetInterface {
         this.riskyDescriptionHtml = textToHtml(this.riskyDescription, true);
         this.options = data.configuration === undefined ? [] : data.configuration;
         this.codeSamples = data.codeSamples === undefined ? [] : data.codeSamples;
+        this.fullClassName = data.fullClassName === undefined ? '' : data.fullClassName;
         if (data.deprecated_switchTo === undefined) {
             this.deprecated_switchToNames = [];
             this._deprecated_switchTo = [];
@@ -296,9 +299,9 @@ export default class Fixer implements FixerOrSetInterface {
 
     /**
      * Get the index of a configuration option, searching for the canonical name and/or its alias
-     * @param name 
-     * @param alias null to search both canonical and alias names, false to search for canonical name only, true to search for alias name only 
-     * 
+     * @param name
+     * @param alias null to search both canonical and alias names, false to search for canonical name only, true to search for alias name only
+     *
      * @returns -1 if not found
      */
     public getOptionIndexByName(name: string, alias: boolean | null = null): number {
@@ -316,9 +319,9 @@ export default class Fixer implements FixerOrSetInterface {
 
     /**
      * Get a configuration option, searching for the canonical name and/or its alias
-     * @param name 
-     * @param alias null to search both canonical and alias names, false to search for canonical name only, true to search for alias name only 
-     * 
+     * @param name
+     * @param alias null to search both canonical and alias names, false to search for canonical name only, true to search for alias name only
+     *
      * @returns null if not found
      */
     public getOptionByName(name: string, alias: boolean | null = null): PFCFixerOption | null {

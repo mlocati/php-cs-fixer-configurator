@@ -167,6 +167,7 @@ class DataExtractor
             if ($fixer instanceof DeprecatedFixerInterface) {
                 $fixerData['deprecated_switchTo'] = $fixer->getSuccessorsNames();
             }
+            $fixerData['fullClassName'] = get_class($fixer);
             $result[$fixer->getName()] = $fixerData;
         }
         ksort($result, SORT_FLAG_CASE);

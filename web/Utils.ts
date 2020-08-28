@@ -142,6 +142,44 @@ export function toPhp(value: any, pretty: boolean = false, indentLevel: number =
     return valueToPhp(value, pretty, indentLevel);
 }
 
+export function underscoreToCamelCase(text: string): string {
+    return text.replace(/([-_][a-z])/ig, ($1: string) => {
+        return $1.toUpperCase()
+            .replace('-', '')
+            .replace('_', '');
+    });
+}
+
+export function camelCaseToUnderscore(text: string): string {
+    return text.replace(/[\w]([A-Z])/g, function(m) {
+               return m[0] + "_" + m[1];
+           }).toLowerCase();
+}
+
+export function setNameToConst(text: string): string {
+    return text.trim()
+        .replace('PHPUnit', 'PHPUNIT')
+        .replace(/([^\d])([\d]+)/ig, ($m: string, $1: string, $2: string) => {
+            return $1 + '_' + $2;
+        })
+        .replace(':', '_')
+        .replace(/(.)([A-Z][a-z]+)/, '$1_$2')
+        .replace(/([a-z0-9])([A-Z])/, '$1_$2')
+        .toUpperCase();
+}
+
+export function constToSetName(text: string): string {
+    return text.trim()
+        .replace(/([A-Z])([A-Z]+)(.)/ig, ($m: string, $1: string, $2: string, $3: string) => {
+            return $1.toUpperCase() + $2.toLowerCase() + $3.toLowerCase();
+        })
+        .replace('Php', 'PHP')
+        .replace('Psr', 'PSR')
+        .replace('PHPunit', 'PHPUnit')
+        .replace('_Risky', ':risky')
+        .replace(/_/g, '');
+}
+
 export function copyToClipboard(text: string): boolean {
     let textDiv: HTMLDivElement = document.createElement('div');
     document.body.appendChild(textDiv);
