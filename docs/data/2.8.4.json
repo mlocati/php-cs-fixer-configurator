@@ -36,7 +36,8 @@
                         "comment_type": "all_multiline"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\AlignMultilineCommentFixer"
         },
         "array_syntax": {
             "configuration": [
@@ -63,7 +64,8 @@
                         "syntax": "short"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\ArraySyntaxFixer"
         },
         "binary_operator_spaces": {
             "configuration": [
@@ -142,7 +144,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\BinaryOperatorSpacesFixer"
         },
         "blank_line_after_namespace": {
             "summary": "There MUST be one blank line after the namespace declaration.",
@@ -155,7 +158,8 @@
                     "from": "<?php\nnamespace Sample\\Sample;\nClass Test{}\n",
                     "to": "<?php\nnamespace Sample\\Sample;\n\nClass Test{}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\NamespaceNotation\\BlankLineAfterNamespaceFixer"
         },
         "blank_line_after_opening_tag": {
             "summary": "Ensure there is no code on the same line as the PHP open tag and it is followed by a blank line.",
@@ -164,7 +168,8 @@
                     "from": "<?php $a = 1;\n$b = 1;\n",
                     "to": "<?php\n\n$a = 1;\n$b = 1;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\BlankLineAfterOpeningTagFixer"
         },
         "blank_line_before_return": {
             "summary": "An empty line feed should precede a return statement.",
@@ -176,7 +181,8 @@
             ],
             "deprecated_switchTo": [
                 "blank_line_before_statement"
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ReturnNotation\\BlankLineBeforeReturnFixer"
         },
         "blank_line_before_statement": {
             "configuration": [
@@ -310,7 +316,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\BlankLineBeforeStatementFixer"
         },
         "braces": {
             "configuration": [
@@ -370,7 +377,8 @@
                         "position_after_functions_and_oop_constructs": "same"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\BracesFixer"
         },
         "cast_spaces": {
             "configuration": [
@@ -404,7 +412,8 @@
                         "space": "none"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\CastSpacesFixer"
         },
         "class_definition": {
             "configuration": [
@@ -464,7 +473,8 @@
                         "multiLineExtendsEachSingleLine": true
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\ClassDefinitionFixer"
         },
         "class_keyword_remove": {
             "summary": "Converts `::class` keywords to FQCN strings.",
@@ -473,7 +483,8 @@
                     "from": "<?php\n\nuse Foo\\Bar\\Baz;\n\n$className = Baz::class;\n",
                     "to": "<?php\n\nuse Foo\\Bar\\Baz;\n\n$className = 'Foo\\Bar\\Baz';\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\ClassKeywordRemoveFixer"
         },
         "combine_consecutive_issets": {
             "summary": "Using `isset(X) &&` multiple times should be done in one call.",
@@ -482,7 +493,8 @@
                     "from": "<?php\n$a = isset($a) && isset($b);\n",
                     "to": "<?php\n$a = isset($a, $b)  ;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\CombineConsecutiveIssetsFixer"
         },
         "combine_consecutive_unsets": {
             "summary": "Calling `unset` on multiple items should be done in one call.",
@@ -491,7 +503,8 @@
                     "from": "<?php\nunset($a); unset($b);\n",
                     "to": "<?php\nunset($a, $b); \n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\CombineConsecutiveUnsetsFixer"
         },
         "compact_nullable_typehint": {
             "summary": "Remove extra spaces in a nullable typehint.",
@@ -501,7 +514,8 @@
                     "from": "<?php\nfunction sample(? string $str): ? string\n{}\n",
                     "to": "<?php\nfunction sample(?string $str): ?string\n{}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\CompactNullableTypehintFixer"
         },
         "concat_space": {
             "configuration": [
@@ -535,7 +549,8 @@
                         "spacing": "one"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\ConcatSpaceFixer"
         },
         "declare_equal_normalize": {
             "configuration": [
@@ -562,7 +577,8 @@
                         "space": "single"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\DeclareEqualNormalizeFixer"
         },
         "declare_strict_types": {
             "risky": true,
@@ -573,7 +589,8 @@
                     "from": "<?php\n",
                     "to": "<?php declare(strict_types=1);"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Strict\\DeclareStrictTypesFixer"
         },
         "dir_constant": {
             "risky": true,
@@ -584,7 +601,8 @@
                     "from": "<?php\n$a = dirname(__FILE__);\n",
                     "to": "<?php\n$a = __DIR__;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\DirConstantFixer"
         },
         "doctrine_annotation_array_assignment": {
             "configuration": [
@@ -708,7 +726,8 @@
                         "operator": ":"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationArrayAssignmentFixer"
         },
         "doctrine_annotation_braces": {
             "configuration": [
@@ -832,7 +851,8 @@
                         "syntax": "with_braces"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationBracesFixer"
         },
         "doctrine_annotation_indentation": {
             "configuration": [
@@ -955,7 +975,8 @@
                         "indent_mixed_lines": true
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationIndentationFixer"
         },
         "doctrine_annotation_spaces": {
             "configuration": [
@@ -1150,7 +1171,8 @@
                     "from": "<?php\n\/**\n * @Foo ( )\n *\/\nclass Bar {}\n\n\/**\n * @Foo(\"bar\" ,\"baz\")\n *\/\nclass Bar2 {}\n\n\/**\n * @Foo(foo = \"foo\", bar = {\"foo\":\"foo\", \"bar\"=\"bar\"})\n *\/\nclass Bar3 {}\n",
                     "to": "<?php\n\/**\n * @Foo()\n *\/\nclass Bar {}\n\n\/**\n * @Foo(\"bar\", \"baz\")\n *\/\nclass Bar2 {}\n\n\/**\n * @Foo(foo=\"foo\", bar={\"foo\" : \"foo\", \"bar\" = \"bar\"})\n *\/\nclass Bar3 {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationSpacesFixer"
         },
         "elseif": {
             "summary": "The keyword `elseif` should be used instead of `else if` so that all control keywords look like single words.",
@@ -1159,7 +1181,8 @@
                     "from": "<?php\nif ($a) {\n} else if ($b) {\n}\n",
                     "to": "<?php\nif ($a) {\n} elseif ($b) {\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\ElseifFixer"
         },
         "encoding": {
             "summary": "PHP code MUST use only UTF-8 without BOM (remove BOM).",
@@ -1168,7 +1191,8 @@
                     "from": "\ufeff<?php\n\necho \"Hello!\";\n",
                     "to": "<?php\n\necho \"Hello!\";\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\EncodingFixer"
         },
         "ereg_to_preg": {
             "risky": true,
@@ -1179,7 +1203,8 @@
                     "from": "<?php $x = ereg('[A-Z]');\n",
                     "to": "<?php $x = preg_match('\/[A-Z]\/D');\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Alias\\EregToPregFixer"
         },
         "full_opening_tag": {
             "summary": "PHP code must use the long `<?php` tags or short-echo `<?=` tags and not other tag variations.",
@@ -1188,7 +1213,8 @@
                     "from": "<?\n\necho \"Hello!\";\n",
                     "to": "<?php\n\necho \"Hello!\";\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\FullOpeningTagFixer"
         },
         "function_declaration": {
             "configuration": [
@@ -1215,7 +1241,8 @@
                         "closure_function_spacing": "none"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\FunctionDeclarationFixer"
         },
         "function_to_constant": {
             "risky": true,
@@ -1250,7 +1277,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\FunctionToConstantFixer"
         },
         "function_typehint_space": {
             "summary": "Add missing space between function's argument and its typehint.",
@@ -1259,7 +1287,8 @@
                     "from": "<?php\nfunction sample(array$a)\n{}\n",
                     "to": "<?php\nfunction sample(array $a)\n{}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\FunctionTypehintSpaceFixer"
         },
         "general_phpdoc_annotation_remove": {
             "configuration": [
@@ -1283,7 +1312,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\GeneralPhpdocAnnotationRemoveFixer"
         },
         "hash_to_slash_comment": {
             "summary": "Single line comments should use double slashes `\/\/` and not hash `#`.",
@@ -1295,7 +1325,8 @@
             ],
             "deprecated_switchTo": [
                 "single_line_comment_style"
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Comment\\HashToSlashCommentFixer"
         },
         "header_comment": {
             "configuration": [
@@ -1364,7 +1395,8 @@
                         "location": "after_declare_strict"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Comment\\HeaderCommentFixer"
         },
         "heredoc_to_nowdoc": {
             "summary": "Convert `heredoc` to `nowdoc` where possible.",
@@ -1373,7 +1405,8 @@
                     "from": "<?php $a = <<<\"TEST\"\nFoo\nTEST;\n",
                     "to": "<?php $a = <<<'TEST'\nFoo\nTEST;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\StringNotation\\HeredocToNowdocFixer"
         },
         "include": {
             "summary": "Include\/Require and file path should be divided with a single space. File path should not be placed under brackets.",
@@ -1382,7 +1415,8 @@
                     "from": "<?php\nrequire (\"sample1.php\");\nrequire_once  \"sample2.php\";\ninclude       \"sample3.php\";\ninclude_once(\"sample4.php\");\n",
                     "to": "<?php\nrequire \"sample1.php\";\nrequire_once \"sample2.php\";\ninclude \"sample3.php\";\ninclude_once \"sample4.php\";\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\IncludeFixer"
         },
         "increment_style": {
             "configuration": [
@@ -1409,7 +1443,8 @@
                         "style": "post"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\IncrementStyleFixer"
         },
         "indentation_type": {
             "summary": "Code MUST use configured indentation type.",
@@ -1418,7 +1453,8 @@
                     "from": "<?php\n\nif (true) {\n\techo 'Hello!';\n}\n",
                     "to": "<?php\n\nif (true) {\n    echo 'Hello!';\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\IndentationTypeFixer"
         },
         "is_null": {
             "risky": true,
@@ -1446,7 +1482,8 @@
                         "use_yoda_style": false
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\IsNullFixer"
         },
         "line_ending": {
             "summary": "All PHP files must use same line ending.",
@@ -1455,7 +1492,8 @@
                     "from": "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \r\n |\r\nTEST;\n",
                     "to": "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \n |\nTEST;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\LineEndingFixer"
         },
         "linebreak_after_opening_tag": {
             "summary": "Ensure there is no code on the same line as the PHP open tag.",
@@ -1464,7 +1502,8 @@
                     "from": "<?php $a = 1;\n$b = 3;\n",
                     "to": "<?php\n$a = 1;\n$b = 3;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\LinebreakAfterOpeningTagFixer"
         },
         "list_syntax": {
             "configuration": [
@@ -1491,7 +1530,8 @@
                         "syntax": "short"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ListNotation\\ListSyntaxFixer"
         },
         "lowercase_cast": {
             "summary": "Cast should be written in lower case.",
@@ -1500,7 +1540,8 @@
                     "from": "<?php\n    $a = (BOOLEAN) $b;\n    $a = (BOOL) $b;\n    $a = (INTEGER) $b;\n    $a = (INT) $b;\n    $a = (DOUBLE) $b;\n    $a = (FLoaT) $b;\n    $a = (reaL) $b;\n    $a = (flOAT) $b;\n    $a = (sTRING) $b;\n    $a = (ARRAy) $b;\n    $a = (OBJect) $b;\n    $a = (UNset) $b;\n    $a = (Binary) $b;\n",
                     "to": "<?php\n    $a = (boolean) $b;\n    $a = (bool) $b;\n    $a = (integer) $b;\n    $a = (int) $b;\n    $a = (double) $b;\n    $a = (float) $b;\n    $a = (real) $b;\n    $a = (float) $b;\n    $a = (string) $b;\n    $a = (array) $b;\n    $a = (object) $b;\n    $a = (unset) $b;\n    $a = (binary) $b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\LowercaseCastFixer"
         },
         "lowercase_constants": {
             "summary": "The PHP constants `true`, `false`, and `null` MUST be in lower case.",
@@ -1509,7 +1550,8 @@
                     "from": "<?php\n$a = FALSE;\n$b = True;\n$c = nuLL;\n",
                     "to": "<?php\n$a = false;\n$b = true;\n$c = null;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Casing\\LowercaseConstantsFixer"
         },
         "lowercase_keywords": {
             "summary": "PHP keywords MUST be in lower case.",
@@ -1518,7 +1560,8 @@
                     "from": "<?php\n    FOREACH($a AS $B) {\n        TRY {\n            NEW $C($a, ISSET($B));\n            WHILE($B) {\n                INCLUDE \"test.php\";\n            }\n        } CATCH(\\Exception $e) {\n            EXIT(1);\n        }\n    }\n",
                     "to": "<?php\n    foreach($a as $B) {\n        try {\n            new $C($a, isset($B));\n            while($B) {\n                include \"test.php\";\n            }\n        } catch(\\Exception $e) {\n            exit(1);\n        }\n    }\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Casing\\LowercaseKeywordsFixer"
         },
         "magic_constant_casing": {
             "summary": "Magic constants should be referred to using the correct casing.",
@@ -1527,7 +1570,8 @@
                     "from": "<?php\necho __dir__;\n",
                     "to": "<?php\necho __DIR__;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Casing\\MagicConstantCasingFixer"
         },
         "mb_str_functions": {
             "risky": true,
@@ -1538,7 +1582,8 @@
                     "from": "<?php\n$a = strlen($a);\n$a = strpos($a, $b);\n$a = strrpos($a, $b);\n$a = substr($a, $b);\n$a = strtolower($a);\n$a = strtoupper($a);\n$a = stripos($a, $b);\n$a = strripos($a, $b);\n$a = strstr($a, $b);\n$a = stristr($a, $b);\n$a = strrchr($a, $b);\n$a = substr_count($a, $b);\n",
                     "to": "<?php\n$a = mb_strlen($a);\n$a = mb_strpos($a, $b);\n$a = mb_strrpos($a, $b);\n$a = mb_substr($a, $b);\n$a = mb_strtolower($a);\n$a = mb_strtoupper($a);\n$a = mb_stripos($a, $b);\n$a = mb_strripos($a, $b);\n$a = mb_strstr($a, $b);\n$a = mb_stristr($a, $b);\n$a = mb_strrchr($a, $b);\n$a = mb_substr_count($a, $b);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Alias\\MbStrFunctionsFixer"
         },
         "method_argument_space": {
             "configuration": [
@@ -1602,7 +1647,8 @@
                         "keep_multiple_spaces_after_comma": false
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\MethodArgumentSpaceFixer"
         },
         "method_separation": {
             "summary": "Methods must be separated with one blank line.",
@@ -1611,7 +1657,8 @@
                     "from": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n    protected function bar()\n    {\n    }\n}\n",
                     "to": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n\n    protected function bar()\n    {\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\MethodSeparationFixer"
         },
         "modernize_types_casting": {
             "risky": true,
@@ -1622,7 +1669,8 @@
                     "from": "<?php\n    $a = intval($b);\n    $a = floatval($b);\n    $a = doubleval($b);\n    $a = strval ($b);\n    $a = boolval($b);\n",
                     "to": "<?php\n    $a = (int) $b;\n    $a = (float) $b;\n    $a = (float) $b;\n    $a = (string) $b;\n    $a = (bool) $b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\ModernizeTypesCastingFixer"
         },
         "native_function_casing": {
             "summary": "Function defined by PHP should be called using the correct casing.",
@@ -1631,7 +1679,8 @@
                     "from": "<?php\nSTRLEN($str);\n",
                     "to": "<?php\nstrlen($str);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Casing\\NativeFunctionCasingFixer"
         },
         "native_function_invocation": {
             "risky": true,
@@ -1661,7 +1710,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\NativeFunctionInvocationFixer"
         },
         "new_with_braces": {
             "summary": "All instances created with new keyword must be followed by braces.",
@@ -1670,7 +1720,8 @@
                     "from": "<?php $x = new X;\n",
                     "to": "<?php $x = new X();\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\NewWithBracesFixer"
         },
         "no_alias_functions": {
             "risky": true,
@@ -1681,7 +1732,8 @@
                     "from": "<?php\n$a = chop($b);\nclose($b);\n$a = doubleval($b);\n$a = fputs($b, $c);\nini_alter($b, $c);\n$a = is_double($b);\n$a = is_integer($b);\n$a = is_long($b);\n$a = is_real($b);\n$a = is_writeable($b);\n$a = join($glue, $pieces);\n$a = key_exists($key, $array);\nmagic_quotes_runtime($new_setting);\n$a = pos($array);\n$a = show_source($filename, true);\n$a = sizeof($b);\n$a = strchr($haystack, $needle);\n",
                     "to": "<?php\n$a = rtrim($b);\nclosedir($b);\n$a = floatval($b);\n$a = fwrite($b, $c);\nini_set($b, $c);\n$a = is_float($b);\n$a = is_int($b);\n$a = is_int($b);\n$a = is_float($b);\n$a = is_writable($b);\n$a = implode($glue, $pieces);\n$a = array_key_exists($key, $array);\nset_magic_quotes_runtime($new_setting);\n$a = current($array);\n$a = highlight_file($filename, true);\n$a = count($b);\n$a = strstr($haystack, $needle);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Alias\\NoAliasFunctionsFixer"
         },
         "no_blank_lines_after_class_opening": {
             "summary": "There should be no empty lines after class opening brace.",
@@ -1690,7 +1742,8 @@
                     "from": "<?php\nfinal class Sample\n{\n\n    protected function foo()\n    {\n    }\n}\n",
                     "to": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\NoBlankLinesAfterClassOpeningFixer"
         },
         "no_blank_lines_after_phpdoc": {
             "summary": "There should not be blank lines between docblock and the documented element.",
@@ -1699,7 +1752,8 @@
                     "from": "<?php\n\n\/**\n * This is the bar class.\n *\/\n\n\nclass Bar {}\n",
                     "to": "<?php\n\n\/**\n * This is the bar class.\n *\/\nclass Bar {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\NoBlankLinesAfterPhpdocFixer"
         },
         "no_blank_lines_before_namespace": {
             "summary": "There should be no blank lines before a namespace declaration.",
@@ -1708,7 +1762,8 @@
                     "from": "<?php\n\n\n\nnamespace Example;\n",
                     "to": "<?php\nnamespace Example;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\NamespaceNotation\\NoBlankLinesBeforeNamespaceFixer"
         },
         "no_break_comment": {
             "configuration": [
@@ -1728,7 +1783,8 @@
                     "from": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    case 2:\n        bar();\n        \/\/ no break\n        break;\n    case 3:\n        baz();\n}\n",
                     "to": "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        \/\/ no break\n    case 2:\n        bar();\n        break;\n    case 3:\n        baz();\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\NoBreakCommentFixer"
         },
         "no_closing_tag": {
             "summary": "The closing `?>` tag MUST be omitted from files containing only PHP.",
@@ -1737,7 +1793,8 @@
                     "from": "<?php\nclass Sample\n{\n}\n?>\n",
                     "to": "<?php\nclass Sample\n{\n}"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\NoClosingTagFixer"
         },
         "no_empty_comment": {
             "summary": "There should not be any empty comments.",
@@ -1746,7 +1803,8 @@
                     "from": "<?php\n\/\/\n#\n\/* *\/\n",
                     "to": "<?php\n\n\n\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Comment\\NoEmptyCommentFixer"
         },
         "no_empty_phpdoc": {
             "summary": "There should not be empty PHPDoc blocks.",
@@ -1755,7 +1813,8 @@
                     "from": "<?php \/**  *\/\n",
                     "to": "<?php \n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\NoEmptyPhpdocFixer"
         },
         "no_empty_statement": {
             "summary": "Remove useless semicolon statements.",
@@ -1764,7 +1823,8 @@
                     "from": "<?php $a = 1;;\n",
                     "to": "<?php $a = 1;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Semicolon\\NoEmptyStatementFixer"
         },
         "no_extra_consecutive_blank_lines": {
             "configuration": [
@@ -1886,7 +1946,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoExtraConsecutiveBlankLinesFixer"
         },
         "no_homoglyph_names": {
             "risky": true,
@@ -1897,7 +1958,8 @@
                     "from": "<?php $n\u0430m\u0435 = 'wrong \"a\" character';\n",
                     "to": "<?php $name = 'wrong \"a\" character';\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Naming\\NoHomoglyphNamesFixer"
         },
         "no_leading_import_slash": {
             "summary": "Remove leading slashes in use clauses.",
@@ -1906,7 +1968,8 @@
                     "from": "<?php\nnamespace Foo;\nuse \\Bar;\n",
                     "to": "<?php\nnamespace Foo;\nuse Bar;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Import\\NoLeadingImportSlashFixer"
         },
         "no_leading_namespace_whitespace": {
             "summary": "The namespace declaration line shouldn't contain leading whitespace.",
@@ -1915,7 +1978,8 @@
                     "from": "<?php\n namespace Test8a;\n    namespace Test8b;\n",
                     "to": "<?php\nnamespace Test8a;\nnamespace Test8b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\NamespaceNotation\\NoLeadingNamespaceWhitespaceFixer"
         },
         "no_mixed_echo_print": {
             "configuration": [
@@ -1942,7 +2006,8 @@
                         "use": "print"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Alias\\NoMixedEchoPrintFixer"
         },
         "no_multiline_whitespace_around_double_arrow": {
             "summary": "Operator `=>` should not be surrounded by multi-line whitespaces.",
@@ -1951,7 +2016,8 @@
                     "from": "<?php\n$a = array(1\n\n=> 2);\n",
                     "to": "<?php\n$a = array(1 => 2);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\NoMultilineWhitespaceAroundDoubleArrowFixer"
         },
         "no_multiline_whitespace_before_semicolons": {
             "summary": "Multi-line whitespace before closing semicolon are prohibited.",
@@ -1960,7 +2026,8 @@
                     "from": "<?php\nfunction foo () {\n    return 1 + 2\n        ;\n}\n",
                     "to": "<?php\nfunction foo () {\n    return 1 + 2;\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Semicolon\\NoMultilineWhitespaceBeforeSemicolonsFixer"
         },
         "no_null_property_initialization": {
             "summary": "Properties MUST not be explicitly initialized with `null`.",
@@ -1969,7 +2036,8 @@
                     "from": "<?php\nclass Foo {\n    public $foo = null;\n}\n",
                     "to": "<?php\nclass Foo {\n    public $foo;\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\NoNullPropertyInitializationFixer"
         },
         "no_php4_constructor": {
             "risky": true,
@@ -1980,7 +2048,8 @@
                     "from": "<?php\nclass Foo\n{\n    public function Foo($bar)\n    {\n    }\n}\n",
                     "to": "<?php\nclass Foo\n{\n    public function __construct($bar)\n    {\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\NoPhp4ConstructorFixer"
         },
         "no_short_bool_cast": {
             "summary": "Short cast `bool` using double exclamation mark should not be used.",
@@ -1989,7 +2058,8 @@
                     "from": "<?php\n$a = !!$b;\n",
                     "to": "<?php\n$a = (bool)$b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\NoShortBoolCastFixer"
         },
         "no_short_echo_tag": {
             "summary": "Replace short-echo `<?=` with long format `<?php echo` syntax.",
@@ -1998,7 +2068,8 @@
                     "from": "<?= \"foo\";\n",
                     "to": "<?php echo \"foo\";\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\NoShortEchoTagFixer"
         },
         "no_singleline_whitespace_before_semicolons": {
             "summary": "Single-line whitespace before closing semicolon are prohibited.",
@@ -2007,7 +2078,8 @@
                     "from": "<?php $this->foo() ;\n",
                     "to": "<?php $this->foo();\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Semicolon\\NoSinglelineWhitespaceBeforeSemicolonsFixer"
         },
         "no_spaces_after_function_name": {
             "summary": "When making a method or function call, there MUST NOT be a space between the method or function name and the opening parenthesis.",
@@ -2016,7 +2088,8 @@
                     "from": "<?php\nrequire ('sample.php');\necho (test (3));\nexit  (1);\n$func ();\n",
                     "to": "<?php\nrequire('sample.php');\necho(test(3));\nexit(1);\n$func();\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\NoSpacesAfterFunctionNameFixer"
         },
         "no_spaces_around_offset": {
             "configuration": [
@@ -2056,7 +2129,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoSpacesAroundOffsetFixer"
         },
         "no_spaces_inside_parenthesis": {
             "summary": "There MUST NOT be a space after the opening parenthesis. There MUST NOT be a space before the closing parenthesis.",
@@ -2069,7 +2143,8 @@
                     "from": "<?php\nfunction foo( $bar, $baz )\n{\n}\n",
                     "to": "<?php\nfunction foo($bar, $baz)\n{\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoSpacesInsideParenthesisFixer"
         },
         "no_superfluous_elseif": {
             "summary": "Replaces superfluous `elseif` with `if`.",
@@ -2078,7 +2153,8 @@
                     "from": "<?php\nif ($a) {\n    return 1;\n} elseif ($b) {\n    return 2;\n}\n",
                     "to": "<?php\nif ($a) {\n    return 1;\n}\nif ($b) {\n    return 2;\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\NoSuperfluousElseifFixer"
         },
         "no_trailing_comma_in_list_call": {
             "summary": "Remove trailing commas in list function calls.",
@@ -2087,7 +2163,8 @@
                     "from": "<?php\nlist($a, $b,) = foo();\n",
                     "to": "<?php\nlist($a, $b) = foo();\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\NoTrailingCommaInListCallFixer"
         },
         "no_trailing_comma_in_singleline_array": {
             "summary": "PHP single-line arrays should not have trailing comma.",
@@ -2096,7 +2173,8 @@
                     "from": "<?php\n$a = array('sample',  );\n",
                     "to": "<?php\n$a = array('sample');\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\NoTrailingCommaInSinglelineArrayFixer"
         },
         "no_trailing_whitespace": {
             "summary": "Remove trailing whitespace at the end of non-blank lines.",
@@ -2105,7 +2183,8 @@
                     "from": "<?php\n$a = 1;     \n",
                     "to": "<?php\n$a = 1;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoTrailingWhitespaceFixer"
         },
         "no_trailing_whitespace_in_comment": {
             "summary": "There MUST be no trailing spaces inside comments and phpdocs.",
@@ -2114,7 +2193,8 @@
                     "from": "<?php\n\/\/ This is \n\/\/ a comment. \n",
                     "to": "<?php\n\/\/ This is\n\/\/ a comment.\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Comment\\NoTrailingWhitespaceInCommentFixer"
         },
         "no_unneeded_control_parentheses": {
             "configuration": [
@@ -2151,7 +2231,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixer"
         },
         "no_unneeded_curly_braces": {
             "summary": "Removes unneeded curly braces that are superfluous and aren't part of a control structure's body.",
@@ -2160,7 +2241,8 @@
                     "from": "<?php {\n    echo 1;\n}\n\nswitch ($b) {\n    case 1: {\n        break;\n    }\n}\n",
                     "to": "<?php \n    echo 1;\n\n\nswitch ($b) {\n    case 1: \n        break;\n    \n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\NoUnneededCurlyBracesFixer"
         },
         "no_unneeded_final_method": {
             "summary": "A final class must not have final methods.",
@@ -2173,7 +2255,8 @@
                     "from": "<?php\nclass Foo {\n    final private function bar() {}\n}\n",
                     "to": "<?php\nclass Foo {\n    private function bar() {}\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\NoUnneededFinalMethodFixer"
         },
         "no_unreachable_default_argument_value": {
             "risky": true,
@@ -2184,7 +2267,8 @@
                     "from": "<?php\nfunction example($foo = \"two words\", $bar) {}\n",
                     "to": "<?php\nfunction example($foo, $bar) {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixer"
         },
         "no_unused_imports": {
             "summary": "Unused use statements must be removed.",
@@ -2193,7 +2277,8 @@
                     "from": "<?php\nuse \\DateTime;\nuse \\Exception;\n\nnew DateTime();\n",
                     "to": "<?php\nuse \\DateTime;\n\nnew DateTime();\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Import\\NoUnusedImportsFixer"
         },
         "no_useless_else": {
             "summary": "There should not be useless `else` cases.",
@@ -2202,7 +2287,8 @@
                     "from": "<?php\nif ($a) {\n    return 1;\n} else {\n    return 2;\n}\n",
                     "to": "<?php\nif ($a) {\n    return 1;\n}  \n    return 2;\n\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\NoUselessElseFixer"
         },
         "no_useless_return": {
             "summary": "There should not be an empty return statement at the end of a function.",
@@ -2211,7 +2297,8 @@
                     "from": "<?php\nfunction example($b) {\n    if ($b) {\n        return;\n    }\n    return;\n}\n",
                     "to": "<?php\nfunction example($b) {\n    if ($b) {\n        return;\n    }\n    \n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ReturnNotation\\NoUselessReturnFixer"
         },
         "no_whitespace_before_comma_in_array": {
             "summary": "In array declaration, there MUST NOT be a whitespace before each comma.",
@@ -2220,7 +2307,8 @@
                     "from": "<?php $x = array(1 , \"2\");\n",
                     "to": "<?php $x = array(1, \"2\");\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\NoWhitespaceBeforeCommaInArrayFixer"
         },
         "no_whitespace_in_blank_line": {
             "summary": "Remove trailing whitespace at the end of blank lines.",
@@ -2229,7 +2317,8 @@
                     "from": "<?php\n   \n$a = 1;\n",
                     "to": "<?php\n\n$a = 1;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoWhitespaceInBlankLineFixer"
         },
         "non_printable_character": {
             "risky": true,
@@ -2257,7 +2346,8 @@
                         "use_escape_sequences_in_strings": true
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\NonPrintableCharacterFixer"
         },
         "normalize_index_brace": {
             "summary": "Array index should always be written by using square braces.",
@@ -2266,7 +2356,8 @@
                     "from": "<?php\necho $sample{$index};\n",
                     "to": "<?php\necho $sample[$index];\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\NormalizeIndexBraceFixer"
         },
         "not_operator_with_space": {
             "summary": "Logical NOT operators (`!`) should have leading and trailing whitespaces.",
@@ -2275,7 +2366,8 @@
                     "from": "<?php\n\nif (!$bar) {\n    echo \"Help!\";\n}\n",
                     "to": "<?php\n\nif ( ! $bar) {\n    echo \"Help!\";\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\NotOperatorWithSpaceFixer"
         },
         "not_operator_with_successor_space": {
             "summary": "Logical NOT operators (`!`) should have one trailing whitespace.",
@@ -2284,7 +2376,8 @@
                     "from": "<?php\n\nif (!$bar) {\n    echo \"Help!\";\n}\n",
                     "to": "<?php\n\nif (! $bar) {\n    echo \"Help!\";\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\NotOperatorWithSuccessorSpaceFixer"
         },
         "object_operator_without_whitespace": {
             "summary": "There should not be space before or after object `T_OBJECT_OPERATOR` `->`.",
@@ -2293,7 +2386,8 @@
                     "from": "<?php $a  ->  b;\n",
                     "to": "<?php $a->b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\ObjectOperatorWithoutWhitespaceFixer"
         },
         "ordered_class_elements": {
             "configuration": [
@@ -2337,7 +2431,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\OrderedClassElementsFixer"
         },
         "ordered_imports": {
             "configuration": [
@@ -2401,7 +2496,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Import\\OrderedImportsFixer"
         },
         "php_unit_construct": {
             "risky": true,
@@ -2437,7 +2533,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitConstructFixer"
         },
         "php_unit_dedicate_assert": {
             "risky": true,
@@ -2481,7 +2578,8 @@
                         "target": "5.6"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitDedicateAssertFixer"
         },
         "php_unit_expectation": {
             "risky": true,
@@ -2521,7 +2619,8 @@
                         "target": "5.2"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitExpectationFixer"
         },
         "php_unit_fqcn_annotation": {
             "summary": "PHPUnit annotations should be a FQCNs including a root namespace.",
@@ -2530,7 +2629,8 @@
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    \/**\n     * @expectedException InvalidArgumentException\n     * @covers Project\\NameSpace\\Something\n     * @coversDefaultClass Project\\Default\n     * @uses Project\\Test\\Util\n     *\/\n    public function testSomeTest()\n    {\n    }\n}\n",
                     "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    \/**\n     * @expectedException \\InvalidArgumentException\n     * @covers \\Project\\NameSpace\\Something\n     * @coversDefaultClass \\Project\\Default\n     * @uses \\Project\\Test\\Util\n     *\/\n    public function testSomeTest()\n    {\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitFqcnAnnotationFixer"
         },
         "php_unit_mock": {
             "risky": true,
@@ -2545,7 +2645,8 @@
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testFoo()\n    {\n        $mock1 = $this->getMock(\"Foo\");\n        $mock1 = $this->getMock(\"Bar\", [\"aaa\"]); \/\/ version with multiple params is not supported\n    }\n}\n",
                     "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testFoo()\n    {\n        $mock1 = $this->createMock(\"Foo\");\n        $mock1 = $this->getMock(\"Bar\", [\"aaa\"]); \/\/ version with multiple params is not supported\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitMockFixer"
         },
         "php_unit_namespaced": {
             "risky": true,
@@ -2573,7 +2674,8 @@
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n}\n",
                     "to": "<?php\nfinal class MyTest extends \\PHPUnit\\Framework\\TestCase\n{\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitNamespacedFixer"
         },
         "php_unit_no_expectation_annotation": {
             "risky": true,
@@ -2614,7 +2716,8 @@
                         "target": "3.2"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitNoExpectationAnnotationFixer"
         },
         "php_unit_strict": {
             "risky": true,
@@ -2649,7 +2752,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitStrictFixer"
         },
         "php_unit_test_class_requires_covers": {
             "summary": "Adds a default `@coversNothing` annotation to PHPUnit test classes that have no `@covers*` annotation.",
@@ -2658,7 +2762,8 @@
                     "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertSame(a(), b());\n    }\n}\n",
                     "to": "<?php\n\n\/**\n * @coversNothing\n *\/\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertSame(a(), b());\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitTestClassRequiresCoversFixer"
         },
         "phpdoc_add_missing_param_annotation": {
             "configuration": [
@@ -2691,7 +2796,8 @@
                         "only_untyped": false
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixer"
         },
         "phpdoc_align": {
             "configuration": [
@@ -2716,7 +2822,8 @@
                     "from": "<?php\n\/**\n * @param  EngineInterface $templating\n * @param string      $format\n * @param  int  $code       an HTTP response status code\n * @param    bool         $debug\n * @param  mixed    &$reference     a parameter passed by reference\n *\/\n",
                     "to": "<?php\n\/**\n * @param EngineInterface $templating\n * @param string          $format\n * @param int             $code       an HTTP response status code\n * @param bool            $debug\n * @param mixed           &$reference a parameter passed by reference\n *\/\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocAlignFixer"
         },
         "phpdoc_annotation_without_dot": {
             "summary": "Phpdocs annotation descriptions should not be a sentence.",
@@ -2725,7 +2832,8 @@
                     "from": "<?php\n\/**\n * @param string $bar Some string.\n *\/\nfunction foo ($bar) {}\n",
                     "to": "<?php\n\/**\n * @param string $bar some string\n *\/\nfunction foo ($bar) {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocAnnotationWithoutDotFixer"
         },
         "phpdoc_indent": {
             "summary": "Docblocks should have the same indentation as the documented subject.",
@@ -2734,7 +2842,8 @@
                     "from": "<?php\nclass DocBlocks\n{\n\/**\n * Test constants\n *\/\n    const INDENT = 1;\n}\n",
                     "to": "<?php\nclass DocBlocks\n{\n    \/**\n     * Test constants\n     *\/\n    const INDENT = 1;\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocIndentFixer"
         },
         "phpdoc_inline_tag": {
             "summary": "Fix phpdoc inline tags, make inheritdoc always inline.",
@@ -2743,7 +2852,8 @@
                     "from": "<?php\n\/**\n * @{TUTORIAL}\n * {{ @link }}\n * {@examples}\n * @inheritdocs\n *\/\n",
                     "to": "<?php\n\/**\n * {@tutorial}\n * {@link}\n * {@example}\n * {@inheritdoc}\n *\/\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocInlineTagFixer"
         },
         "phpdoc_no_access": {
             "summary": "@access annotations should be omitted from phpdocs.",
@@ -2752,7 +2862,8 @@
                     "from": "<?php\nclass Foo\n{\n    \/**\n     * @internal\n     * @access private\n     *\/\n    private $bar;\n}\n",
                     "to": "<?php\nclass Foo\n{\n    \/**\n     * @internal\n     *\/\n    private $bar;\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocNoAccessFixer"
         },
         "phpdoc_no_alias_tag": {
             "configuration": [
@@ -2785,7 +2896,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocNoAliasTagFixer"
         },
         "phpdoc_no_empty_return": {
             "summary": "@return void and @return null annotations should be omitted from phpdocs.",
@@ -2798,7 +2910,8 @@
                     "from": "<?php\n\/**\n * @return void\n*\/\nfunction foo() {}\n",
                     "to": "<?php\n\/**\n*\/\nfunction foo() {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocNoEmptyReturnFixer"
         },
         "phpdoc_no_package": {
             "summary": "@package and @subpackage annotations should be omitted from phpdocs.",
@@ -2807,7 +2920,8 @@
                     "from": "<?php\n\/**\n * @internal\n * @package Foo\n * subpackage Bar\n *\/\nclass Baz\n{\n}\n",
                     "to": "<?php\n\/**\n * @internal\n *\/\nclass Baz\n{\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocNoPackageFixer"
         },
         "phpdoc_no_useless_inheritdoc": {
             "summary": "Classy that does not inherit must not have inheritdoc tags.",
@@ -2820,7 +2934,8 @@
                     "from": "<?php\nclass Sample\n{\n    \/**\n     * @inheritdoc\n     *\/\n    public function Test()\n    {\n    }\n}\n",
                     "to": "<?php\nclass Sample\n{\n    \/**\n     * \n     *\/\n    public function Test()\n    {\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocNoUselessInheritdocFixer"
         },
         "phpdoc_order": {
             "summary": "Annotations in phpdocs should be ordered so that param annotations come first, then throws annotations, then return annotations.",
@@ -2829,7 +2944,8 @@
                     "from": "<?php\n\/**\n * Hello there!\n *\n * @throws Exception|RuntimeException dfsdf\n * @custom Test!\n * @return int  Return the number of changes.\n * @param string $foo\n * @param bool   $bar Bar\n *\/\n",
                     "to": "<?php\n\/**\n * Hello there!\n *\n * @custom Test!\n * @param string $foo\n * @param bool   $bar Bar\n * @throws Exception|RuntimeException dfsdf\n * @return int  Return the number of changes.\n *\/\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocOrderFixer"
         },
         "phpdoc_return_self_reference": {
             "configuration": [
@@ -2864,7 +2980,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocReturnSelfReferenceFixer"
         },
         "phpdoc_scalar": {
             "summary": "Scalar types should always be written in the same form. `int` not `integer`, `bool` not `boolean`, `float` not `real` or `double`.",
@@ -2873,7 +2990,8 @@
                     "from": "<?php\n\/**\n * @param integer $a\n * @param boolean $b\n * @param real $c\n *\n * @return double\n *\/\nfunction sample($a, $b, $c)\n{\n    return sample2($a, $b, $c);\n}\n",
                     "to": "<?php\n\/**\n * @param int $a\n * @param bool $b\n * @param float $c\n *\n * @return float\n *\/\nfunction sample($a, $b, $c)\n{\n    return sample2($a, $b, $c);\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocScalarFixer"
         },
         "phpdoc_separation": {
             "summary": "Annotations in phpdocs should be grouped together so that annotations of the same type immediately follow each other, and annotations of a different type are separated by a single blank line.",
@@ -2882,7 +3000,8 @@
                     "from": "<?php\n\/**\n * Description.\n * @param string $foo\n *\n *\n * @param bool   $bar Bar\n * @throws Exception|RuntimeException\n * @return bool\n *\/\nfunction fnc($foo, $bar) {}\n",
                     "to": "<?php\n\/**\n * Description.\n *\n * @param string $foo\n * @param bool   $bar Bar\n *\n * @throws Exception|RuntimeException\n *\n * @return bool\n *\/\nfunction fnc($foo, $bar) {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocSeparationFixer"
         },
         "phpdoc_single_line_var_spacing": {
             "summary": "Single line @var PHPDoc should have proper spacing.",
@@ -2891,7 +3010,8 @@
                     "from": "<?php \/**@var   MyClass   $a   *\/\n$a = test();\n",
                     "to": "<?php \/** @var MyClass $a *\/\n$a = test();\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocSingleLineVarSpacingFixer"
         },
         "phpdoc_summary": {
             "summary": "Phpdocs summary should end in either a full stop, exclamation mark, or question mark.",
@@ -2900,7 +3020,8 @@
                     "from": "<?php\n\/**\n * Foo function is great\n *\/\nfunction foo () {}\n",
                     "to": "<?php\n\/**\n * Foo function is great.\n *\/\nfunction foo () {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocSummaryFixer"
         },
         "phpdoc_to_comment": {
             "summary": "Docblocks should only be used on structural elements.",
@@ -2909,7 +3030,8 @@
                     "from": "<?php\n$first = true;\/\/ needed because by default first docblock is never fixed.\n\n\/** This should not be a docblock *\/\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n",
                     "to": "<?php\n$first = true;\/\/ needed because by default first docblock is never fixed.\n\n\/* This should not be a docblock *\/\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocToCommentFixer"
         },
         "phpdoc_trim": {
             "summary": "Phpdocs should start and end with content, excluding the very first and last line of the docblocks.",
@@ -2918,7 +3040,8 @@
                     "from": "<?php\n\/**\n *\n * Foo must be final class.\n *\n *\n *\/\nfinal class Foo {}\n",
                     "to": "<?php\n\/**\n * Foo must be final class.\n *\/\nfinal class Foo {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocTrimFixer"
         },
         "phpdoc_types": {
             "summary": "The correct case must be used for standard PHP types in phpdoc.",
@@ -2927,7 +3050,8 @@
                     "from": "<?php\n\/**\n * @param STRING|String[] $bar\n *\n * @return inT[]\n *\/\n",
                     "to": "<?php\n\/**\n * @param string|string[] $bar\n *\n * @return int[]\n *\/\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocTypesFixer"
         },
         "phpdoc_types_order": {
             "configuration": [
@@ -2987,7 +3111,8 @@
                         "null_adjustment": "none"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocTypesOrderFixer"
         },
         "phpdoc_var_without_name": {
             "summary": "@var and @type annotations should not contain the variable name.",
@@ -2996,7 +3121,8 @@
                     "from": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int $bar\n     *\/\n    public $bar;\n\n    \/**\n     * @var $baz float\n     *\/\n    public $baz;\n\n}\n",
                     "to": "<?php\nfinal class Foo\n{\n    \/**\n     * @var int\n     *\/\n    public $bar;\n\n    \/**\n     * @var float\n     *\/\n    public $baz;\n\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocVarWithoutNameFixer"
         },
         "pow_to_exponentiation": {
             "risky": true,
@@ -3007,7 +3133,8 @@
                     "from": "<?php\n pow($a, 1);\n",
                     "to": "<?php\n $a** 1;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Alias\\PowToExponentiationFixer"
         },
         "pre_increment": {
             "summary": "Pre incrementation\/decrementation should be used if possible.",
@@ -3019,7 +3146,8 @@
             ],
             "deprecated_switchTo": [
                 "increment_style"
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\PreIncrementFixer"
         },
         "protected_to_private": {
             "summary": "Converts `protected` variables and methods to `private` where possible.",
@@ -3028,7 +3156,8 @@
                     "from": "<?php\nfinal class Sample\n{\n    protected $a;\n\n    protected function test()\n    {\n    }\n}\n",
                     "to": "<?php\nfinal class Sample\n{\n    private $a;\n\n    private function test()\n    {\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\ProtectedToPrivateFixer"
         },
         "psr0": {
             "risky": true,
@@ -3056,7 +3185,8 @@
                         "dir": "\/path\/to\/vendor\/friendsofphp\/php-cs-fixer\/src"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\Psr0Fixer"
         },
         "psr4": {
             "risky": true,
@@ -3067,7 +3197,8 @@
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
                     "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass Psr4Fixer {}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\Psr4Fixer"
         },
         "random_api_migration": {
             "risky": true,
@@ -3101,7 +3232,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Alias\\RandomApiMigrationFixer"
         },
         "return_type_declaration": {
             "configuration": [
@@ -3136,7 +3268,8 @@
                         "space_before": "one"
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\ReturnTypeDeclarationFixer"
         },
         "self_accessor": {
             "summary": "Inside class or interface element \"self\" should be preferred to the class name itself.",
@@ -3145,7 +3278,8 @@
                     "from": "<?php\nclass Sample\n{\n    const BAZ = 1;\n    const BAR = Sample::BAZ;\n\n    public function getBar()\n    {\n        return Sample::BAR;\n    }\n}\n",
                     "to": "<?php\nclass Sample\n{\n    const BAZ = 1;\n    const BAR = self::BAZ;\n\n    public function getBar()\n    {\n        return self::BAR;\n    }\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\SelfAccessorFixer"
         },
         "semicolon_after_instruction": {
             "summary": "Instructions must be terminated with a semicolon.",
@@ -3154,7 +3288,8 @@
                     "from": "<?php echo 1 ?>\n",
                     "to": "<?php echo 1; ?>\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Semicolon\\SemicolonAfterInstructionFixer"
         },
         "short_scalar_cast": {
             "summary": "Cast `(boolean)` and `(integer)` should be written as `(bool)` and `(int)`, `(double)` and `(real)` as `(float)`.",
@@ -3163,7 +3298,8 @@
                     "from": "<?php\n$a = (boolean) $b;\n$a = (integer) $b;\n$a = (double) $b;\n$a = (real) $b;\n",
                     "to": "<?php\n$a = (bool) $b;\n$a = (int) $b;\n$a = (float) $b;\n$a = (float) $b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\ShortScalarCastFixer"
         },
         "silenced_deprecation_error": {
             "risky": true,
@@ -3174,7 +3310,8 @@
                     "from": "<?php\ntrigger_error('Warning.', E_USER_DEPRECATED);\n",
                     "to": "<?php\n@trigger_error('Warning.', E_USER_DEPRECATED);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\SilencedDeprecationErrorFixer"
         },
         "simplified_null_return": {
             "summary": "A return statement wishing to return `void` should not return `null`.",
@@ -3187,7 +3324,8 @@
                     "from": "<?php\nfunction foo() { return null; }\nfunction bar(): int { return null; }\nfunction baz(): ?int { return null; }\nfunction xyz(): void { return null; }\n",
                     "to": "<?php\nfunction foo() { return; }\nfunction bar(): int { return null; }\nfunction baz(): ?int { return null; }\nfunction xyz(): void { return; }\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ReturnNotation\\SimplifiedNullReturnFixer"
         },
         "single_blank_line_at_eof": {
             "summary": "A PHP file without end tag must always end with a single empty line feed.",
@@ -3196,7 +3334,8 @@
                     "from": "<?php\n$a = 1;",
                     "to": "<?php\n$a = 1;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\SingleBlankLineAtEofFixer"
         },
         "single_blank_line_before_namespace": {
             "summary": "There should be exactly one blank line before a namespace declaration.",
@@ -3209,7 +3348,8 @@
                     "from": "<?php\n\n\nnamespace A{}\n",
                     "to": "<?php\n\nnamespace A{}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\NamespaceNotation\\SingleBlankLineBeforeNamespaceFixer"
         },
         "single_class_element_per_statement": {
             "configuration": [
@@ -3240,7 +3380,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\SingleClassElementPerStatementFixer"
         },
         "single_import_per_statement": {
             "summary": "There MUST be one use keyword per declaration.",
@@ -3249,7 +3390,8 @@
                     "from": "<?php\nuse Foo, Sample, Sample\\Sample as Sample2;\n",
                     "to": "<?php\nuse Foo;\nuse Sample;\nuse Sample\\Sample as Sample2;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Import\\SingleImportPerStatementFixer"
         },
         "single_line_after_imports": {
             "summary": "Each namespace use MUST go on its own line and there MUST be one blank line after the use statements block.",
@@ -3262,7 +3404,8 @@
                     "from": "<?php\nnamespace Foo;\n\nuse Bar;\nuse Baz;\n\n\nfinal class Example\n{\n}\n",
                     "to": "<?php\nnamespace Foo;\n\nuse Bar;\nuse Baz;\n\nfinal class Example\n{\n}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Import\\SingleLineAfterImportsFixer"
         },
         "single_line_comment_style": {
             "configuration": [
@@ -3302,7 +3445,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Comment\\SingleLineCommentStyleFixer"
         },
         "single_quote": {
             "summary": "Convert double quotes to single quotes for simple strings.",
@@ -3311,7 +3455,8 @@
                     "from": "<?php $a = \"sample\";\n",
                     "to": "<?php $a = 'sample';\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\StringNotation\\SingleQuoteFixer"
         },
         "space_after_semicolon": {
             "configuration": [
@@ -3337,7 +3482,8 @@
                         "remove_in_empty_for_expressions": true
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Semicolon\\SpaceAfterSemicolonFixer"
         },
         "standardize_not_equals": {
             "summary": "Replace all `<>` with `!=`.",
@@ -3346,7 +3492,8 @@
                     "from": "<?php\n$a = $b <> $c;\n",
                     "to": "<?php\n$a = $b != $c;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\StandardizeNotEqualsFixer"
         },
         "strict_comparison": {
             "risky": true,
@@ -3357,7 +3504,8 @@
                     "from": "<?php\n$a = 1== $b;\n",
                     "to": "<?php\n$a = 1=== $b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Strict\\StrictComparisonFixer"
         },
         "strict_param": {
             "risky": true,
@@ -3369,7 +3517,8 @@
                     "from": "<?php\n$a = array_keys($b);\n$a = array_search($b, $c);\n$a = base64_decode($b);\n$a = in_array($b, $c);\n$a = mb_detect_encoding($b, $c);\n",
                     "to": "<?php\n$a = array_keys($b);\n$a = array_search($b, $c, true);\n$a = base64_decode($b, true);\n$a = in_array($b, $c, true);\n$a = mb_detect_encoding($b, $c, true);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Strict\\StrictParamFixer"
         },
         "switch_case_semicolon_to_colon": {
             "summary": "A case should be followed by a colon and not a semicolon.",
@@ -3378,7 +3527,8 @@
                     "from": "<?php\n    switch ($a) {\n        case 1;\n            break;\n        default;\n            break;\n    }\n",
                     "to": "<?php\n    switch ($a) {\n        case 1:\n            break;\n        default:\n            break;\n    }\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\SwitchCaseSemicolonToColonFixer"
         },
         "switch_case_space": {
             "summary": "Removes extra spaces between colon and case value.",
@@ -3387,7 +3537,8 @@
                     "from": "<?php\n    switch($a) {\n        case 1   :\n            break;\n        default     :\n            return 2;\n    }\n",
                     "to": "<?php\n    switch($a) {\n        case 1:\n            break;\n        default:\n            return 2;\n    }\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\SwitchCaseSpaceFixer"
         },
         "ternary_operator_spaces": {
             "summary": "Standardize spaces around ternary operator.",
@@ -3396,7 +3547,8 @@
                     "from": "<?php $a = $a   ?1 :0;\n",
                     "to": "<?php $a = $a ? 1 : 0;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\TernaryOperatorSpacesFixer"
         },
         "ternary_to_null_coalescing": {
             "summary": "Use `null` coalescing operator `??` where possible. Requires PHP >= 7.0.",
@@ -3405,7 +3557,8 @@
                     "from": "<?php\n$sample = isset($a) ? $a : $b;\n",
                     "to": "<?php\n$sample = $a ?? $b;\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\TernaryToNullCoalescingFixer"
         },
         "trailing_comma_in_multiline_array": {
             "summary": "PHP multi-line arrays should have a trailing comma.",
@@ -3414,7 +3567,8 @@
                     "from": "<?php\narray(\n    1,\n    2\n);\n",
                     "to": "<?php\narray(\n    1,\n    2,\n);\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\TrailingCommaInMultilineArrayFixer"
         },
         "trim_array_spaces": {
             "summary": "Arrays should be formatted like function\/method arguments, without leading or trailing single line space.",
@@ -3423,7 +3577,8 @@
                     "from": "<?php\n$sample = array( );\n$sample = array( 'a', 'b' );\n",
                     "to": "<?php\n$sample = array();\n$sample = array('a', 'b');\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\TrimArraySpacesFixer"
         },
         "unary_operator_spaces": {
             "summary": "Unary operators should be placed adjacent to their operands.",
@@ -3432,7 +3587,8 @@
                     "from": "<?php\n$sample ++;\n-- $sample;\n$sample = ! ! $a;\n$sample = ~  $c;\nfunction & foo(){}\n",
                     "to": "<?php\n$sample++;\n--$sample;\n$sample = !!$a;\n$sample = ~$c;\nfunction &foo(){}\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\UnaryOperatorSpacesFixer"
         },
         "visibility_required": {
             "configuration": [
@@ -3463,7 +3619,8 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\VisibilityRequiredFixer"
         },
         "void_return": {
             "risky": true,
@@ -3474,7 +3631,8 @@
                     "from": "<?php\nfunction foo($a) {};\n",
                     "to": "<?php\nfunction foo($a): void {};\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\VoidReturnFixer"
         },
         "whitespace_after_comma_in_array": {
             "summary": "In array declaration, there MUST be a whitespace after each comma.",
@@ -3483,7 +3641,8 @@
                     "from": "<?php\n$sample = array(1,'a',$b,);\n",
                     "to": "<?php\n$sample = array(1, 'a', $b, );\n"
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\WhitespaceAfterCommaInArrayFixer"
         },
         "yoda_style": {
             "configuration": [
@@ -3530,7 +3689,8 @@
                         "less_and_greater": null
                     }
                 }
-            ]
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\YodaStyleFixer"
         }
     },
     "sets": {
