@@ -1,6 +1,6 @@
 import ExporterInterface, { RenderOptions } from "./ExporterInterface";
 import { SerializedConfigurationInterface } from "../Configuration";
-import { toPhp } from "../Utils";
+import { toPhp, setNameToConst } from "../Utils";
 
 export default class PhpECSExporter implements ExporterInterface {
 
@@ -61,12 +61,12 @@ export default class PhpECSExporter implements ExporterInterface {
 
         if (configuration.fixerSets !== undefined) {
             lines.push(INDENT + '$parameters->set(Option::SETS, [');
-            lines.push(INDENT + INDENT + '// must be done manually, as names differ');
+            lines.push(INDENT + INDENT + '// @TODO must be reviewed manually, as names differ and there is no set-exclude in easy-coding-standard');
             configuration.fixerSets.forEach((fixerSetName: string): void => {
                 if (fixerSetName.charAt(0) === '-') {
                     lines.push(INDENT + INDENT + '// exclude: SetList::' + fixerSetName.substr(2) + ',');
                 } else {
-                    lines.push(INDENT + INDENT + '// include SetList::' + fixerSetName.substr(1) + ',');
+                    lines.push(INDENT + INDENT + 'SetList::' + setNameToConst(fixerSetName.substr(1)) + ',');
                 }
             });
             lines.push(INDENT + ']);');

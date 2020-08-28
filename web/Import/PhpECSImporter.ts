@@ -1,7 +1,7 @@
 import ImporterInterface from "./ImporterInterface";
 import PhpParser from 'php-parser';
 import { SerializedConfigurationInterface } from "../Configuration";
-import {camelCaseToUnderscore} from "../Utils";
+import {camelCaseToUnderscore, constToSetName} from "../Utils";
 
 export default class PhpECSImporter implements ImporterInterface {
 
@@ -39,15 +39,17 @@ export default class PhpECSImporter implements ImporterInterface {
         if (services === null) {
             throw new Error('Unable to find the services definitions.');
         }
+
+        services = PhpECSImporter.addSets(services, PhpECSImporter.getParameterValue(parameters, 'Option::SETS'));
         let configuration = this.parseSetRulesArray(services);
-        let indentValue = parameters['Option::INDENTATION'];
+        let indentValue = PhpECSImporter.getParameterValue(parameters,'Option::INDENTATION');
         if (typeof indentValue === 'string') {
             if (configuration.whitespace === undefined) {
                 configuration.whitespace = {};
             }
             configuration.whitespace.indent = indentValue;
         }
-        let lineEndingValue = parameters['Option::LINE_ENDING'];
+        let lineEndingValue = PhpECSImporter.getParameterValue(parameters, 'Option::LINE_ENDING');
         if (typeof lineEndingValue === 'string') {
             if (configuration.whitespace === undefined) {
                 configuration.whitespace = {};
@@ -89,14 +91,23 @@ export default class PhpECSImporter implements ImporterInterface {
                 throw new Error('Expected dictionary as setRules() array.');
             }
             let value: any = (<any>setRulesArray)[key];
-
-            if (value !== true && value !== false && (value === null || typeof value !== 'object')) {
-                throw new Error('Unsupported value type in setRules() array.');
+            if (key.charAt(0) === '@') {
+                if (value !== true && value !== false) {
+                    throw new Error('Unsupported value type in setRules() array.');
+                }
+                if (configuration.fixerSets === undefined) {
+                    configuration.fixerSets = [];
+                }
+                configuration.fixerSets.push((value ? '' : '-') + key);
+            } else {
+                if (value !== true && value !== false && (value === null || typeof value !== 'object')) {
+                    throw new Error('Unsupported value type in setRules() array.');
+                }
+                if (configuration.fixers === undefined) {
+                    configuration.fixers = {};
+                }
+                configuration.fixers[key] = value;
             }
-            if (configuration.fixers === undefined) {
-                configuration.fixers = {};
-            }
-            configuration.fixers[key] = value;
         });
         return configuration;
     }
@@ -201,6 +212,28 @@ export default class PhpECSImporter implements ImporterInterface {
 
     private static getUnderscoreName(classname: string): string {
         let namespaces: string[] = classname.split('\\');
-        return camelCaseToUnderscore(namespaces[namespaces.length - 1]).replace('_fixer', '');
+        return camelCaseToUnderscore(namespaces[namespaces.length - 1]).replace(/_?fixer/ig, '').toLowerCase();
+    }
+
+    private static getParameterValue(parameters: any[string], name: string): any {
+        if (name in parameters) {
+            return parameters[name];
+        }
+    }
+
+    private static addSets(services: any, sets: any): any {
+        let numSets = sets && sets.items ? sets.items.length : 0;
+        for (let setIndex = 0; setIndex < numSets; setIndex++) {
+            if (sets.items[setIndex] &&
+                sets.items[setIndex].kind === "staticlookup" &&
+                sets.items[setIndex].offset.kind === "identifier" &&
+                sets.items[setIndex].what.kind === "classreference" &&
+                sets.items[setIndex].what.name === "SetList"
+            ) {
+                let key: string = '@' + constToSetName(sets.items[setIndex].offset.name);
+                services[key] = true;
+            }
+        }
+        return services;
     }
 }
