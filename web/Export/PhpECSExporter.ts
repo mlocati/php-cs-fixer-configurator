@@ -1,6 +1,6 @@
 import ExporterInterface, { RenderOptions } from "./ExporterInterface";
 import { SerializedConfigurationInterface } from "../Configuration";
-import { toPhp, setNameToConst } from "../Utils";
+import {toPhp, setNameToConst } from "../Utils";
 
 export default class PhpECSExporter implements ExporterInterface {
 
@@ -13,6 +13,8 @@ export default class PhpECSExporter implements ExporterInterface {
     readonly supportConfiguringWhitespace: boolean = true;
 
     readonly supportFixerDescriptions: boolean = true;
+
+    readonly supportImportFixerClasses: boolean = true;
 
     /**
      * Generate the text representing the configuration
@@ -30,12 +32,21 @@ export default class PhpECSExporter implements ExporterInterface {
             ' * you can change this configuration by importing this file.',
             ' */',
             '',
-            'use Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ContainerConfigurator;',
-            'use Symplify\\EasyCodingStandard\\Configuration\\Option;',
-            '',
-            'return static function (ContainerConfigurator $containerConfigurator): void {',
-            INDENT + '$parameters = $containerConfigurator->parameters();',
         ];
+
+        if (options.importFixerClasses && configuration.fixers !== undefined) {
+            let importFixers = PhpECSExporter.getImports(Object.keys(configuration.fixers), options);
+            importFixers.forEach((fixerName: string): void => {
+                lines.push('use ' + fixerName + ';');
+            });
+        }
+
+        lines.push('use Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ContainerConfigurator;');
+        lines.push('use Symplify\\EasyCodingStandard\\Configuration\\Option;');
+        lines.push('');
+        lines.push('return static function (ContainerConfigurator $containerConfigurator): void {');
+        lines.push(INDENT + '$parameters = $containerConfigurator->parameters();');
+
         if (configuration.risky) {
             lines.push(INDENT + '// risky are allowed, though there is no setting in ECS.');
         }
@@ -85,15 +96,32 @@ export default class PhpECSExporter implements ExporterInterface {
                     }
                 }
                 const fixerConfiguration = (<{ [fixerName: string]: boolean | object }>configuration.fixers)[fixerName];
+                let fixerUsedName = options.importFixerClasses ? PhpECSExporter.getImportedName(fixer.fullClassName) : fixer.fullClassName;
                 if (typeof fixerConfiguration === 'boolean') {
-                    lines.push(INDENT + '$services->set(' + fixer.fullClassName + '::class);');
+                    lines.push(INDENT + '$services->set(' + fixerUsedName + '::class);');
                 } else {
-                    lines.push(INDENT + '$services->set(' + fixer.fullClassName + '::class)');
-                    lines.push(INDENT + INDENT + '->call(\'configure\', [' + toPhp(fixerConfiguration) + ']);');
+                    lines.push(INDENT + '$services->set(' + fixerUsedName + '::class)');
+                    lines.push(INDENT + '         ' + '->call(\'configure\', [' + toPhp(fixerConfiguration) + ']);');
                 }
             });
         }
         lines.push('\};\n');
         return lines.join(LINE_ENDING);
+    }
+
+    private static getImportedName(classname: string): string {
+        let namespaces: string[] = classname.split('\\');
+        return namespaces[namespaces.length - 1];
+    }
+
+    private static getImports(fixers: any, options: any): any {
+        let imports: string[] = [];
+        fixers.forEach((fixerName: string): void => {
+            const fixer = options.version.getFixerByName(fixerName);
+            if (fixer !== null) {
+                imports.push(fixer.fullClassName);
+            }
+        });
+        return imports.sort();
     }
 }
