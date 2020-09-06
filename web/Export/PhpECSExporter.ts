@@ -43,6 +43,9 @@ export default class PhpECSExporter implements ExporterInterface {
 
         lines.push('use Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ContainerConfigurator;');
         lines.push('use Symplify\\EasyCodingStandard\\Configuration\\Option;');
+        if (configuration.fixerSets !== undefined) {
+            lines.push('use Symplify\\EasyCodingStandard\\ValueObject\\Set\\SetList;');
+        }
         lines.push('');
         lines.push('return static function (ContainerConfigurator $containerConfigurator): void {');
         lines.push(INDENT + '$parameters = $containerConfigurator->parameters();');
