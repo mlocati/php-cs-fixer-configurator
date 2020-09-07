@@ -3,7 +3,8 @@ import Version from "../Version";
 
 export interface RenderOptions {
     readonly version: Version;
-    readonly exportFixerDescriptions: boolean,
+    readonly exportFixerDescriptions: boolean;
+    readonly importFixerClasses?: boolean;
 }
 
 interface ExporterInterface {
@@ -31,6 +32,11 @@ interface ExporterInterface {
      * Does this exporter support exporting fixer descriptions?
      */
     readonly supportFixerDescriptions: boolean;
+
+    /**
+     * Does this exporter support importing fixer classes?
+     */
+    readonly supportImportFixerClasses?: boolean;
 
     /**
      * Generate the text representing the configuration

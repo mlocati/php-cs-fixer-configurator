@@ -49,8 +49,12 @@
                 <b-form-checkbox v-model="expandFixerSets">Expand presets</b-form-checkbox>
                 <b-form-checkbox
                     v-model="exportFixerDescriptions"
-                    v-bind:disabled="!exporter.supportFixerDescriptions"
+                    v-bind:disabled="!exporter.supportImportFixerClasses"
                 >Export fixer descriptions</b-form-checkbox>
+                <b-form-checkbox
+                    v-model="importFixerClasses"
+                    v-bind:disabled="!exporter.supportFixerDescriptions"
+                >Import fixer classes</b-form-checkbox>
             </div>
         </b-form-group>
 
@@ -112,6 +116,7 @@ export default Vue.extend({
             outputError: null,
             expandFixerSets: false,
             exportFixerDescriptions: false,
+            importFixerClasses: false
         };
     },
     mounted: function() {
@@ -143,6 +148,9 @@ export default Vue.extend({
         exportFixerDescriptions: function() {
             this.refreshOutput(false);
         },
+        importFixerClasses: function() {
+            this.refreshOutput(false);
+        },
     },
     methods: {
         copyToClipboard: function() {
@@ -163,6 +171,7 @@ export default Vue.extend({
                 this.output = this.exporter.render(serializedConfiguration, {
                     version: this.configuration.version,
                     exportFixerDescriptions: this.exportFixerDescriptions,
+                    importFixerClasses: this.importFixerClasses,
                 });
                 this.outputError = null;
             } catch (e) {
