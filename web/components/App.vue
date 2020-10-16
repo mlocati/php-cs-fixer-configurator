@@ -176,6 +176,13 @@
                             <i class="fas fa-cog"></i>
                         </b-button>
                         <b-button
+                            v-on:click.prevent="hideDeprecatedFixers = !hideDeprecatedFixers"
+                            v-bind:variant="hideDeprecatedFixers ? '' : 'success'"
+                            v-bind:title="hideDeprecatedFixers ? 'Show deprecated fixers' : 'Hide deprecated fixers'"
+                        >
+                            <i class="fas fa-thumbs-down"></i>
+                        </b-button>
+                        <b-button
                             v-b-modal.help-modal
                             title="Get some help"
                         >
@@ -187,7 +194,10 @@
         </header>
 
         <main>
-            <b-container fluid>
+            <b-container
+                v-bind:class="hideDeprecatedFixers ? 'hide-deprecated-fixers' : ''"
+                fluid
+            >
                 <grid-view
                     v-if="view === 'GRID'"
                     v-bind:fixers="visibleFixers"
@@ -363,6 +373,7 @@ export default Vue.extend({
             busy: <boolean>false,
             configuring: <boolean>false,
             configuration: <Configuration>(<any>undefined),
+            hideDeprecatedFixers: PersistentStorage.getBoolean('hideDeprecatedFixers'),
             visibleFixers: <Fixer[]>[],
             views: {
                 GRID: {
@@ -631,6 +642,9 @@ export default Vue.extend({
     watch: {
         view: function(view: string): void {
             PersistentStorage.setString('view', view);
+        },
+        hideDeprecatedFixers: function(hideDeprecatedFixers: boolean): void {
+            PersistentStorage.setBoolean('hideDeprecatedFixers', hideDeprecatedFixers);
         },
         viewingFixerOrSetAndFixer: function() {
             this.refreshLocationHash();

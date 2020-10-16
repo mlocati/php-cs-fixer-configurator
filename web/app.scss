@@ -42,6 +42,10 @@
 @include fixer-class('fixer-selected-by-user-configured', #5cb85c);
 @include fixer-class('fixer-unselected-by-user', #eca6a4);
 
+.hide-deprecated-fixers .fixer-deprecated.fixer-unselected {
+  display: none;
+}
+
 pre.prism {
   padding: 0.3em;
   .token.tab:not(:empty),

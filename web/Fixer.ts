@@ -342,11 +342,13 @@ export default class Fixer implements FixerOrSetInterface {
             const state = configuration.getFixerState(this);
             switch (state.state) {
                 case FixerState.UNSELECTED:
+                    classes.push('fixer-unselected');
                     break;
                 case FixerState.BYFIXERSET_INCLUDED:
                     classes.push('fixer-selected-by-fixerset');
                     break;
                 case FixerState.BYFIXERSET_EXCLUDED:
+                    classes.push('fixer-unselected');
                     break;
                 case FixerState.MANUALLY_INCLUDED:
                     classes.push(state.configuration === null ? 'fixer-selected-by-user' : 'fixer-selected-by-user-configured');
@@ -357,6 +359,8 @@ export default class Fixer implements FixerOrSetInterface {
                 default:
                     throw new Error('Unrecognized fixer state');
             }
+        } else {
+            classes.push('fixer-unselected');
         }
         return classes.join(' ');
     }
