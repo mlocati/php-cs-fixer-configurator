@@ -138,6 +138,7 @@
                             v-bind:disabled="busy"
                             v-on:click.prevent="view = viewKey"
                             v-bind:variant="view === viewKey ? 'success' : ''"
+                            v-bind:title="viewData.helpText"
                         >
                             <i v-bind:class="viewData.icon"></i>
                         </b-button>
@@ -145,6 +146,7 @@
                             v-if="configuring"
                             v-bind:disabled="busy"
                             v-b-modal.import-modal
+                            title="Import"
                         >
                             <i class="fas fa-file-import"></i>
                         </b-button>
@@ -152,6 +154,7 @@
                             v-if="configuring"
                             v-bind:disabled="busy"
                             v-b-modal.export-modal
+                            title="Export"
                         >
                             <i class="fas fa-file-export"></i>
                         </b-button>
@@ -160,6 +163,7 @@
                             v-bind:disabled="busy"
                             v-bind:variant="rememberConfiguration ? 'success' : ''"
                             v-on:click="rememberConfiguration =! rememberConfiguration"
+                            title="Remember configuration"
                         >
                             <i class="fas fa-thumbtack"></i>
                         </b-button>
@@ -167,10 +171,14 @@
                             v-on:click.prevent="configuring = !configuring"
                             v-bind:disabled="busy"
                             v-bind:variant="configuring ? 'success' : ''"
+                            v-bind:title="configuring ? 'Switch to View mode' : 'Switch to Configuration mode'"
                         >
                             <i class="fas fa-cog"></i>
                         </b-button>
-                        <b-button v-b-modal.help-modal>
+                        <b-button
+                            v-b-modal.help-modal
+                            title="Get some help"
+                        >
                             <i class="fas fa-question-circle"></i>
                         </b-button>
                     </b-button-group>
