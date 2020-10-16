@@ -5,6 +5,7 @@
                 v-for="fixer in fixers"
                 v-bind:key="fixer.uniqueKey"
                 class="col-sm-6 col-lg-4 col-xl-3"
+                v-bind:class="fixer.getCssClass(configuration)"
             >
                 <grid-view-fixer
                     v-bind:configuration="configuration"

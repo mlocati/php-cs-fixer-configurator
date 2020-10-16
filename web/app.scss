@@ -29,16 +29,18 @@
   padding-right: 3rem!important;
 }
 
-.fixer-selected-by-fixerset {
-  background-color: #ace8b7;
+@mixin fixer-class($class, $background-color) {
+  tr.#{$class},
+  div.#{$class}>div.card,
+  div.fixer-selection.#{$class} {
+    background-color: $background-color;
+  }
 }
-.fixer-selected-by-user,
-.fixer-selected-by-user-configured {
-  background-color: #5cb85c;
-}
-.fixer-unselected-by-user {
-  background-color: #eca6a4;
-}
+
+@include fixer-class('fixer-selected-by-fixerset', #ace8b7);
+@include fixer-class('fixer-selected-by-user', #5cb85c);
+@include fixer-class('fixer-selected-by-user-configured', #5cb85c);
+@include fixer-class('fixer-unselected-by-user', #eca6a4);
 
 pre.prism {
   padding: 0.3em;

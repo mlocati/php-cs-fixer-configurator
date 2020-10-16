@@ -1,6 +1,6 @@
 <template>
     <tr
-        v-bind:class="fixerCssClass"
+        v-bind:class="fixer.getCssClass(configuration)"
         v-on:click.prevent="toggleConfiguration"
     >
         <td v-if="configuration">
@@ -92,26 +92,6 @@ export default Vue.extend({
         },
     },
     computed: {
-        fixerCssClass: function(): string {
-            if (!this.configuration) {
-                return '';
-            }
-            const state = this.configuration.getFixerState(this.fixer);
-            switch (state.state) {
-                case FixerState.UNSELECTED:
-                    return '';
-                case FixerState.BYFIXERSET_INCLUDED:
-                    return 'fixer-selected-by-fixerset';
-                case FixerState.BYFIXERSET_EXCLUDED:
-                    return '';
-                case FixerState.MANUALLY_INCLUDED:
-                    return state.configuration === null ? 'fixer-selected-by-user' : 'fixer-selected-by-user-configured';
-                case FixerState.MANUALLY_EXCLUDED:
-                    return 'fixer-unselected-by-user';
-                default:
-                    throw new Error('Unrecognized fixer state');
-            }
-        },
         configurationButtonState: function(): number {
             if (!this.configuration) {
                 return 0;

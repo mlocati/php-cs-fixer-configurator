@@ -1,3 +1,4 @@
+import Configuration, { FixerState } from './Configuration';
 import { PFCFixer, PFCFixerOption, PFCFixerCodeSample } from './PCFDataDefinitions';
 import FixerOrSetInterface from './FixerOrSetInterface';
 import FixerSet, { FixerSetFixer } from './FixerSet';
@@ -327,5 +328,36 @@ export default class Fixer implements FixerOrSetInterface {
     public getOptionByName(name: string, alias: boolean | null = null): PFCFixerOption | null {
         const index = this.getOptionIndexByName(name, alias);
         return index === -1 ? null : this.options[index];
+    }
+
+    public getCssClass(configuration: Configuration|null) : string {
+        const classes : string[] = [];
+        if (this.deprecated_switchToNames.length > 0) {
+            classes.push('fixer-deprecated');
+        }
+        if (this.risky) {
+            classes.push('fixer-risky');
+        }
+        if (configuration) {
+            const state = configuration.getFixerState(this);
+            switch (state.state) {
+                case FixerState.UNSELECTED:
+                    break;
+                case FixerState.BYFIXERSET_INCLUDED:
+                    classes.push('fixer-selected-by-fixerset');
+                    break;
+                case FixerState.BYFIXERSET_EXCLUDED:
+                    break;
+                case FixerState.MANUALLY_INCLUDED:
+                    classes.push(state.configuration === null ? 'fixer-selected-by-user' : 'fixer-selected-by-user-configured');
+                    break;
+                case FixerState.MANUALLY_EXCLUDED:
+                    classes.push('fixer-unselected-by-user');
+                    break;
+                default:
+                    throw new Error('Unrecognized fixer state');
+            }
+        }
+        return classes.join(' ');
     }
 }

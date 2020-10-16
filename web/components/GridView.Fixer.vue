@@ -1,7 +1,6 @@
 <template>
     <b-card
         class="mt-3"
-        v-bind:class="fixerCssClass"
         v-on:click.prevent="toggleConfiguration"
     >
         <b-card-title>
@@ -106,26 +105,6 @@ export default Vue.extend({
         },
     },
     computed: {
-        fixerCssClass: function(): string {
-            if (!this.configuration) {
-                return '';
-            }
-            const state = this.configuration.getFixerState(this.fixer);
-            switch (state.state) {
-                case FixerState.UNSELECTED:
-                    return '';
-                case FixerState.BYFIXERSET_INCLUDED:
-                    return 'fixer-selected-by-fixerset';
-                case FixerState.BYFIXERSET_EXCLUDED:
-                    return '';
-                case FixerState.MANUALLY_INCLUDED:
-                    return state.configuration === null ? 'fixer-selected-by-user' : 'fixer-selected-by-user-configured';
-                case FixerState.MANUALLY_EXCLUDED:
-                    return 'fixer-unselected-by-user';
-                default:
-                    throw new Error('Unrecognized fixer state');
-            }
-        },
         configurationButtonState: function(): number {
             if (!this.configuration) {
                 return 0;
