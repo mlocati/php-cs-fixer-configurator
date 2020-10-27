@@ -1,5 +1,5 @@
 {
-    "version": "2.16.4",
+    "version": "2.16.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -612,6 +612,15 @@
                 {
                     "from": "<?php \/* header *\/ $x = true; \/* @var bool $isFoo *\/ $isFoo = true;\n",
                     "to": "<?php \/* header *\/ $x = true; \/** @var bool $isFoo *\/ $isFoo = true;\n"
+                },
+                {
+                    "from": "<?php\n\/\/ @todo do something later\n$foo = 1;\n\n\/\/ @var int $a\n$a = foo();\n",
+                    "to": "<?php\n\/\/ @todo do something later\n$foo = 1;\n\n\/** @var int $a *\/\n$a = foo();\n",
+                    "configuration": {
+                        "ignored_tags": [
+                            "todo"
+                        ]
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Comment\\CommentToPhpdocFixer"
@@ -679,6 +688,13 @@
                 {
                     "from": "<?php\n$a = FALSE;\n$b = True;\n$c = nuLL;\n",
                     "to": "<?php\n$a = false;\n$b = true;\n$c = null;\n"
+                },
+                {
+                    "from": "<?php\n$a = FALSE;\n$b = True;\n$c = nuLL;\n",
+                    "to": "<?php\n$a = FALSE;\n$b = TRUE;\n$c = NULL;\n",
+                    "configuration": {
+                        "case": "upper"
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Casing\\ConstantCaseFixer"
@@ -1674,7 +1690,7 @@
                 },
                 {
                     "from": "<?php\n$f = fn () => null;\n",
-                    "to": "*** Tokens::fromCode() failed with ParseError: syntax error, unexpected '=>' (T_DOUBLE_ARROW) *** ",
+                    "to": "<?php\n$f = fn() => null;\n",
                     "configuration": {
                         "closure_function_spacing": "none"
                     }
@@ -3406,7 +3422,7 @@
         "no_unset_on_property": {
             "risky": true,
             "summary": "Properties should be set to `null` instead of using `unset`.",
-            "riskyDescription": "Changing variables to `null` instead of unsetting them will mean they still show up when looping over class variables. With PHP 7.4, this rule might introduce `null` assignments to property whose type declaration does not allow it.",
+            "riskyDescription": "Risky when relying on attributes to be removed using `unset` rather than be set to `null`. Changing variables to `null` instead of unsetting means these still show up when looping over class variables and reference properties remain unbroken. With PHP 7.4, this rule might introduce `null` assignments to properties whose type declaration does not allow it.",
             "codeSamples": [
                 {
                     "from": "<?php\nunset($this->a);\n",
@@ -3798,12 +3814,12 @@
             "riskyDescription": "Fixer could be risky if one is overriding PHPUnit's native methods.",
             "codeSamples": [
                 {
-                    "from": "<?php\n$this->assertEquals(false, $b);\n$this->assertSame(true, $a);\n$this->assertNotEquals(null, $c);\n$this->assertNotSame(null, $d);\n",
-                    "to": "<?php\n$this->assertFalse($b);\n$this->assertTrue($a);\n$this->assertNotNull($c);\n$this->assertNotNull($d);\n"
+                    "from": "<?php\nfinal class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(false, $b);\n        $this->assertSame(true, $a);\n        $this->assertNotEquals(null, $c);\n        $this->assertNotSame(null, $d);\n    }\n}\n",
+                    "to": "<?php\nfinal class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse($b);\n        $this->assertTrue($a);\n        $this->assertNotNull($c);\n        $this->assertNotNull($d);\n    }\n}\n"
                 },
                 {
-                    "from": "<?php\n$this->assertEquals(false, $b);\n$this->assertSame(true, $a);\n$this->assertNotEquals(null, $c);\n$this->assertNotSame(null, $d);\n",
-                    "to": "<?php\n$this->assertEquals(false, $b);\n$this->assertTrue($a);\n$this->assertNotEquals(null, $c);\n$this->assertNotNull($d);\n",
+                    "from": "<?php\nfinal class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(false, $b);\n        $this->assertSame(true, $a);\n        $this->assertNotEquals(null, $c);\n        $this->assertNotSame(null, $d);\n    }\n}\n",
+                    "to": "<?php\nfinal class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(false, $b);\n        $this->assertTrue($a);\n        $this->assertNotEquals(null, $c);\n        $this->assertNotNull($d);\n    }\n}\n",
                     "configuration": {
                         "assertions": [
                             "assertSame",
@@ -3846,12 +3862,12 @@
             "riskyDescription": "Fixer could be risky if one is overriding PHPUnit's native methods.",
             "codeSamples": [
                 {
-                    "from": "<?php\n$this->assertTrue(is_float( $a), \"my message\");\n$this->assertTrue(is_nan($a));\n",
-                    "to": "<?php\n$this->assertInternalType('float', $a, \"my message\");\n$this->assertNan($a);\n"
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertTrue(is_float( $a), \"my message\");\n        $this->assertTrue(is_nan($a));\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertInternalType('float', $a, \"my message\");\n        $this->assertNan($a);\n    }\n}\n"
                 },
                 {
-                    "from": "<?php\n$this->assertTrue(is_dir($a));\n$this->assertTrue(is_writable($a));\n$this->assertTrue(is_readable($a));\n",
-                    "to": "<?php\n$this->assertDirectoryExists($a);\n$this->assertIsWritable($a);\n$this->assertIsReadable($a);\n",
+                    "from": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertTrue(is_dir($a));\n        $this->assertTrue(is_writable($a));\n        $this->assertTrue(is_readable($a));\n    }\n}\n",
+                    "to": "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomeTest()\n    {\n        $this->assertDirectoryExists($a);\n        $this->assertIsWritable($a);\n        $this->assertIsReadable($a);\n    }\n}\n",
                     "configuration": {
                         "target": "5.6"
                     }
@@ -4663,16 +4679,6 @@
         },
         "phpdoc_to_param_type": {
             "risky": true,
-            "configuration": [
-                {
-                    "name": "scalar_types",
-                    "description": "Fix also scalar types; may have unexpected behaviour due to PHP bad type coercion system.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                }
-            ],
             "summary": "EXPERIMENTAL: Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.",
             "riskyDescription": "This rule is EXPERIMENTAL and [1] is not covered with backward compatibility promise. [2] `@param` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. [3] Manual actions are required if inherited signatures are not properly documented.",
             "codeSamples": [
@@ -4720,6 +4726,10 @@
                     "configuration": {
                         "scalar_types": false
                     }
+                },
+                {
+                    "from": "<?php\nfinal class Foo {\n    \/**\n     * @return static\n     *\/\n    public function create($prototype) {\n        return new static($prototype);\n    }\n}\n",
+                    "to": "<?php\nfinal class Foo {\n    \/**\n     * @return static\n     *\/\n    public function create($prototype): self {\n        return new static($prototype);\n    }\n}\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixer"
@@ -4915,9 +4925,9 @@
                 },
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\Fixer\\Basic;\nclass Psr0Fixer {}\n",
+                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass Psr0Fixer {}\n",
                     "configuration": {
-                        "dir": "\/path\/to\/vendor\/friendsofphp\/php-cs-fixer\/src"
+                        "dir": ".\/src"
                     }
                 }
             ],
@@ -5259,8 +5269,8 @@
             "summary": "Throwing exception must be done in single line.",
             "codeSamples": [
                 {
-                    "from": "<?php\nthrow new Exception(\n    'Error',\n    500\n);\n",
-                    "to": "<?php\nthrow new Exception('Error', 500);\n"
+                    "from": "<?php\nthrow new Exception(\n    'Error.',\n    500\n);\n",
+                    "to": "<?php\nthrow new Exception('Error.', 500);\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\SingleLineThrowFixer"
@@ -6030,6 +6040,11 @@
             "comment_to_phpdoc": null,
             "final_internal_class": null,
             "logical_operators": null,
+            "no_alias_functions": {
+                "sets": [
+                    "@all"
+                ]
+            },
             "no_unreachable_default_argument_value": null,
             "no_unset_on_property": null,
             "php_unit_set_up_tear_down_visibility": null,
@@ -6075,7 +6090,6 @@
                 "scope": "namespaced",
                 "strict": true
             },
-            "no_alias_functions": null,
             "no_homoglyph_names": null,
             "no_unneeded_final_method": null,
             "non_printable_character": null,
@@ -6151,6 +6165,41 @@
                 ]
             },
             "ternary_to_null_coalescing": null
+        },
+        "@PHP80Migration": {
+            "no_unset_cast": null,
+            "normalize_index_brace": null,
+            "heredoc_indentation": null,
+            "visibility_required": {
+                "elements": [
+                    "const",
+                    "method",
+                    "property"
+                ]
+            },
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP80Migration:risky": {
+            "implode_call": null,
+            "no_alias_functions": {
+                "sets": [
+                    "@all"
+                ]
+            },
+            "no_unneeded_final_method": null,
+            "void_return": null,
+            "combine_nested_dirname": null,
+            "declare_strict_types": null,
+            "non_printable_character": {
+                "use_escape_sequences_in_strings": true
+            },
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "pow_to_exponentiation": null
         },
         "@PHPUnit30Migration:risky": {
             "php_unit_dedicate_assert": {
