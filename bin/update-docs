@@ -4,8 +4,8 @@
 use MLocati\PhpCsFixerConfigurator\DataExtractor;
 use MLocati\PhpCsFixerConfigurator\JsonEncoder;
 
-if (PHP_VERSION_ID < 70300) {
-    fprintf(STDERR, "This script must be run with PHP 7.3+.\n");
+if (PHP_VERSION_ID < 70400) {
+    fprintf(STDERR, "This script must be run with PHP 7.4+.\n");
     exit(1);
 }
 
