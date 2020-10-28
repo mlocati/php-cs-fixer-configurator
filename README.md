@@ -1,4 +1,4 @@
-[![TravisCI Build Status](https://travis-ci.org/mlocati/php-cs-fixer-configurator.svg?branch=master)](https://travis-ci.org/mlocati/php-cs-fixer-configurator)
+[![TravisCI Build Status](https://travis-ci.com/mlocati/php-cs-fixer-configurator.svg?branch=master)](https://travis-ci.com/mlocati/php-cs-fixer-configurator)
 
 # PHP-CS-Fixer Configurator
 
