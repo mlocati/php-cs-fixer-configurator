@@ -49,11 +49,11 @@
                 <b-form-checkbox v-model="expandFixerSets">Expand presets</b-form-checkbox>
                 <b-form-checkbox
                     v-model="exportFixerDescriptions"
-                    v-bind:disabled="!exporter.supportImportFixerClasses"
+                    v-bind:disabled="!exporter.supportFixerDescriptions"
                 >Export fixer descriptions</b-form-checkbox>
                 <b-form-checkbox
                     v-model="importFixerClasses"
-                    v-bind:disabled="!exporter.supportFixerDescriptions"
+                    v-bind:disabled="!exporter.supportImportFixerClasses"
                 >Import fixer classes</b-form-checkbox>
             </div>
         </b-form-group>
