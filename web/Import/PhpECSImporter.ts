@@ -1,7 +1,7 @@
 import ImporterInterface from "./ImporterInterface";
 import PhpParser from 'php-parser';
 import { SerializedConfigurationInterface } from "../Configuration";
-import {camelCaseToUnderscore, constToSetName} from "../Utils";
+import { camelCaseToUnderscore, constToSetName } from "../Utils";
 
 export default class PhpECSImporter implements ImporterInterface {
 
@@ -32,22 +32,23 @@ export default class PhpECSImporter implements ImporterInterface {
     }
 
     parse(serialized: string): SerializedConfigurationInterface {
-        let ast = this.getAST(serialized),
+        const ast = this.getAST(serialized),
+            services = PhpECSImporter.getServices(ast),
             parameters = PhpECSImporter.getParameters(ast),
-            services = this.getServices(ast);
-
-        if (services === null) {
-            throw new Error('Unable to find the services definitions.');
+            sets = PhpECSImporter.getParameterValue(parameters, 'Option::SETS');
+        let someData: boolean = false;
+        PhpECSImporter.addSets(services, sets);
+        if (Object.keys(services).length !== 0) {
+            someData = true;
         }
-
-        services = PhpECSImporter.addSets(services, PhpECSImporter.getParameterValue(parameters, 'Option::SETS'));
-        let configuration = this.parseSetRulesArray(services);
-        let indentValue = PhpECSImporter.getParameterValue(parameters,'Option::INDENTATION');
+        let configuration = PhpECSImporter.parseSetRulesArray(services);
+        let indentValue = PhpECSImporter.getParameterValue(parameters, 'Option::INDENTATION');
         if (typeof indentValue === 'string') {
             if (configuration.whitespace === undefined) {
                 configuration.whitespace = {};
             }
             configuration.whitespace.indent = indentValue;
+            someData = true;
         }
         let lineEndingValue = PhpECSImporter.getParameterValue(parameters, 'Option::LINE_ENDING');
         if (typeof lineEndingValue === 'string') {
@@ -55,6 +56,10 @@ export default class PhpECSImporter implements ImporterInterface {
                 configuration.whitespace = {};
             }
             configuration.whitespace.lineEnding = lineEndingValue;
+            someData = true;
+        }
+        if (someData === false) {
+            throw new Error('No service definition, no sets and no configration found.');
         }
         return configuration;
     }
@@ -84,7 +89,7 @@ export default class PhpECSImporter implements ImporterInterface {
      * @param setRulesArray
      * @throws
      */
-    protected parseSetRulesArray(setRulesArray: any): SerializedConfigurationInterface {
+    protected static parseSetRulesArray(setRulesArray: any): SerializedConfigurationInterface {
         let configuration: SerializedConfigurationInterface = {};
         Object.keys(<Object>setRulesArray).forEach((key: string | any) => {
             if (typeof key !== 'string') {
@@ -117,7 +122,7 @@ export default class PhpECSImporter implements ImporterInterface {
      * @param value
      * @throws
      */
-    protected valueToJavascript(value: any): boolean | string | number | Array<any> | Object {
+    protected static valueToJavascript(value: any): boolean | string | number | Array<any> | Object {
         let valueKind: string = value && value.kind ? value.kind : '?';
         switch (valueKind) {
             case 'boolean':
@@ -139,9 +144,9 @@ export default class PhpECSImporter implements ImporterInterface {
                         return;
                     }
                     if (v.key) {
-                        (<any>arr)[<string>this.valueToJavascript(v.key)] = this.valueToJavascript(v.value);
+                        (<any>arr)[<string>PhpECSImporter.valueToJavascript(v.key)] = PhpECSImporter.valueToJavascript(v.value);
                     } else {
-                        (<Array<any>>arr).push(this.valueToJavascript(v));
+                        (<Array<any>>arr).push(PhpECSImporter.valueToJavascript(v));
                     }
                 });
                 return arr;
@@ -149,9 +154,9 @@ export default class PhpECSImporter implements ImporterInterface {
         throw new Error(`Unsupported value type ${valueKind} in setRules() array.`);
     }
 
-    private static getParameters(ast: any): any {
+    private static getParameters(ast: any): any[string] {
         let numExpressions = ast ? ast.length : 0,
-            parameters: any[any] = [];
+            parameters: any[string] = {};
         for (let exprIndex = 0; exprIndex < numExpressions; exprIndex++) {
             if (ast[exprIndex].kind === "expressionstatement" &&
                 ast[exprIndex].expression.kind === "call" &&
@@ -171,9 +176,9 @@ export default class PhpECSImporter implements ImporterInterface {
         return parameters;
     }
 
-    private getServices(ast: any): any {
+    private static getServices(ast: any): any[string] {
         let numExpressions = ast ? ast.length : 0,
-            services: any[any] = [];
+            services: any[string] = {};
         for (let exprIndex = 0; exprIndex < numExpressions; exprIndex++) {
             if (ast[exprIndex].kind === "expressionstatement" &&
                 ast[exprIndex].expression.kind === "call" &&
@@ -188,8 +193,7 @@ export default class PhpECSImporter implements ImporterInterface {
             ) {
                 let name: string = PhpECSImporter.getUnderscoreName(ast[exprIndex].expression.arguments[0].what.name);
                 services[name] = true;
-            }
-            if (ast[exprIndex].kind === "expressionstatement" &&
+            } else if (ast[exprIndex].kind === "expressionstatement" &&
                 ast[exprIndex].expression.kind === "call" &&
                 ast[exprIndex].expression.what.kind === "propertylookup" &&
                 ast[exprIndex].expression.what.offset.kind === "identifier" &&
@@ -204,7 +208,7 @@ export default class PhpECSImporter implements ImporterInterface {
                 ast[exprIndex].expression.what.what.arguments[0].what.kind === "classreference"
             ) {
                 let name: string = PhpECSImporter.getUnderscoreName(ast[exprIndex].expression.what.what.arguments[0].what.name);
-                services[name] = this.valueToJavascript(ast[exprIndex].expression.arguments[1].items[0]);
+                services[name] = PhpECSImporter.valueToJavascript(ast[exprIndex].expression.arguments[1].items[0]);
             }
         }
         return services;
@@ -221,9 +225,11 @@ export default class PhpECSImporter implements ImporterInterface {
         }
     }
 
-    private static addSets(services: any, sets: any): any {
-        let numSets = sets && sets.items ? sets.items.length : 0;
-        for (let setIndex = 0; setIndex < numSets; setIndex++) {
+    private static addSets(services: any[string], sets: any): void {
+        if (!sets || !(sets.items instanceof Array)) {
+            return
+        }
+        for (let setIndex = 0; setIndex < sets.items.length; setIndex++) {
             if (sets.items[setIndex] &&
                 sets.items[setIndex].kind === "staticlookup" &&
                 sets.items[setIndex].offset.kind === "identifier" &&
@@ -234,6 +240,5 @@ export default class PhpECSImporter implements ImporterInterface {
                 services[key] = true;
             }
         }
-        return services;
     }
 }
