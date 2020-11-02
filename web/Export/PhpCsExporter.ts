@@ -54,7 +54,9 @@ export default class PhpCsExporter implements ExporterInterface {
             });
         }
         if (configuration.fixers !== undefined) {
-            Object.keys(configuration.fixers).forEach((fixerName: string): void => {
+            const fixerNames = Object.keys(configuration.fixers);
+            fixerNames.sort();
+            fixerNames.forEach((fixerName: string): void => {
                 const fixerConfiguration = (<{ [fixerName: string]: boolean | object }>configuration.fixers)[fixerName];
                 if (options.exportFixerDescriptions) {
                     const fixer = options.version.getFixerByName(fixerName);
