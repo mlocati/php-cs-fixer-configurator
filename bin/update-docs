@@ -3,18 +3,35 @@
 
 use MLocati\PhpCsFixerConfigurator\DataExtractor;
 use MLocati\PhpCsFixerConfigurator\JsonEncoder;
+use MLocati\PhpCsFixerConfigurator\Patcher;
 
 if (PHP_VERSION_ID < 70400) {
-    fprintf(STDERR, "This script must be run with PHP 7.4+.\n");
+    fwrite(STDERR, "This script must be run with PHP 7.4+.\n");
     exit(1);
 }
+
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    $error = (string) $errstr;
+    if ($error === '') {
+        $error = "Unknown error (code {$errno})";
+    }
+    foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $trace) {
+        if (!empty($trace['file'])) {
+            if (empty($trace['line'])) {
+                $error .= "\n{$trace['file']}";
+            } else {
+                $error .= "\n{$trace['file']}:{$trace['line']}";
+            }
+        }
+    }
+    throw new RuntimeException($error);
+}, -1);
 
 function deleteFromFilesystem($path)
 {
     if (is_link($path) || is_file($path)) {
         @unlink($path);
-    }
-    elseif (is_dir($path)) {
+    } elseif (is_dir($path)) {
         $hDir = @opendir($path);
         while(($item = @readdir($hDir)) !== false) {
             switch ($item) {
@@ -31,76 +48,86 @@ function deleteFromFilesystem($path)
     }
 }
 
-if (isset($argv[1])) {
-    @unlink(dirname(__DIR__) . '/composer.lock');
-    deleteFromFilesystem(dirname(__DIR__) . '/vendor');
-    fprintf(STDOUT, "Installing PHP-CS-Fixer version {$argv[1]}... ");
-    $cmd = ['composer'];
-    $cmd[] = '--ignore-platform-reqs';
-    $cmd[] = '--no-progress';
-    $cmd[] = '--no-suggest';
-    $cmd[] = '--optimize-autoloader';
-    $cmd[] = '--quiet';
-    $cmd[] = '--no-ansi';
-    $cmd[] = '--no-interaction';
-    $cmd[] = '--working-dir=' . escapeshellarg(dirname(__DIR__));
-    $cmd[] = 'require';
-    $cmd[] = escapeshellarg("friendsofphp/php-cs-fixer:{$argv[1]}");
-    $cmd[] = '2>&1';
-    $output = [];
-    $rc = -1;
-    @exec(implode(' ', $cmd), $output, $rc);
-    if ($rc !== 0) {
-        fprintf(STDERR, 'composer failed: ' . trim(implode("\n", $output)) . "\n");
-        exit($rc);
+try {
+    if (isset($argv[1])) {
+        if (is_file(dirname(__DIR__) . '/composer.lock')) {
+            @unlink(dirname(__DIR__) . '/composer.lock');
+        }
+        deleteFromFilesystem(dirname(__DIR__) . '/vendor');
+        fwrite(STDOUT, "Installing PHP-CS-Fixer version {$argv[1]}... ");
+        $cmd = ['composer'];
+        $cmd[] = '--ignore-platform-reqs';
+        $cmd[] = '--no-progress';
+        $cmd[] = '--no-suggest';
+        $cmd[] = '--optimize-autoloader';
+        $cmd[] = '--quiet';
+        $cmd[] = '--no-ansi';
+        $cmd[] = '--no-interaction';
+        $cmd[] = '--working-dir=' . escapeshellarg(dirname(__DIR__));
+        $cmd[] = 'require';
+        $cmd[] = escapeshellarg("friendsofphp/php-cs-fixer:{$argv[1]}");
+        $cmd[] = '2>&1';
+        $output = [];
+        $rc = -1;
+        @exec(implode(' ', $cmd), $output, $rc);
+        if ($rc !== 0) {
+            fwrite(STDERR, 'composer failed: ' . trim(implode("\n", $output)) . "\n");
+            exit($rc);
+        }
+        fwrite(STDOUT, "done.\n");
     }
-    fprintf(STDOUT, "done.\n");
-}
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+    require_once dirname(__DIR__) . '/php/Patcher.php';
+    Patcher::withPatches(static function () {
+        require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-fprintf(STDOUT, 'Extracting data... ');
-$dataExtractor = new DataExtractor();
-$version = $dataExtractor->getVersion();
-$data = [
-    'version' => $version,
-    'indent' => $dataExtractor->getDefaultIndent(),
-    'lineEnding' => $dataExtractor->getDefaultLineEnding(),
-    'fixers' => $dataExtractor->getFixers(),
-    'sets' => $dataExtractor->getSets(),
-];
-fprintf(STDOUT, "done.\n");
+        fwrite(STDOUT, 'Extracting data... ');
+        $dataExtractor = new DataExtractor();
+        $version = $dataExtractor->getVersion();
+        $data = [
+            'version' => $version,
+            'indent' => $dataExtractor->getDefaultIndent(),
+            'lineEnding' => $dataExtractor->getDefaultLineEnding(),
+            'fixers' => $dataExtractor->getFixers(false),
+            'sets' => $dataExtractor->getSets(),
+        ];
+        fwrite(STDOUT, "done.\n");
 
-$jsDir = dirname(__DIR__) . '/docs/data';
-if (!is_dir($jsDir)) {
-    mkdir($jsDir);
-}
-fprintf(STDOUT, 'Saving data... ');
-if (is_file("{$jsDir}/versions.json")) {
-    $versions = @json_decode(@file_get_contents("{$jsDir}/versions.json"));
-    if (!is_array($versions)) {
-        fprintf(STDERR, "Error loading versions file!\n");
-    }
-} else {
-    $versions = [];
-}
-$encoder = new JsonEncoder();
-if (!in_array($version, $versions, true)) {
-    $versions[] = $version;
-    usort($versions, function ($versionA, $versionB) {
-        return version_compare($versionB, $versionA);
+        $jsDir = dirname(__DIR__) . '/docs/data';
+        if (!is_dir($jsDir)) {
+            mkdir($jsDir);
+        }
+        fwrite(STDOUT, 'Saving data... ');
+        if (is_file("{$jsDir}/versions.json")) {
+            $versions = @json_decode(@file_get_contents("{$jsDir}/versions.json"));
+            if (!is_array($versions)) {
+                fwrite(STDERR, "Error loading versions file!\n");
+            }
+        } else {
+            $versions = [];
+        }
+        $encoder = new JsonEncoder();
+        if (!in_array($version, $versions, true)) {
+            $versions[] = $version;
+            usort($versions, function ($versionA, $versionB) {
+                return version_compare($versionB, $versionA);
+            });
+            if (@file_put_contents("{$jsDir}/versions.json", json_encode($versions, JSON_PRETTY_PRINT)) === false) {
+                fwrite(STDERR, "Error saving versions file!\n");
+                exit(1);
+            }
+        }
+        if (@file_put_contents("{$jsDir}/{$version}.json", $encoder->setPrettyPrint(true)->stringify($data)) === false) {
+            fwrite(STDERR, "Error saving data!\n");
+            exit(1);
+        }
+        if (@file_put_contents("{$jsDir}/{$version}.min.json", $encoder->setPrettyPrint(false)->stringify($data)) === false) {
+            fwrite(STDERR, "Error saving compressed data!\n");
+            exit(1);
+        }
+        fwrite(STDOUT, "done.\n");
     });
-    if (@file_put_contents("{$jsDir}/versions.json", json_encode($versions, JSON_PRETTY_PRINT)) === false) {
-        fprintf(STDERR, "Error saving versions file!\n");
-        exit(1);
-    }
-}
-if (@file_put_contents("{$jsDir}/{$version}.json", $encoder->setPrettyPrint(true)->stringify($data)) === false) {
-    fprintf(STDERR, "Error saving data!\n");
+} catch (RuntimeException $x) {
+    fwrite(STDERR, $x->getMessage() . "\n");
     exit(1);
 }
-if (@file_put_contents("{$jsDir}/{$version}.min.json", $encoder->setPrettyPrint(false)->stringify($data)) === false) {
-    fprintf(STDERR, "Error saving compressed data!\n");
-    exit(1);
-}
-fprintf(STDOUT, "done.\n");

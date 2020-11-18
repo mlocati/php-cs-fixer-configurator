@@ -51,9 +51,11 @@ class DataExtractor
     }
 
     /**
+     * @param bool $ignoreErrors
+     *
      * @return array
      */
-    public function getFixers()
+    public function getFixers($ignoreErrors)
     {
         $result = [];
         $factory = FixerFactory::create()->registerBuiltInFixers();
@@ -128,21 +130,29 @@ class DataExtractor
                     $originalConfiguration = $codeSample->getConfiguration();
                     $configuration = $originalConfiguration === null ? [] : $originalConfiguration;
                     $new = null;
-                    try {
+                    if ($ignoreErrors) {
+                        try {
+                            $tokens = $this->extractTokens($old);
+                        } catch (Exception $x) {
+                            $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
+                        } catch (Throwable $x) {
+                            $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
+                        }
+                    } else {
                         $tokens = $this->extractTokens($old);
-                    } catch (Exception $x) {
-                        $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
-                    } catch (Throwable $x) {
-                        $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
                     }
                     if ($new === null) {
                         if ($fixer instanceof ConfigurableFixerInterface) {
-                            try {
+                            if ($ignoreErrors) {
+                                try {
+                                    $fixer->configure($configuration);
+                                } catch (Exception $x) {
+                                    $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
+                                } catch (Exception $x) {
+                                    $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
+                                }
+                            } else {
                                 $fixer->configure($configuration);
-                            } catch (Exception $x) {
-                                $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
-                            } catch (Exception $x) {
-                                $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
                             }
                         }
                         if ($new === null) {
@@ -221,9 +231,6 @@ class DataExtractor
     }
 
     /**
-     * @param \PhpCsFixer\FixerConfiguration\FixerOptionInterface $option
-     * @param \PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface $fixer
-     *
      * @return \MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue
      */
     private function guessOptionEmptyArrayType(FixerOptionInterface $option, ConfigurationDefinitionFixerInterface $fixer)
@@ -260,7 +267,7 @@ class DataExtractor
      */
     private function extractTokens($code)
     {
-        set_error_handler(function() {}, E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING | E_USER_WARNING | E_USER_NOTICE | E_STRICT | E_RECOVERABLE_ERROR | E_DEPRECATED | E_USER_DEPRECATED);
+        set_error_handler(function () {}, E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING | E_USER_WARNING | E_USER_NOTICE | E_STRICT | E_RECOVERABLE_ERROR | E_DEPRECATED | E_USER_DEPRECATED);
         $tokens = Tokens::fromCode($code);
         restore_error_handler();
 

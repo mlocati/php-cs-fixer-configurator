@@ -81,7 +81,6 @@ class JsonEncoder
     }
 
     /**
-     * @param array $value
      * @param string $prefix
      * @param string $oneTimePrefix
      *
@@ -131,7 +130,6 @@ class JsonEncoder
     }
 
     /**
-     * @param \MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue $value
      * @param string $prefix
      * @param string $oneTimePrefix
      *

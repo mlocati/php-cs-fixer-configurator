@@ -2,19 +2,22 @@
 <?php
 
 if (PHP_VERSION_ID < 70400) {
-    fprintf(STDERR, "This script must be run with PHP 7.4+.\n");
+    fwrite(STDERR, "This script must be run with PHP 7.4+.\n");
     exit(1);
 }
 
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    fprintf(STDERR, "{$errstr}\n");
-    if ($errfile) {
-        fprintf(STDERR, "File: {$errfile}\n");
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    $error = (string) $errstr;
+    if ($error === '') {
+        $error = "Unknown error (code {$errno})";
+    }
+    if ((string) $errfile !== '') {
+        $error .= "\nFile: {$errfile}";
         if ($errline) {
-            fprintf(STDERR, "Line: {$errline}\n");
+            $error .= "\nLine: {$errline}";
         }
     }
-    exit(-1);
+    throw new RuntimeException($error);
 }, -1);
 
 class PCFCWorker
@@ -52,7 +55,8 @@ class PCFCWorker
      */
     public function setForce($value)
     {
-        $this->force = (bool)$value;
+        $this->force = (bool) $value;
+
         return $this;
     }
 
@@ -156,8 +160,7 @@ class PCFCWorker
         $versionsFile = $this->getCurrentVersionsFile();
         if (is_file($versionsFile)) {
             $versions = json_decode(file_get_contents($versionsFile), true);
-            foreach ($versions as $version)
-            {
+            foreach ($versions as $version) {
                 if (!isset($currentVersions[$version])) {
                     $currentVersions[$version] = new PCFCCurrentVersion();
                 }
@@ -196,13 +199,10 @@ class PCFCWorker
         $rc = null;
         passthru(implode(' ', $args), $rc);
         if ($rc !== 0) {
-            throw new Exception('Failed!');
+            throw new RuntimeException('Failed!');
         }
     }
 
-    /**
-     * 
-     */
     public function resetComposerJson()
     {
         $rootDir = $this->getRootDir();
@@ -287,6 +287,7 @@ class PCFCCurrentVersion
     public function setInVersionsFile($value)
     {
         $this->inVersionsFile = (bool) $value;
+
         return $this;
     }
 
@@ -298,6 +299,7 @@ class PCFCCurrentVersion
     public function addJSDataFile($path)
     {
         $this->jsDataFiles[] = $path;
+
         return $this;
     }
 
@@ -318,49 +320,52 @@ class PCFCCurrentVersion
     }
 }
 
-$force = in_array('-f', $argv, true) || in_array('--force', $argv, true);
-
-$worker = new PCFCWorker(dirname(__DIR__));
-
-fprintf(STDOUT, "Listing currently parsed versions... ");
-$currentVersions = $worker->getCurrentVersions();
-fprintf(STDOUT, "done.\n");
-
-fprintf(STDOUT, "Listing latest versions... ");
-$wantedVersions = $worker->getWantedVersions();
-fprintf(STDOUT, "done.\n");
-
-foreach ($currentVersions as $versionID => $versionData)
-{
-    if ($force) {
-        fprintf(STDOUT, "Removing version {$versionID} because of the --force flag.\n");
-    } elseif ($versionData->isOK() !== true) {
-        fprintf(STDOUT, "Removing version {$versionID} because it lacks some data.\n");
-    } elseif (in_array($versionID, $wantedVersions, true) === false) {
-        fprintf(STDOUT, "Removing version {$versionID} because it's no more needed.\n");
-    } else {
-        continue;
-    }
-    $worker->deleteCurrentVersion($versionID, $versionData);
-    unset($currentVersions[$versionID]);
-}
-
-$someVersionParsed = false;
 try {
-    foreach ($wantedVersions as $wantedVersion)
-    {
-        fprintf(STDOUT, "Version {$wantedVersion} ");
-        if (isset($currentVersions[$wantedVersion])) {
-            fprintf(STDOUT, "already parsed.\n");
+    $force = in_array('-f', $argv, true) || in_array('--force', $argv, true);
+
+    $worker = new PCFCWorker(dirname(__DIR__));
+
+    fwrite(STDOUT, 'Listing currently parsed versions... ');
+    $currentVersions = $worker->getCurrentVersions();
+    fwrite(STDOUT, "done.\n");
+
+    fwrite(STDOUT, 'Listing latest versions... ');
+    $wantedVersions = $worker->getWantedVersions();
+    fwrite(STDOUT, "done.\n");
+
+    foreach ($currentVersions as $versionID => $versionData) {
+        if ($force) {
+            fwrite(STDOUT, "Removing version {$versionID} because of the --force flag.\n");
+        } elseif ($versionData->isOK() !== true) {
+            fwrite(STDOUT, "Removing version {$versionID} because it lacks some data.\n");
+        } elseif (in_array($versionID, $wantedVersions, true) === false) {
+            fwrite(STDOUT, "Removing version {$versionID} because it's no more needed.\n");
+        } else {
             continue;
         }
-        fprintf(STDOUT, "needs parsing.\n");
-        $someVersionParsed = true;
-        $worker->parseNewVersion($wantedVersion);
+        $worker->deleteCurrentVersion($versionID, $versionData);
+        unset($currentVersions[$versionID]);
     }
-} finally {
-    if ($someVersionParsed) {
-        fprintf(STDOUT, "Resetting composer.json.\n");
-        $worker->resetComposerJson();
+
+    $someVersionParsed = false;
+    try {
+        foreach ($wantedVersions as $wantedVersion) {
+            fwrite(STDOUT, "Version {$wantedVersion} ");
+            if (isset($currentVersions[$wantedVersion])) {
+                fwrite(STDOUT, "already parsed.\n");
+                continue;
+            }
+            fwrite(STDOUT, "needs parsing.\n");
+            $someVersionParsed = true;
+            $worker->parseNewVersion($wantedVersion);
+        }
+    } finally {
+        if ($someVersionParsed) {
+            fwrite(STDOUT, "Resetting composer.json.\n");
+            $worker->resetComposerJson();
+        }
     }
+} catch (RuntimeException $x) {
+    fwrite(STDERR, $x->getMessage() . "\n");
+    exit(1);
 }
