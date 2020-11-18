@@ -10,6 +10,7 @@ use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
 use PhpCsFixer\Fixer\DefinedFixerInterface;
 use PhpCsFixer\Fixer\DeprecatedFixerInterface;
 use PhpCsFixer\FixerConfiguration\AliasedFixerOption;
+use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
 use PhpCsFixer\FixerConfiguration\FixerOptionInterface;
 use PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface;
 use PhpCsFixer\FixerFactory;
@@ -92,13 +93,37 @@ class DataExtractor
                     }
                     $allowedValues = $option->getAllowedValues();
                     if ($allowedValues !== null) {
-                        foreach ($allowedValues as $allowedValue) {
-                            if ($allowedValue !== null && !is_scalar($allowedValue)) {
+                        $nullIndex = array_search(null, $allowedValues, true);
+                        if ($nullIndex !== false) {
+                            array_splice($allowedValues, $nullIndex, 1);
+                        }
+                        if (count($allowedValues) === 1 && $allowedValues[0] instanceof AllowedValueSubset) {
+                            $sublist = $allowedValues[0]->getAllowedValues();
+                            $group = [];
+                            foreach ($sublist as $allowedValue) {
+                                if (!is_scalar($allowedValue)) {
+                                    $group = null;
+                                    break;
+                                }
+                                $group[] = $allowedValue;
+                            }
+                            if ($group === null || $group === []) {
                                 $allowedValues = null;
-                                break;
+                            } else {
+                                $allowedValues = [$group];
+                            }
+                        } else {
+                            foreach ($allowedValues as $allowedValue) {
+                                if (!is_scalar($allowedValue)) {
+                                    $allowedValues = null;
+                                    break;
+                                }
                             }
                         }
                         if ($allowedValues !== null) {
+                            if ($nullIndex !== false) {
+                                $allowedValues[] = null;
+                            }
                             $o['allowedValues'] = $allowedValues;
                         }
                     }

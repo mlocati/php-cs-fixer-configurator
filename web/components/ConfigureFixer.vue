@@ -51,8 +51,15 @@
         ></default-fixer-option-value>
 
         <div v-else>
+            <option-value-from-list-multi
+                v-if="optionAllowedValuesMulti !== null"
+                v-bind:allowed-values="optionAllowedValuesMulti.values"
+                v-bind:nullable="optionAllowedValuesMulti.nullable"
+                v-bind:selected-value="customOptionValue"
+                v-on:change="setCustomOptionValue"
+            />
             <option-value-from-list
-                v-if="optionAllowedValues !== null"
+                v-else-if="optionAllowedValues !== null"
                 v-bind:values="optionAllowedValues"
                 v-bind:selected-value="customOptionValue"
                 v-on:change="setCustomOptionValue"
@@ -73,6 +80,7 @@ import Configuration, { FixerState } from '../Configuration';
 import DefaultFixerOptionValue from './configure/DefaultFixerOptionValue.vue';
 import OptionValueFromJson from './configure/OptionValueFromJson.vue';
 import OptionValueFromList from './configure/OptionValueFromList.vue';
+import OptionValueFromListMulti from './configure/OptionValueFromListMulti.vue';
 import Fixer from '../Fixer';
 import { PFCFixerOption } from '../PCFDataDefinitions';
 import Prism from './Prism.vue';
@@ -85,6 +93,7 @@ export default Vue.extend({
         DefaultFixerOptionValue,
         OptionValueFromJson,
         OptionValueFromList,
+        OptionValueFromListMulti,
         Prism,
     },
     props: {
@@ -154,6 +163,19 @@ export default Vue.extend({
         },
         canGoToNextOption: function(): boolean {
             return this.optionIndex + 1 < this.options.length;
+        },
+        optionAllowedValuesMulti: function(): Object | null {
+            var oav = this.optionAllowedValues;
+            if (oav === null) {
+                return null;
+            }
+            if (oav[0] instanceof Array && (oav.length === 1 || oav[1] === null)) {
+                return {
+                    values: oav[0],
+                    nullable: oav.length === 2,
+                }
+            }
+            return null;
         },
         optionAllowedValues: function(): Array<any> | null {
             const option = this.option;

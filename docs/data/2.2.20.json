@@ -816,6 +816,13 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "phpversion",
+                            "php_sapi_name",
+                            "pi"
+                        ]
                     ]
                 }
             ],
@@ -1284,6 +1291,21 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "break",
+                            "continue",
+                            "extra",
+                            "return",
+                            "throw",
+                            "use",
+                            "useTrait",
+                            "use_trait",
+                            "curly_brace_block",
+                            "parenthesis_brace_block",
+                            "square_brace_block"
+                        ]
                     ]
                 }
             ],
@@ -1517,6 +1539,12 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "inside",
+                            "outside"
+                        ]
                     ]
                 }
             ],
@@ -1776,6 +1804,38 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "use_trait",
+                            "public",
+                            "protected",
+                            "private",
+                            "constant",
+                            "constant_public",
+                            "constant_protected",
+                            "constant_private",
+                            "property",
+                            "property_static",
+                            "property_public",
+                            "property_protected",
+                            "property_private",
+                            "property_public_static",
+                            "property_protected_static",
+                            "property_private_static",
+                            "method",
+                            "method_static",
+                            "method_public",
+                            "method_protected",
+                            "method_private",
+                            "method_public_static",
+                            "method_protected_static",
+                            "method_private_static",
+                            "construct",
+                            "destruct",
+                            "magic",
+                            "phpunit"
+                        ]
                     ]
                 }
             ],
@@ -1879,6 +1939,14 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "assertSame",
+                            "assertEquals",
+                            "assertNotEquals",
+                            "assertNotSame"
+                        ]
                     ]
                 }
             ],
@@ -1932,6 +2000,30 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "array_key_exists",
+                            "empty",
+                            "file_exists",
+                            "is_infinite",
+                            "is_nan",
+                            "is_null",
+                            "is_array",
+                            "is_bool",
+                            "is_callable",
+                            "is_double",
+                            "is_float",
+                            "is_int",
+                            "is_integer",
+                            "is_long",
+                            "is_numeric",
+                            "is_object",
+                            "is_real",
+                            "is_resource",
+                            "is_scalar",
+                            "is_string"
+                        ]
                     ]
                 }
             ],
@@ -1978,6 +2070,14 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "assertAttributeEquals",
+                            "assertAttributeNotEquals",
+                            "assertEquals",
+                            "assertNotEquals"
+                        ]
                     ]
                 }
             ],
@@ -2519,6 +2619,12 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "const",
+                            "property"
+                        ]
                     ]
                 }
             ],
@@ -2700,6 +2806,13 @@
                     ],
                     "allowedTypes": [
                         "array"
+                    ],
+                    "allowedValues": [
+                        [
+                            "property",
+                            "method",
+                            "const"
+                        ]
                     ]
                 }
             ],
