@@ -175,8 +175,9 @@
                                                 <li
                                                     v-for="(difference, differenceIndex) in changes.differences"
                                                     v-bind:key="differenceIndex"
-                                                    v-html="textToHtml(difference)"
-                                                ></li>
+                                                >
+                                                    <view-difference v-bind:difference="difference" />
+                                                </li>
                                             </ul>
                                         </td>
                                     </tr>
@@ -302,8 +303,9 @@
                                                 <li
                                                     v-for="(difference, differenceIndex) in changes.differences"
                                                     v-bind:key="differenceIndex"
-                                                    v-html="textToHtml(difference)"
-                                                ></li>
+                                                >
+                                                    <view-difference v-bind:difference="difference" />
+                                                </li>
                                             </ul>
                                         </td>
                                     </tr>
@@ -320,15 +322,16 @@
 <script lang="ts">
 import FixerLink from './FixerLink.vue';
 import FixerSetLink from './FixerSetLink.vue';
-import { textToHtml } from '../Utils';
 import Version from '../Version';
 import { VersionChanges, compareVersions } from '../VersionComparison';
+import ViewDifference from './ViewDifference.vue';
 import Vue from 'vue';
 
 export default Vue.extend({
     components: {
         FixerLink,
         FixerSetLink,
+        ViewDifference,
     },
     props: {
         versions: {
@@ -390,9 +393,6 @@ export default Vue.extend({
         },
     },
     methods: {
-        textToHtml: function(text: string): string {
-            return textToHtml(text, true);
-        },
         refreshComparison: function() {
             this.changes = null;
             compareVersions(this.newerVersion, this.olderVersion).then(changes => {

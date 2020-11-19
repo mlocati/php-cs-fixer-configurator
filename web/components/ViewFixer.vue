@@ -306,8 +306,9 @@
                             <li
                                 v-for="(difference, differenceIndex) in historyEntry.differences"
                                 v-bind:key="differenceIndex"
-                                v-html="textToHtml(difference)"
-                            ></li>
+                            >
+                                <view-difference v-bind:difference="difference" />
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -324,6 +325,7 @@ import { getFixerHistory, FixerHistoryEntry } from '../VersionComparison';
 import * as PersistentStorage from '../PersistentStorage';
 import Prism from './Prism.vue';
 import { textToHtml, toPhp } from '../Utils';
+import ViewDifference from './ViewDifference.vue';
 import Vue from 'vue';
 
 interface HistoryData
@@ -336,6 +338,7 @@ export default Vue.extend({
         FixerLink,
         FixerSetLink,
         Prism,
+        ViewDifference,
     },
     data: function() {
         return {
