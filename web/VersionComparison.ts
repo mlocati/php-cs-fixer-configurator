@@ -2,11 +2,12 @@ import Version from "./Version";
 import Fixer from "./Fixer";
 import FixerSet from "./FixerSet";
 
-interface FixerChanges {
+export interface FixerChanges {
     readonly newerFixer: Fixer;
     readonly olderFixer: Fixer;
     readonly differences: string[];
 }
+
 interface FixerSetChanges {
     readonly newerFixerSet: FixerSet;
     readonly olderFixerSet: FixerSet;
@@ -34,6 +35,13 @@ interface FixerSetsPair {
     readonly olderFixerSet: FixerSet;
 }
 
+export interface FixerHistoryEntry {
+    readonly version: Version;
+    readonly previousVersionFixer: Fixer | null;
+    readonly newerVersionFixer: Fixer | null;
+    readonly differences: string[];
+}
+
 export function compareVersions(newerVersion: Version, olderVersion: Version): Promise<VersionChanges> {
     return new Promise<VersionChanges>((resolve, reject) => {
         Promise.all([newerVersion.load(), olderVersion.load()]).then(() => {
@@ -42,7 +50,12 @@ export function compareVersions(newerVersion: Version, olderVersion: Version): P
     });
 }
 
-export function compareLoadedVersions(newerVersion: Version, olderVersion: Version): VersionChanges {
+export async function getFixerHistory(fixerName: string): Promise<FixerHistoryEntry[]> {
+    const versions: Version[] = await Version.loadAllVersions();
+    return getFixerHistoryLoaded(fixerName, versions);
+}
+
+function compareLoadedVersions(newerVersion: Version, olderVersion: Version): VersionChanges {
     const changes: VersionChanges = {
         empty: true,
         newerVersion,
@@ -103,6 +116,47 @@ export function compareLoadedVersions(newerVersion: Version, olderVersion: Versi
     return changes;
 }
 
+function getFixerHistoryLoaded(fixerName: string, versions: Version[]): FixerHistoryEntry[] {
+    versions = (<Version[]>[]).concat(versions);
+    versions.reverse();
+    const result: FixerHistoryEntry[] = [];
+    let previousVersionFixer: Fixer | null = null;
+    versions.forEach((version: Version, versionIndex: number): void => {
+        const newerVersionFixer = version.getFixerByName(fixerName);
+        if (newerVersionFixer === null) {
+            if (previousVersionFixer !== null) {
+                result.push({
+                    version: previousVersionFixer.version,
+                    previousVersionFixer,
+                    newerVersionFixer,
+                    differences: [`The fixer has been removed in version ${version.majorMinorVersion}`],
+                });
+            }
+        } else if (previousVersionFixer === null) {
+            if (versionIndex > 0) {
+                result.push({
+                    version: newerVersionFixer.version,
+                    previousVersionFixer,
+                    newerVersionFixer,
+                    differences: [`The fixer has been introduced in version ${version.majorMinorVersion}`],
+                });
+            }
+        } else {
+            const differences: string[] = compareFixers(previousVersionFixer, newerVersionFixer);
+            if (differences.length !== 0) {
+                result.push({
+                    version: newerVersionFixer.version,
+                    previousVersionFixer,
+                    newerVersionFixer,
+                    differences,
+                });
+            }
+        }
+        previousVersionFixer = newerVersionFixer;
+    });
+    return result;
+}
+
 function compareFixers(newerFixer: Fixer, olderFixer: Fixer): string[] {
     const differences: string[] = [];
     if (newerFixer.risky !== olderFixer.risky) {
@@ -147,6 +201,11 @@ function compareFixers(newerFixer: Fixer, olderFixer: Fixer): string[] {
             differences.push(newerOption.allowedTypes !== undefined ? `The \`${newerOption.name}\` option has been assigned a list of allowed types` : `The list of allowed types of the \`${newerOption.name}\` option has been removed`);
         } else if (newerOption.allowedTypes !== undefined && JSON.stringify(newerOption.allowedTypes) !== JSON.stringify(olderOption.allowedTypes)) {
             differences.push(`The list of allowed types of the \`${newerOption.name}\` option has changed`);
+        }
+        if (newerOption.allowedValues !== undefined && olderOption.allowedValues !== undefined) {
+            if (JSON.stringify(sortArrayRecursive(newerOption.allowedValues)) !== JSON.stringify(sortArrayRecursive(olderOption.allowedValues))) {
+                differences.push(`The allowed values of the \`${newerOption.name}\` option changed`);
+            }
         }
     });
     olderFixer.options.forEach((olderOption): void => {
@@ -199,4 +258,15 @@ function compareFixerSets(newerFixerSet: FixerSet, olderFixerSet: FixerSet): str
         }
     });
     return differences;
+}
+
+function sortArrayRecursive(value: any[]): any[] {
+    let clone = (<any[]>[]).concat(value);
+    clone.sort();
+    for (let i = 0; i < clone.length; i++) {
+        if (clone[i] instanceof Array) {
+            clone[i] = sortArrayRecursive(clone[i]);
+        }
+    }
+    return clone;
 }

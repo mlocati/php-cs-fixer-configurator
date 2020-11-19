@@ -281,6 +281,37 @@
                     </b-tabs>
                 </div>
             </template>
+            <div
+                class="tab-pane"
+                v-bind:class="tab === 'history' ? 'active' : ''"
+            >
+                <div v-if="history === null">
+                    Loading version data... <i class="fas fa-circle-notch fa-spin"></i>
+                </div>
+                <div v-else-if="history.length === 0">
+                    No changes detected across versions.
+                </div>
+                <div v-else>
+                    <div v-for="(historyEntry, historyEntryIndex) in history" v-bind:key="fixer.name + '@' + historyEntry.version.majorMinorVersion + '@' + historyEntryIndex">
+                        <h6>
+                            Changes in version {{ historyEntry.version.majorMinorVersion }}
+                            <fixer-link v-if="historyEntry.previousVersionFixer" v-bind:fixer="historyEntry.previousVersionFixer" v-bind:disabled="historyEntry.previousVersionFixer === fixer">
+                                <template v-slot:badge-contents>view v.{{ historyEntry.previousVersionFixer.version.majorMinorVersion }}</template>
+                            </fixer-link>
+                            <fixer-link v-if="historyEntry.newerVersionFixer" v-bind:fixer="historyEntry.newerVersionFixer" v-bind:disabled="historyEntry.newerVersionFixer === fixer">
+                                <template v-slot:badge-contents>view v.{{ historyEntry.newerVersionFixer.version.majorMinorVersion }}</template>
+                            </fixer-link>
+                        </h6>
+                        <ul>
+                            <li
+                                v-for="(difference, differenceIndex) in historyEntry.differences"
+                                v-bind:key="differenceIndex"
+                                v-html="textToHtml(difference)"
+                            ></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -289,11 +320,17 @@
 import Fixer from '../Fixer';
 import FixerLink from './FixerLink.vue';
 import FixerSetLink from './FixerSetLink.vue';
+import { getFixerHistory, FixerHistoryEntry } from '../VersionComparison';
 import * as PersistentStorage from '../PersistentStorage';
 import Prism from './Prism.vue';
 import { textToHtml, toPhp } from '../Utils';
 import Vue from 'vue';
 
+interface HistoryData
+{
+    fixer: Fixer,
+    loadedHistory: FixerHistoryEntry[]|null,
+}
 export default Vue.extend({
     components: {
         FixerLink,
@@ -304,6 +341,8 @@ export default Vue.extend({
         return {
             tab: 'general',
             sideBySideIO: PersistentStorage.getBoolean('fixer-sidebyside-io'),
+            loadingHistoryForFixer: <Fixer|null>null,
+            loadedHistory: <FixerHistoryEntry[]|null>null,
         };
     },
     props: {
@@ -312,16 +351,23 @@ export default Vue.extend({
             required: true,
         },
     },
+    mounted: function(): void {
+        this.checkCurrentTab();
+    },
     computed: {
         manyCodeSamples: function() {
-            return (<Fixer>this.fixer).codeSamples.length > 5;
+            return (<Fixer>this.fixer).codeSamples.length > 4;
         },
         tabOptions: function() {
             const result = [{ value: 'general', text: 'General' }];
             for (let i = 0; i < (<Fixer>this.fixer).codeSamples.length; i++) {
                 result.push({ value: `codesample-${i}`, text: `Example #${i + 1}` });
             }
+            result.push({ value: `history`, text: `History` });
             return result;
+        },
+        history: function() : FixerHistoryEntry[]|null {
+            return this.loadingHistoryForFixer === this.fixer ? this.loadedHistory : null;
         },
     },
     methods: {
@@ -331,10 +377,29 @@ export default Vue.extend({
         toPhp: function(value: any): string {
             return toPhp(value, true);
         },
+        checkCurrentTab: function(): void {
+            switch (this.tab) {
+                case 'history':
+                    if (this.loadingHistoryForFixer !== this.fixer) {
+                        this.loadingHistoryForFixer = this.fixer;
+                        this.loadedHistory = null;
+                        getFixerHistory(this.fixer.name).then((changes) => {
+                            this.loadedHistory = changes;
+                        });
+                    }
+                    break;
+            }
+        },
     },
     watch: {
         sideBySideIO: function(newValue: boolean): void {
             PersistentStorage.setBoolean('fixer-sidebyside-io', newValue);
+        },
+        fixer: function(): void {
+            this.checkCurrentTab();
+        },
+        tab: function(): void {
+            this.checkCurrentTab();
         },
     },
 });

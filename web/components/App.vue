@@ -419,12 +419,12 @@ export default Vue.extend({
                 if (this.initialLocationHash.fixerOrSetName.charAt(0) === '@') {
                     fixerOrSet = this.configuration.version.getFixerSetByName(this.initialLocationHash.fixerOrSetName);
                     if (fixerOrSet === null) {
-                        console.warn(`Unable to find a fixer set named "${this.initialLocationHash.fixerOrSetName}" for version ${this.configuration.version.mayorMinorVersion}`);
+                        console.warn(`Unable to find a fixer set named "${this.initialLocationHash.fixerOrSetName}" for version ${this.configuration.version.majorMinorVersion}`);
                     }
                 } else {
                     fixerOrSet = this.configuration.version.getFixerByName(this.initialLocationHash.fixerOrSetName);
                     if (fixerOrSet === null) {
-                        console.warn(`Unable to find a fixer named "${this.initialLocationHash.fixerOrSetName}" for version ${this.configuration.version.mayorMinorVersion}`);
+                        console.warn(`Unable to find a fixer named "${this.initialLocationHash.fixerOrSetName}" for version ${this.configuration.version.majorMinorVersion}`);
                     }
                 }
             }
@@ -529,7 +529,7 @@ export default Vue.extend({
                 }
                 let versionFromConfiguration: Version | undefined;
                 this.versions.some((v: Version) => {
-                    if (configuration.version === v.mayorMinorVersion || (<string>configuration.version).indexOf(v.mayorMinorVersion + '.') === 0) {
+                    if (configuration.version === v.majorMinorVersion || (<string>configuration.version).indexOf(v.majorMinorVersion + '.') === 0) {
                         versionFromConfiguration = v;
                     }
                     return versionFromConfiguration !== undefined;
@@ -540,7 +540,7 @@ export default Vue.extend({
                     resolve();
                     return;
                 }
-                if (versionFromConfiguration === this.configuration.version || !window.confirm(`The configuration is for version ${versionFromConfiguration.mayorMinorVersion} instead of ${this.configuration.version.mayorMinorVersion}\nDo you want to switch to it?`)) {
+                if (versionFromConfiguration === this.configuration.version || !window.confirm(`The configuration is for version ${versionFromConfiguration.majorMinorVersion} instead of ${this.configuration.version.majorMinorVersion}\nDo you want to switch to it?`)) {
                     this.applyConfigurationWithVersion(configuration, this.configuration.version);
                     resolve();
                     return;

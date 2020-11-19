@@ -18,7 +18,7 @@ Version.getVersions().then((versions: Version[]) => {
     let hash = LocationHash.fromWindowLocation();
     if (wantedVersion === null && hash.majorMinorVersion.length !== 0) {
         versions.some((v: Version) => {
-            if (v.mayorMinorVersion !== hash.majorMinorVersion) {
+            if (v.majorMinorVersion !== hash.majorMinorVersion) {
                 return false;
             }
             wantedVersion = v;
@@ -30,7 +30,7 @@ Version.getVersions().then((versions: Version[]) => {
     }
     if (wantedVersion === null && initialSerializedConfiguration && initialSerializedConfiguration.version) {
         versions.some((v: Version) => {
-            if (initialSerializedConfiguration.version !== v.mayorMinorVersion && (<string>initialSerializedConfiguration.version).indexOf(v.mayorMinorVersion + '.') !== 0) {
+            if (initialSerializedConfiguration.version !== v.majorMinorVersion && (<string>initialSerializedConfiguration.version).indexOf(v.majorMinorVersion + '.') !== 0) {
                 return false;
             }
             wantedVersion = v;

@@ -22,11 +22,11 @@ export default class Version {
     public readonly fullVersion: string;
 
     /**
-     * The mayor.minor PHP-CS-Fixer version.
+     * The major.minor PHP-CS-Fixer version.
      *
      * @example 1.2
      */
-    public readonly mayorMinorVersion: string;
+    public readonly majorMinorVersion: string;
 
     /**
      * Is this version already fully loaded?
@@ -133,7 +133,7 @@ export default class Version {
     constructor(fullVersion: string) {
         this.fullVersion = fullVersion;
         const matches = /^(\d+\.\d+)\.\d+$/.exec(fullVersion);
-        this.mayorMinorVersion = matches === null ? fullVersion : matches[1];
+        this.majorMinorVersion = matches === null ? fullVersion : matches[1];
     }
 
     /**
@@ -192,7 +192,7 @@ export default class Version {
     }
 
     /**
-     * Get the list of available PHP-CS-Fixer versions data.
+     * Get the list of available PHP-CS-Fixer versions data (without loading all their data).
      */
     public static getVersions(): Promise<Version[]> {
         return new Promise<Version[]>((resolve) => {
@@ -207,6 +207,16 @@ export default class Version {
                 resolve(versions);
             });
         });
+    }
+
+    public static async loadAllVersions(): Promise<Version[]> {
+        const versions = await Version.getVersions();
+        const versionLoaders: Promise<void>[] = [];
+        versions.forEach((version: Version): void => {
+            versionLoaders.push(version.load());
+        })
+        await Promise.all(versionLoaders);
+        return versions;
     }
 
     /**

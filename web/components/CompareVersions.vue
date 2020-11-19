@@ -166,10 +166,10 @@
                                         <td>
                                             <b>{{ changes.newerFixer.name }}</b>
                                             <fixer-link v-bind:fixer="changes.newerFixer">
-                                                <template v-slot:badge-contents>v.{{ changes.newerFixer.version.mayorMinorVersion }}</template>
+                                                <template v-slot:badge-contents>v.{{ changes.newerFixer.version.majorMinorVersion }}</template>
                                             </fixer-link>&nbsp;vs
                                             <fixer-link v-bind:fixer="changes.olderFixer">
-                                                <template v-slot:badge-contents>v.{{ changes.olderFixer.version.mayorMinorVersion }}</template>
+                                                <template v-slot:badge-contents>v.{{ changes.olderFixer.version.majorMinorVersion }}</template>
                                             </fixer-link>
                                             <ul>
                                                 <li
@@ -293,10 +293,10 @@
                                         <td>
                                             <b>{{ changes.newerFixerSet.name }}</b>
                                             <fixer-set-link v-bind:fixer-set="changes.newerFixerSet">
-                                                <template v-slot:badge-contents>v.{{ changes.newerFixerSet.version.mayorMinorVersion }}</template>
+                                                <template v-slot:badge-contents>v.{{ changes.newerFixerSet.version.majorMinorVersion }}</template>
                                             </fixer-set-link>&nbsp;vs
                                             <fixer-set-link v-bind:fixer-set="changes.olderFixerSet">
-                                                <template v-slot:badge-contents>v.{{ changes.olderFixerSet.version.mayorMinorVersion }}</template>
+                                                <template v-slot:badge-contents>v.{{ changes.olderFixerSet.version.majorMinorVersion }}</template>
                                             </fixer-set-link>
                                             <ul>
                                                 <li

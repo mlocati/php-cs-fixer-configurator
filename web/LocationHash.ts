@@ -14,7 +14,7 @@ export class HashData {
     public fixerOrSetName: string = '';
     public static create(version: Version, configuring: boolean = false, fixerOrSet: FixerOrSetInterface | null = null): HashData {
         let hashData = new HashData();
-        hashData.majorMinorVersion = (fixerOrSet === null ? version : fixerOrSet.version).mayorMinorVersion;
+        hashData.majorMinorVersion = (fixerOrSet === null ? version : fixerOrSet.version).majorMinorVersion;
         hashData.configuring = configuring;
         hashData.fixerOrSetName = fixerOrSet === null ? '' : fixerOrSet.name;
         return hashData;

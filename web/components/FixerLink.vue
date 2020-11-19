@@ -1,11 +1,11 @@
 <template>
     <a
         href="#"
-        v-bind:class="linkClass"
+        v-bind:class="finalLinkClass"
         v-on:click.prevent.stop="view"
     >
         <slot>
-            <b-badge variant="info">
+            <b-badge v-bind:variant="defaultBadgeVariant">
                 <slot name="badge-contents">{{ fixer.name}}</slot>
             </b-badge>
         </slot>
@@ -27,17 +27,39 @@ export default Vue.extend({
             type: String,
             required: false,
         },
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: false,
+        }
     },
     methods: {
         view: function() {
-            EventBus.$emit('fixer-clicked', this.fixer);
+            if (!this.disabled) {
+                EventBus.$emit('fixer-clicked', this.fixer);
+            }
         },
     },
+    computed: {
+        finalLinkClass: function() : string {
+            const chunks: string[] = [this.disabled ? 'disabled' : 'enabled'];
+            if (typeof this.linkClass === 'string' && this.linkClass.length > 0) {
+                chunks.push(this.linkClass);
+            }
+            return chunks.join(' ');
+        },
+        defaultBadgeVariant: function() : string {
+            return this.disabled ? 'secondary' : 'info';
+        }
+    }
 });
 </script>
 
 <style scoped>
-a {
+a.enabled {
     cursor: help;
+}
+a.disabled {
+    cursor: default;
 }
 </style>
