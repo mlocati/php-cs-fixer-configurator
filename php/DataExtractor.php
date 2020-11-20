@@ -217,6 +217,7 @@ class DataExtractor
     {
         $result = [];
         $setNames = RuleSet::create()->getSetDefinitionNames();
+        sort($setNames, SORT_STRING);
         foreach ($setNames as $setName) {
             $ruleSet = RuleSet::create([$setName => true]);
             $config = [];
