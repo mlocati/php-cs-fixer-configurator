@@ -3924,6 +3924,185 @@
         }
     },
     "sets": {
+        "@DoctrineAnnotation": {
+            "doctrine_annotation_array_assignment": {
+                "operator": ":"
+            },
+            "doctrine_annotation_braces": null,
+            "doctrine_annotation_indentation": null,
+            "doctrine_annotation_spaces": {
+                "before_array_assignments_colon": false
+            }
+        },
+        "@PHP56Migration": [],
+        "@PHP56Migration:risky": {
+            "pow_to_exponentiation": null
+        },
+        "@PHP70Migration": {
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP70Migration:risky": {
+            "declare_strict_types": null,
+            "non_printable_character": {
+                "use_escape_sequences_in_strings": true
+            },
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "pow_to_exponentiation": null
+        },
+        "@PHP71Migration": {
+            "visibility_required": {
+                "elements": [
+                    "const",
+                    "method",
+                    "property"
+                ]
+            },
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP71Migration:risky": {
+            "void_return": null,
+            "declare_strict_types": null,
+            "non_printable_character": {
+                "use_escape_sequences_in_strings": true
+            },
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "pow_to_exponentiation": null
+        },
+        "@PHPUnit30Migration:risky": {
+            "php_unit_dedicate_assert": {
+                "target": "3.0"
+            }
+        },
+        "@PHPUnit32Migration:risky": {
+            "php_unit_no_expectation_annotation": {
+                "target": "3.2"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "3.0"
+            }
+        },
+        "@PHPUnit35Migration:risky": {
+            "php_unit_dedicate_assert": {
+                "target": "3.5"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "3.2"
+            }
+        },
+        "@PHPUnit43Migration:risky": {
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "3.5"
+            }
+        },
+        "@PHPUnit48Migration:risky": {
+            "php_unit_namespaced": {
+                "target": "4.8"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "3.5"
+            }
+        },
+        "@PHPUnit50Migration:risky": {
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
+            "php_unit_namespaced": {
+                "target": "4.8"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
+        "@PHPUnit52Migration:risky": {
+            "php_unit_expectation": {
+                "target": "5.2"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
+            "php_unit_namespaced": {
+                "target": "4.8"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
+        "@PHPUnit54Migration:risky": {
+            "php_unit_mock": null,
+            "php_unit_expectation": {
+                "target": "5.2"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
+            "php_unit_namespaced": {
+                "target": "4.8"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
+        "@PHPUnit56Migration:risky": {
+            "php_unit_dedicate_assert": {
+                "target": "5.6"
+            },
+            "php_unit_expectation": {
+                "target": "5.6"
+            },
+            "php_unit_mock": null,
+            "php_unit_namespaced": {
+                "target": "4.8"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
+        "@PHPUnit57Migration:risky": {
+            "php_unit_namespaced": {
+                "target": "5.7"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "5.6"
+            },
+            "php_unit_expectation": {
+                "target": "5.6"
+            },
+            "php_unit_mock": null,
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
+        "@PHPUnit60Migration:risky": {
+            "php_unit_namespaced": {
+                "target": "6.0"
+            },
+            "php_unit_dedicate_assert": {
+                "target": "5.6"
+            },
+            "php_unit_expectation": {
+                "target": "5.6"
+            },
+            "php_unit_mock": null,
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
+            }
+        },
         "@PSR1": {
             "encoding": null,
             "full_opening_tag": null
@@ -4104,185 +4283,6 @@
             "php_unit_dedicate_assert": null,
             "psr4": null,
             "silenced_deprecation_error": null
-        },
-        "@DoctrineAnnotation": {
-            "doctrine_annotation_array_assignment": {
-                "operator": ":"
-            },
-            "doctrine_annotation_braces": null,
-            "doctrine_annotation_indentation": null,
-            "doctrine_annotation_spaces": {
-                "before_array_assignments_colon": false
-            }
-        },
-        "@PHP56Migration": [],
-        "@PHP56Migration:risky": {
-            "pow_to_exponentiation": null
-        },
-        "@PHP70Migration": {
-            "ternary_to_null_coalescing": null
-        },
-        "@PHP70Migration:risky": {
-            "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "pow_to_exponentiation": null
-        },
-        "@PHP71Migration": {
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
-            "ternary_to_null_coalescing": null
-        },
-        "@PHP71Migration:risky": {
-            "void_return": null,
-            "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "pow_to_exponentiation": null
-        },
-        "@PHPUnit30Migration:risky": {
-            "php_unit_dedicate_assert": {
-                "target": "3.0"
-            }
-        },
-        "@PHPUnit32Migration:risky": {
-            "php_unit_no_expectation_annotation": {
-                "target": "3.2"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "3.0"
-            }
-        },
-        "@PHPUnit35Migration:risky": {
-            "php_unit_dedicate_assert": {
-                "target": "3.5"
-            },
-            "php_unit_no_expectation_annotation": {
-                "target": "3.2"
-            }
-        },
-        "@PHPUnit43Migration:risky": {
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "3.5"
-            }
-        },
-        "@PHPUnit48Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "4.8"
-            },
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "3.5"
-            }
-        },
-        "@PHPUnit50Migration:risky": {
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
-            "php_unit_namespaced": {
-                "target": "4.8"
-            },
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            }
-        },
-        "@PHPUnit52Migration:risky": {
-            "php_unit_expectation": {
-                "target": "5.2"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
-            "php_unit_namespaced": {
-                "target": "4.8"
-            },
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            }
-        },
-        "@PHPUnit54Migration:risky": {
-            "php_unit_mock": null,
-            "php_unit_expectation": {
-                "target": "5.2"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "5.0"
-            },
-            "php_unit_namespaced": {
-                "target": "4.8"
-            },
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            }
-        },
-        "@PHPUnit56Migration:risky": {
-            "php_unit_dedicate_assert": {
-                "target": "5.6"
-            },
-            "php_unit_expectation": {
-                "target": "5.6"
-            },
-            "php_unit_mock": null,
-            "php_unit_namespaced": {
-                "target": "4.8"
-            },
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            }
-        },
-        "@PHPUnit57Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "5.7"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "5.6"
-            },
-            "php_unit_expectation": {
-                "target": "5.6"
-            },
-            "php_unit_mock": null,
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            }
-        },
-        "@PHPUnit60Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "6.0"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "5.6"
-            },
-            "php_unit_expectation": {
-                "target": "5.6"
-            },
-            "php_unit_mock": null,
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            }
         }
     }
 }

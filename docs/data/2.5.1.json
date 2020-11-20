@@ -3413,6 +3413,60 @@
         }
     },
     "sets": {
+        "@DoctrineAnnotation": {
+            "doctrine_annotation_array_assignment": {
+                "operator": ":"
+            },
+            "doctrine_annotation_braces": null,
+            "doctrine_annotation_indentation": null,
+            "doctrine_annotation_spaces": {
+                "before_array_assignments_colon": false
+            }
+        },
+        "@PHP56Migration": [],
+        "@PHP56Migration:risky": {
+            "pow_to_exponentiation": null
+        },
+        "@PHP70Migration": {
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP70Migration:risky": {
+            "declare_strict_types": null,
+            "non_printable_character": {
+                "use_escape_sequences_in_strings": true
+            },
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "pow_to_exponentiation": null
+        },
+        "@PHP71Migration": {
+            "visibility_required": {
+                "elements": [
+                    "const",
+                    "method",
+                    "property"
+                ]
+            },
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP71Migration:risky": {
+            "void_return": null,
+            "declare_strict_types": null,
+            "non_printable_character": {
+                "use_escape_sequences_in_strings": true
+            },
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "pow_to_exponentiation": null
+        },
         "@PSR1": {
             "encoding": null,
             "full_opening_tag": null
@@ -3581,60 +3635,6 @@
             "php_unit_dedicate_assert": null,
             "psr4": null,
             "silenced_deprecation_error": null
-        },
-        "@DoctrineAnnotation": {
-            "doctrine_annotation_array_assignment": {
-                "operator": ":"
-            },
-            "doctrine_annotation_braces": null,
-            "doctrine_annotation_indentation": null,
-            "doctrine_annotation_spaces": {
-                "before_array_assignments_colon": false
-            }
-        },
-        "@PHP56Migration": [],
-        "@PHP56Migration:risky": {
-            "pow_to_exponentiation": null
-        },
-        "@PHP70Migration": {
-            "ternary_to_null_coalescing": null
-        },
-        "@PHP70Migration:risky": {
-            "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "pow_to_exponentiation": null
-        },
-        "@PHP71Migration": {
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
-            "ternary_to_null_coalescing": null
-        },
-        "@PHP71Migration:risky": {
-            "void_return": null,
-            "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "pow_to_exponentiation": null
         }
     }
 }

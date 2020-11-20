@@ -2846,6 +2846,33 @@
         }
     },
     "sets": {
+        "@PHP56Migration": [],
+        "@PHP56Migration:risky": {
+            "pow_to_exponentiation": null
+        },
+        "@PHP70Migration": {
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP70Migration:risky": {
+            "declare_strict_types": null,
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "pow_to_exponentiation": null
+        },
+        "@PHP71Migration": {
+            "visibility_required": {
+                "elements": [
+                    "const",
+                    "method",
+                    "property"
+                ]
+            },
+            "ternary_to_null_coalescing": null
+        },
         "@PSR1": {
             "encoding": null,
             "full_opening_tag": null
@@ -3006,33 +3033,6 @@
             "psr4": null,
             "self_accessor": null,
             "silenced_deprecation_error": null
-        },
-        "@PHP56Migration": [],
-        "@PHP56Migration:risky": {
-            "pow_to_exponentiation": null
-        },
-        "@PHP70Migration": {
-            "ternary_to_null_coalescing": null
-        },
-        "@PHP70Migration:risky": {
-            "declare_strict_types": null,
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "pow_to_exponentiation": null
-        },
-        "@PHP71Migration": {
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
-            "ternary_to_null_coalescing": null
         }
     }
 }

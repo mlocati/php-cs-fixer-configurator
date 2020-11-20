@@ -2754,6 +2754,39 @@
         }
     },
     "sets": {
+        "@PHP56Migration": {
+            "pow_to_exponentiation": null
+        },
+        "@PHP70Migration": {
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "ternary_to_null_coalescing": null,
+            "pow_to_exponentiation": null
+        },
+        "@PHP70Migration:risky": {
+            "declare_strict_types": null
+        },
+        "@PHP71Migration": {
+            "visibility_required": {
+                "elements": [
+                    "const",
+                    "method",
+                    "property"
+                ]
+            },
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "ternary_to_null_coalescing": null,
+            "pow_to_exponentiation": null
+        },
         "@PSR1": {
             "encoding": null,
             "full_opening_tag": null
@@ -2914,39 +2947,6 @@
             "php_unit_dedicate_assert": null,
             "psr4": null,
             "silenced_deprecation_error": null
-        },
-        "@PHP56Migration": {
-            "pow_to_exponentiation": null
-        },
-        "@PHP70Migration": {
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "ternary_to_null_coalescing": null,
-            "pow_to_exponentiation": null
-        },
-        "@PHP70Migration:risky": {
-            "declare_strict_types": null
-        },
-        "@PHP71Migration": {
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "ternary_to_null_coalescing": null,
-            "pow_to_exponentiation": null
         }
     }
 }
