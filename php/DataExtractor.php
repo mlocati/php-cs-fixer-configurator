@@ -216,10 +216,10 @@ class DataExtractor
     public function getSets()
     {
         $result = [];
-        $setNames = RuleSet::create()->getSetDefinitionNames();
+        $setNames = $this->getSetNames();
         sort($setNames, SORT_STRING);
         foreach ($setNames as $setName) {
-            $ruleSet = RuleSet::create([$setName => true]);
+            $ruleSet = $this->createRuleSet([$setName => true]);
             $config = [];
             foreach ($ruleSet->getRules() as $ruleName => $ruleConfiguration) {
                 $config[$ruleName] = $ruleConfiguration === true ? null : $ruleConfiguration;
@@ -298,5 +298,29 @@ class DataExtractor
         restore_error_handler();
 
         return $tokens;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getSetNames(): array
+    {
+        if (class_exists(RuleSet\RuleSets::class) && method_exists(RuleSet\RuleSets::class, 'getSetDefinitionNames')) {
+            return RuleSet\RuleSets::getSetDefinitionNames();
+        }
+
+        return $this->createRuleSet()->getSetDefinitionNames();
+    }
+
+    /**
+     * @return \PhpCsFixer\RuleSet\RuleSet|\PhpCsFixer\RuleSet\RuleSet
+     */
+    private function createRuleSet(array $set = []): object
+    {
+        if (class_exists(RuleSet\RuleSet::class)) {
+            return new RuleSet\RuleSet($set);
+        }
+
+        return RuleSet::create($set);
     }
 }
