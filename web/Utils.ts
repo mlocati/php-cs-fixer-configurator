@@ -200,7 +200,7 @@ export function copyToClipboard(text: string): boolean {
             textRange.moveToElementText(textDiv);
             textRange.select();
             copied = textRange.execCommand('copy') === true;
-            if (window.getSelection) {
+            if ((<any>window).getSelection) {
                 (<any>window).getSelection().removeAllRanges();
             } else if ((<any>document).selection && (<any>document).selection.empty) {
                 (<any>document).selection.empty();

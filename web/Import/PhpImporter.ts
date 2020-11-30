@@ -16,7 +16,6 @@ export default class PhpImporter implements ImporterInterface {
         this.parser = new PhpParser({
             parser: {
                 debug: false,
-                locations: false,
                 extractDoc: false,
                 suppressErrors: false
             },
