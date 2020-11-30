@@ -1,0 +1,100 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - "**"
+  pull_request:
+    branches:
+      - master
+  repository_dispatch:
+    types:
+      - build
+
+jobs:
+  build:
+    env:
+      PUSH_CHANGES: n
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Check changed files
+        run: |
+          if test "${{ github.event_name }}" = 'pull_request'; then
+            COMMIT_RANGE="${{ github.event.pull_request.base.ref }}..$GITHUB_SHA"
+          else
+            COMMIT_RANGE="${{ github.event.before }}..$GITHUB_SHA"
+          fi
+          if ! git diff "$COMMIT_RANGE" >/dev/null 2>/dev/null; then
+            COMMIT_RANGE='HEAD~..HEAD'
+          fi
+          printf 'Checking changes files in commit range "%s"\n' "$COMMIT_RANGE"
+          # A: added
+          # C: copied
+          # M: modified
+          # R: renamed
+          # T: type changed
+          # U: unmerged
+          # X: unknown
+          # B: pairing broken
+          CHANGED_FILES="$(git diff --name-only --diff-filter=ACMRTUXB $COMMIT_RANGE)"
+          if test -z "$CHANGED_FILES"; then
+            echo 'No changed files detected.'
+          else
+            printf 'Changed files:\n%s\n' "$CHANGED_FILES"
+            WRONG_COMMITTED_FILES=0
+            for CHANGED_FILE in $CHANGED_FILES; do
+              case "$CHANGED_FILE" in
+                docs/css/* | docs/fonts/* | docs/js/* | docs/index.html | docs/mix-manifest.json)
+                  if test $WRONG_COMMITTED_FILES -eq 0; then
+                    printf '\nPlease DO NOT commit the following file(s):\n' >&2
+                    WRONG_COMMITTED_FILES=1
+                  fi
+                  printf -- '- %s\n' "$CHANGED_FILE" >&2
+                  ;;
+              esac
+            done
+            if test $WRONG_COMMITTED_FILES -ne 0; then
+              exit 1
+            fi
+            if test "${{ github.event_name }}" = 'pull_request'; then
+              echo 'The pull request does not contain invalid files.'
+            else
+              echo 'The last commit does not contain invalid files.'
+            fi
+          fi
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run-script production
+      - name: Check changes
+        if: github.event_name != 'pull_request'
+        run: |
+          if test -z "$(git status --porcelain -- docs)"; then
+            echo 'No changes detected in built app'
+          else
+            echo 'Changes detected in built app'
+            git add --all docs
+            echo 'PUSH_CHANGES=y' >> "$GITHUB_ENV"
+          fi
+      - name: Commit and push
+        if: env.PUSH_CHANGES == 'y'
+        run: |
+          printf 'Configuring git... '
+          git config --local user.name 'Michele Locati'
+          git config --local user.email 'michele@locati.it'
+          echo 'done.'
+          echo 'Committing changes'
+          git commit -m '[skip ci] Automatic assets rebuilding'
+          echo 'Pushing'
+          git push
