@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import * as Prism from 'prismjs';
+require('prismjs/components/prism-diff.js');
 require('prismjs/components/prism-json.js');
 require('prismjs/components/prism-yaml.js');
 require('prismjs/components/prism-markup.js');

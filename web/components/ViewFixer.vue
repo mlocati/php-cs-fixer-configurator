@@ -194,67 +194,91 @@
                         </b-card>
                     </template>
                     <div class="d-none d-xl-block">
-                        <b-button
-                            v-bind:variant="sideBySideIO ? 'success' : 'default'"
-                            size="sm"
-                            style="position: absolute; right:31px; margin-top: 10px"
-                            v-on:click.prevent="sideBySideIO = !sideBySideIO"
-                        >
-                            <i class="fas fa-columns"></i>
-                        </b-button>
-                        <b-tabs
-                            v-if="!sideBySideIO"
-                            class="mt-3"
-                            content-class="mt-3"
-                            no-fade
-                        >
-                            <b-tab
-                                title="Input"
-                                active
+                        <span style="position: absolute; right:31px; margin-top: 10px">
+                            <b-button
+                                v-bind:variant="examplesView === EXAMPLES_VIEW.tabs ? 'success' : 'default'"
+                                size="sm"
+                                v-on:click.prevent="examplesView = EXAMPLES_VIEW.tabs"
                             >
-                                <prism
-                                    language="php"
-                                    v-bind:code="codeSample.from"
-                                    show-invisibles
-                                ></prism>
-                            </b-tab>
-                            <b-tab title="Output">
-                                <prism
-                                    language="php"
-                                    v-bind:code="codeSample.to"
-                                    show-invisibles
-                                ></prism>
-                            </b-tab>
-                        </b-tabs>
-                        <table
-                            v-else
-                            class="table"
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Input</th>
-                                    <th>Output</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <prism
-                                            language="php"
-                                            v-bind:code="codeSample.from"
-                                            show-invisibles
-                                        ></prism>
-                                    </td>
-                                    <td>
-                                        <prism
-                                            language="php"
-                                            v-bind:code="codeSample.to"
-                                            show-invisibles
-                                        ></prism>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                <i class="far fa-square"></i>
+                            </b-button>
+                            <b-button
+                                v-bind:variant="examplesView === EXAMPLES_VIEW.sideBySide ? 'success' : 'default'"
+                                size="sm"
+                                v-on:click.prevent="examplesView = EXAMPLES_VIEW.sideBySide"
+                            >
+                                <i class="fas fa-columns"></i>
+                            </b-button>
+                            <b-button
+                                v-bind:variant="examplesView === EXAMPLES_VIEW.diff ? 'success' : 'default'"
+                                size="sm"
+                                v-on:click.prevent="examplesView = EXAMPLES_VIEW.diff"
+                            >
+                                <i class="fas fa-grip-lines"></i>
+                            </b-button>
+                        </span>
+                        <div class="mt-3">
+                            <b-tabs
+                                v-if="examplesView === EXAMPLES_VIEW.tabs"
+                                content-class="mt-3"
+                                no-fade
+                            >
+                                <b-tab
+                                    title="Input"
+                                    active
+                                >
+                                    <prism
+                                        language="php"
+                                        v-bind:code="codeSample.from"
+                                        show-invisibles
+                                    ></prism>
+                                </b-tab>
+                                <b-tab title="Output">
+                                    <prism
+                                        language="php"
+                                        v-bind:code="codeSample.to"
+                                        show-invisibles
+                                    ></prism>
+                                </b-tab>
+                            </b-tabs>
+                            <table
+                                v-else-if="examplesView === EXAMPLES_VIEW.sideBySide"
+                                class="table"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Input</th>
+                                        <th>Output</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <prism
+                                                language="php"
+                                                v-bind:code="codeSample.from"
+                                                show-invisibles
+                                            ></prism>
+                                        </td>
+                                        <td>
+                                            <prism
+                                                language="php"
+                                                v-bind:code="codeSample.to"
+                                                show-invisibles
+                                            ></prism>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <prism
+                                v-else
+                                language="diff"
+                                v-bind:code="getCodeSampleDiff(codeSample)"
+                                show-invisibles
+                            ></prism>
+                        </div>
+                        <div>
+                        </div>
                     </div>
                     <b-tabs
                         class="mt-3 d-xl-none"
@@ -318,10 +342,12 @@
 </template>
 
 <script lang="ts">
+import { createTwoFilesPatch } from 'diff';
 import Fixer from '../Fixer';
 import FixerLink from './FixerLink.vue';
 import FixerSetLink from './FixerSetLink.vue';
 import { getFixerHistory, FixerHistoryEntry } from '../VersionComparison';
+import { PFCFixerCodeSample } from '../PCFDataDefinitions';
 import * as PersistentStorage from '../PersistentStorage';
 import Prism from './Prism.vue';
 import { textToHtml, toPhp } from '../Utils';
@@ -341,9 +367,15 @@ export default Vue.extend({
         ViewDifference,
     },
     data: function() {
+        const EXAMPLES_VIEW = {
+            tabs: 'tabs',
+            sideBySide: 'sideBySide',
+            diff: 'diff',
+        }
         return {
             tab: 'general',
-            sideBySideIO: PersistentStorage.getBoolean('fixer-sidebyside-io'),
+            EXAMPLES_VIEW: EXAMPLES_VIEW,
+            examplesView: PersistentStorage.getString('fixer-examples-view', EXAMPLES_VIEW.sideBySide, Object.keys(EXAMPLES_VIEW)),
             loadingHistoryForFixer: <Fixer|null>null,
             loadedHistory: <FixerHistoryEntry[]|null>null,
         };
@@ -377,6 +409,10 @@ export default Vue.extend({
         textToHtml: function(value: string): string {
             return textToHtml(value, true);
         },
+        getCodeSampleDiff: function (codeSample: PFCFixerCodeSample): string
+        {
+            return createTwoFilesPatch('original.php', 'fixed.php', codeSample.from, codeSample.to, undefined, undefined, { context: 5});
+        },
         toPhp: function(value: any): string {
             return toPhp(value, true);
         },
@@ -395,8 +431,8 @@ export default Vue.extend({
         },
     },
     watch: {
-        sideBySideIO: function(newValue: boolean): void {
-            PersistentStorage.setBoolean('fixer-sidebyside-io', newValue);
+        examplesView: function(newValue: string): void {
+            PersistentStorage.setString('fixer-examples-view', newValue);
         },
         fixer: function(): void {
             this.checkCurrentTab();
@@ -407,3 +443,6 @@ export default Vue.extend({
     },
 });
 </script>
+<style scoped>
+
+</style>
