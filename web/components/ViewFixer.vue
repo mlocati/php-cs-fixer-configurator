@@ -199,6 +199,7 @@
                                 v-bind:variant="examplesView === EXAMPLES_VIEW.tabs ? 'success' : 'default'"
                                 size="sm"
                                 v-on:click.prevent="examplesView = EXAMPLES_VIEW.tabs"
+                                title="Tab view"
                             >
                                 <i class="far fa-square"></i>
                             </b-button>
@@ -206,6 +207,7 @@
                                 v-bind:variant="examplesView === EXAMPLES_VIEW.sideBySide ? 'success' : 'default'"
                                 size="sm"
                                 v-on:click.prevent="examplesView = EXAMPLES_VIEW.sideBySide"
+                                title="Side-by-side view"
                             >
                                 <i class="fas fa-columns"></i>
                             </b-button>
@@ -213,6 +215,7 @@
                                 v-bind:variant="examplesView === EXAMPLES_VIEW.diff ? 'success' : 'default'"
                                 size="sm"
                                 v-on:click.prevent="examplesView = EXAMPLES_VIEW.diff"
+                                title="Diff view"
                             >
                                 <i class="fas fa-grip-lines"></i>
                             </b-button>
@@ -411,7 +414,8 @@ export default Vue.extend({
         },
         getCodeSampleDiff: function (codeSample: PFCFixerCodeSample): string
         {
-            return createTwoFilesPatch('original.php', 'fixed.php', codeSample.from, codeSample.to, undefined, undefined, { context: 5});
+            var code = createTwoFilesPatch('original.php', 'fixed.php', codeSample.from, codeSample.to, undefined, undefined, { context: 9999});
+            return code.replace(/^===+\n--- original\.php\n\+\+\+ fixed\.php\n@@ [^\n]+\n/, '');
         },
         toPhp: function(value: any): string {
             return toPhp(value, true);
