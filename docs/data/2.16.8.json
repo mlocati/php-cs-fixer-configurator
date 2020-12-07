@@ -1,5 +1,5 @@
 {
-    "version": "2.16.7",
+    "version": "2.16.8",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -5181,6 +5181,15 @@
                             "getrandmax": "mt_getrandmax"
                         }
                     }
+                },
+                {
+                    "from": "<?php $a = rand($b, $c);\n",
+                    "to": "<?php $a = random_int($b, $c);\n",
+                    "configuration": {
+                        "replacements": {
+                            "rand": "random_int"
+                        }
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Alias\\RandomApiMigrationFixer"
@@ -5815,7 +5824,7 @@
                     ]
                 }
             ],
-            "summary": "Write conditions in Yoda style (`true`), non-Yoda style (`false`) or ignore those conditions (`null`) based on configuration.",
+            "summary": "Write conditions in Yoda style (`true`), non-Yoda style (`['equal' => false, 'identical' => false, 'less_and_greater' => false]`) or ignore those conditions (`null`) based on configuration.",
             "codeSamples": [
                 {
                     "from": "<?php\n    if ($a === null) {\n        echo \"null\";\n    }\n",
@@ -5835,6 +5844,15 @@
                     "to": "<?php\nreturn count($bar) === $foo;\n",
                     "configuration": {
                         "always_move_variable": true
+                    }
+                },
+                {
+                    "from": "<?php\n    \/\/ Enforce non-Yoda style.\n    if (null === $a) {\n        echo \"null\";\n    }\n",
+                    "to": "<?php\n    \/\/ Enforce non-Yoda style.\n    if ($a === null) {\n        echo \"null\";\n    }\n",
+                    "configuration": {
+                        "equal": false,
+                        "identical": false,
+                        "less_and_greater": false
                     }
                 }
             ],
@@ -5929,7 +5947,9 @@
                     "@all"
                 ]
             },
+            "no_php4_constructor": null,
             "no_unneeded_final_method": null,
+            "no_unreachable_default_argument_value": null,
             "void_return": null,
             "combine_nested_dirname": null,
             "declare_strict_types": null,
@@ -6379,6 +6399,7 @@
                 "strict": true
             },
             "no_homoglyph_names": null,
+            "no_php4_constructor": null,
             "no_unneeded_final_method": null,
             "non_printable_character": null,
             "php_unit_construct": null,
@@ -6579,6 +6600,7 @@
             },
             "no_alias_functions": null,
             "no_homoglyph_names": null,
+            "no_php4_constructor": null,
             "no_unneeded_final_method": null,
             "non_printable_character": null,
             "php_unit_construct": null,
