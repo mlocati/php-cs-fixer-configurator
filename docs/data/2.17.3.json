@@ -1,5 +1,5 @@
 {
-    "version": "2.17.2",
+    "version": "2.17.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -5177,6 +5177,7 @@
                             "group",
                             "internal",
                             "requires",
+                            "throws",
                             "uses"
                         ]
                     ]
@@ -5655,7 +5656,7 @@
                 },
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass PsrAutoloadingFixer {}\n",
+                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass path_to_PsrAutoloadingFixer {}\n",
                     "configuration": {
                         "dir": ".\/src"
                     }
@@ -5703,7 +5704,7 @@
                 },
                 {
                     "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass PsrAutoloadingFixer {}\n",
+                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass path_to_PsrAutoloadingFixer {}\n",
                     "configuration": {
                         "dir": ".\/src"
                     }
