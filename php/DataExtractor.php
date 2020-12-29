@@ -184,6 +184,9 @@ class DataExtractor
                     if (!isset($fixerData['codeSamples'])) {
                         $fixerData['codeSamples'] = [];
                     }
+                    if ($fixer instanceof Fixer\Basic\Psr0Fixer || $fixer instanceof Fixer\Basic\PsrAutoloadingFixer) {
+                        $new = $this->anonymizePSR0Code($new);
+                    }
                     $codeSampleData = [
                         'from' => $old,
                         'to' => $new,
@@ -223,6 +226,24 @@ class DataExtractor
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $string
+     */
+    private function anonymizePSR0Code($value)
+    {
+        $baseActualPath = trim(str_replace(DIRECTORY_SEPARATOR, '/', dirname(__DIR__)), '/');
+        $fakePath = trim('/path/to');
+        foreach (['/vendor/friendsofphp/php-cs-fixer/src', '/vendor/friendsofphp/php-cs-fixer', ''] as $suffix) {
+            $search = strtr($baseActualPath . $suffix, '/', '_');
+            $replace = strtr(trim($fakePath, '/'), '/', '_');
+            $value = str_replace($search, $replace, $value);
+        }
+
+        return $value;
     }
 
     /**
