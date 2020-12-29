@@ -5,14 +5,9 @@ use Exception;
 use MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue;
 use PhpCsFixer\Config;
 use PhpCsFixer\Console\Application;
-use PhpCsFixer\Fixer\ConfigurableFixerInterface;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
-use PhpCsFixer\Fixer\DefinedFixerInterface;
-use PhpCsFixer\Fixer\DeprecatedFixerInterface;
-use PhpCsFixer\FixerConfiguration\AliasedFixerOption;
-use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
-use PhpCsFixer\FixerConfiguration\FixerOptionInterface;
-use PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface;
+use PhpCsFixer\Fixer;
+use PhpCsFixer\FixerConfiguration;
+use PhpCsFixer\FixerDefinition;
 use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
 use PhpCsFixer\StdinFileInfo;
@@ -65,12 +60,12 @@ class DataExtractor
             if ($fixer->isRisky()) {
                 $fixerData['risky'] = true;
             }
-            if ($fixer instanceof ConfigurationDefinitionFixerInterface) {
+            if ($fixer instanceof Fixer\ConfigurationDefinitionFixerInterface) {
                 foreach ($fixer->getConfigurationDefinition()->getOptions() as $option) {
                     $o = [
                         'name' => $option->getName(),
                     ];
-                    if ($option instanceof AliasedFixerOption) {
+                    if ($option instanceof FixerConfiguration\AliasedFixerOption) {
                         $s = (string) $option->getAlias();
                         if ($s !== '') {
                             $o['alias'] = $s;
@@ -97,7 +92,7 @@ class DataExtractor
                         if ($nullIndex !== false) {
                             array_splice($allowedValues, $nullIndex, 1);
                         }
-                        if (count($allowedValues) === 1 && $allowedValues[0] instanceof AllowedValueSubset) {
+                        if (count($allowedValues) === 1 && $allowedValues[0] instanceof FixerConfiguration\AllowedValueSubset) {
                             $sublist = $allowedValues[0]->getAllowedValues();
                             $group = [];
                             foreach ($sublist as $allowedValue) {
@@ -136,7 +131,7 @@ class DataExtractor
                     return strcasecmp($option1['name'], $option2['name']);
                 });
             }
-            if ($fixer instanceof DefinedFixerInterface) {
+            if ($fixer instanceof Fixer\DefinedFixerInterface) {
                 $definition = $fixer->getDefinition();
                 $s = (string) $definition->getSummary();
                 if ($s !== '') {
@@ -167,7 +162,7 @@ class DataExtractor
                         $tokens = $this->extractTokens($old);
                     }
                     if ($new === null) {
-                        if ($fixer instanceof ConfigurableFixerInterface) {
+                        if ($fixer instanceof Fixer\ConfigurableFixerInterface) {
                             if ($ignoreErrors) {
                                 try {
                                     $fixer->configure($configuration);
@@ -181,7 +176,7 @@ class DataExtractor
                             }
                         }
                         if ($new === null) {
-                            $file = $codeSample instanceof FileSpecificCodeSampleInterface ? $codeSample->getSplFileInfo() : new StdinFileInfo();
+                            $file = $codeSample instanceof FixerDefinition\FileSpecificCodeSampleInterface ? $codeSample->getSplFileInfo() : new StdinFileInfo();
                             $fixer->fix($file, $tokens);
                             $new = $tokens->generateCode();
                         }
@@ -199,7 +194,7 @@ class DataExtractor
                     $fixerData['codeSamples'][] = $codeSampleData;
                 }
             }
-            if ($fixer instanceof DeprecatedFixerInterface) {
+            if ($fixer instanceof Fixer\DeprecatedFixerInterface) {
                 $fixerData['deprecated_switchTo'] = $fixer->getSuccessorsNames();
             }
             $fixerData['fullClassName'] = get_class($fixer);
@@ -259,11 +254,11 @@ class DataExtractor
     /**
      * @return \MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue
      */
-    private function guessOptionEmptyArrayType(FixerOptionInterface $option, ConfigurationDefinitionFixerInterface $fixer)
+    private function guessOptionEmptyArrayType(FixerConfiguration\FixerOptionInterface $option, Fixer\ConfigurationDefinitionFixerInterface $fixer)
     {
         $result = new EmptyArrayValue();
 
-        if ($fixer instanceof DefinedFixerInterface) {
+        if ($fixer instanceof Fixer\DefinedFixerInterface) {
             foreach ($fixer->getDefinition()->getCodeSamples() as $codeSample) {
                 $sampleConfiguration = $codeSample->getConfiguration();
                 if (is_array($sampleConfiguration) && isset($sampleConfiguration[$option->getName()])) {
