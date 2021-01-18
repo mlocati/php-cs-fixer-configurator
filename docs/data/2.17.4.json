@@ -1,5 +1,5 @@
 {
-    "version": "2.17.3",
+    "version": "2.17.4",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -5176,6 +5176,10 @@
                             "depends",
                             "group",
                             "internal",
+                            "method",
+                            "property",
+                            "property-read",
+                            "property-write",
                             "requires",
                             "throws",
                             "uses"
@@ -5241,7 +5245,7 @@
             "configuration": [
                 {
                     "name": "types",
-                    "description": "A map of types to fix.",
+                    "description": "A list of types to fix.",
                     "defaultValue": [
                         "boolean",
                         "double",
@@ -6130,6 +6134,7 @@
                         "catch",
                         "class",
                         "clone",
+                        "comment",
                         "const",
                         "const_import",
                         "continue",
@@ -6157,6 +6162,7 @@
                         "named_argument",
                         "new",
                         "open_tag_with_echo",
+                        "php_doc",
                         "php_open",
                         "print",
                         "private",
@@ -6190,6 +6196,7 @@
                             "catch",
                             "class",
                             "clone",
+                            "comment",
                             "const",
                             "const_import",
                             "continue",
@@ -6217,6 +6224,7 @@
                             "named_argument",
                             "new",
                             "open_tag_with_echo",
+                            "php_doc",
                             "php_open",
                             "print",
                             "private",
