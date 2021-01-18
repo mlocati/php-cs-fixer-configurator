@@ -65,8 +65,8 @@ export default class PhpImporter implements ImporterInterface {
     /**
      * Find the relelevant node associated to a specific method.
      *
-     * @param ast 
-     * @param method 
+     * @param ast
+     * @param method
      * @throws
      */
     protected findRelevantValue(ast: any, method: string): any | null {
@@ -90,7 +90,7 @@ export default class PhpImporter implements ImporterInterface {
      * Walk a node structure searching for the relevant AST note for a specific method.
      *
      * @param node
-     * @param method 
+     * @param method
      * @param methodLC
      * @throws
      */
@@ -175,7 +175,7 @@ export default class PhpImporter implements ImporterInterface {
 
     /**
      * Parse an AST node and extract its value.
-     * @param value 
+     * @param value
      * @throws
      */
     protected valueToJavascript(value: any): boolean | string | number | Array<any> | Object {
@@ -184,7 +184,13 @@ export default class PhpImporter implements ImporterInterface {
             case 'boolean':
             case 'number':
             case 'string':
+            case 'nowdoc':
                 return value.value;
+            case 'encapsed':
+                if (value.value instanceof Array && value.value.length === 1 && value.value[0] && value.value[0].expression && value.value[0].expression.kind === 'string') {
+                    return value.value[0].expression.value;
+                }
+                break;
             case 'array':
                 let arr: Object | Array<any> = {},
                     values: Array<any> = value.items;
