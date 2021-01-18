@@ -247,7 +247,16 @@ export default class Fixer implements FixerOrSetInterface {
             warnings.push(`The option ${optionName} of the fixer ${this.name} has been renamed to ${option.name} for version ${this.version.fullVersion}`);
         }
         if (option.allowedValues !== undefined) {
-            if (option.allowedValues.indexOf(value) < 0) {
+            if (value instanceof Array && option.allowedValues[0] instanceof Array) {
+                const allowedValues = option.allowedValues[0];
+                value = value.filter((v) => {
+                    if (allowedValues.indexOf(v) >= 0) {
+                        return true;
+                    }
+                    warnings.push(`The option ${optionName} of the fixer ${this.name} has the invalid value '${v}'`);
+                    return false;
+                })
+            } else if (option.allowedValues.indexOf(value) < 0) {
                 warnings.push(`The option ${optionName} of the fixer ${this.name} has an invalid value`);
                 return null;
             }

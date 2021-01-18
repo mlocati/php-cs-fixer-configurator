@@ -72,7 +72,7 @@ export default Vue.extend({
       this.rebuildData();
     },
     selectedValue: function (): void {
-      this.rebuildData();
+        this.rebuildData();
     },
     nullSelected: function (): void {
       this.emitNewValue();
@@ -83,16 +83,16 @@ export default Vue.extend({
   },
   methods: {
     rebuildData(): void {
-      for (let index = this.selectedOptions.length - 1; index >= 0; index--) {
-        if (this.allowedValues.indexOf(this.selectedOptions[index]) < 0) {
-          this.selectedOptions.splice(index, 1);
-        }
-      }
+      this.selectedOptions.splice(0, this.selectedOptions.length);
       if (this.selectedValue instanceof Array) {
         this.nullSelected = "N";
+        this.allowedValues.forEach((allowedValue) => {
+          if ((<any>this).selectedValue.indexOf(allowedValue) >= 0) {
+            this.selectedOptions.push(allowedValue);
+          }
+        });
       } else {
-        this.nullSelected = "Y";
-        this.selectedOptions.splice(0, this.selectedOptions.length);
+        this.nullSelected = this.nullable ? "Y" : "N";
       }
     },
     emitNewValue(): void {
