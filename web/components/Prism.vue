@@ -36,6 +36,9 @@ export default Vue.extend({
         update: function() {
             this.$nextTick(() => {
                 const code = <HTMLElement>this.$refs.code;
+                if (!code) {
+                    return;
+                }
                 code.className = 'language-' + this.language;
                 code.textContent = this.code;
                 Prism.highlightElement(<HTMLElement>this.$refs.code);
