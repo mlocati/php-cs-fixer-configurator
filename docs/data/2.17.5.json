@@ -1,5 +1,5 @@
 {
-    "version": "2.17.4",
+    "version": "2.17.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -6769,6 +6769,7 @@
             "clean_namespace": null,
             "no_unset_cast": null,
             "normalize_index_brace": null,
+            "short_scalar_cast": null,
             "heredoc_indentation": null,
             "method_argument_space": {
                 "after_heredoc": true
@@ -6789,7 +6790,6 @@
             "ternary_to_null_coalescing": null
         },
         "@PHP80Migration:risky": {
-            "implode_call": null,
             "no_alias_functions": {
                 "sets": [
                     "@all"
@@ -6798,6 +6798,8 @@
             "no_php4_constructor": null,
             "no_unneeded_final_method": null,
             "no_unreachable_default_argument_value": null,
+            "implode_call": null,
+            "use_arrow_functions": null,
             "void_return": null,
             "combine_nested_dirname": null,
             "declare_strict_types": null,
