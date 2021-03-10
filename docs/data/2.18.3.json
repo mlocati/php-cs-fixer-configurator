@@ -1,5 +1,5 @@
 {
-    "version": "2.18.2",
+    "version": "2.18.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -184,6 +184,42 @@
                     "configuration": {
                         "operators": {
                             "|": "no_space"
+                        }
+                    }
+                },
+                {
+                    "from": "<?php\n$array = [\n    \"foo\"            =>   1,\n    \"baaaaaaaaaaar\"  =>  11,\n];\n",
+                    "to": "<?php\n$array = [\n    \"foo\" => 1,\n    \"baaaaaaaaaaar\" => 11,\n];\n",
+                    "configuration": {
+                        "operators": {
+                            "=>": "single_space"
+                        }
+                    }
+                },
+                {
+                    "from": "<?php\n$array = [\n    \"foo\" => 12,\n    \"baaaaaaaaaaar\"  => 13,\n];\n",
+                    "to": "<?php\n$array = [\n    \"foo\"            => 12,\n    \"baaaaaaaaaaar\"  => 13,\n];\n",
+                    "configuration": {
+                        "operators": {
+                            "=>": "align"
+                        }
+                    }
+                },
+                {
+                    "from": "<?php\n$array = [\n    \"foo\" => 12,\n    \"baaaaaaaaaaar\"  => 13,\n];\n",
+                    "to": "<?php\n$array = [\n    \"foo\"            => 12,\n    \"baaaaaaaaaaar\"  => 13,\n];\n",
+                    "configuration": {
+                        "operators": {
+                            "=>": "align_single_space"
+                        }
+                    }
+                },
+                {
+                    "from": "<?php\n$array = [\n    \"foo\" => 12,\n    \"baaaaaaaaaaar\"  => 13,\n];\n",
+                    "to": "<?php\n$array = [\n    \"foo\"           => 12,\n    \"baaaaaaaaaaar\" => 13,\n];\n",
+                    "configuration": {
+                        "operators": {
+                            "=>": "align_single_space_minimal"
                         }
                     }
                 }
