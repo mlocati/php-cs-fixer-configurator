@@ -84,13 +84,19 @@ try {
         fwrite(STDOUT, 'Extracting data... ');
         $dataExtractor = new DataExtractor();
         $version = $dataExtractor->getVersion();
-        $data = [
-            'version' => $version,
-            'indent' => $dataExtractor->getDefaultIndent(),
-            'lineEnding' => $dataExtractor->getDefaultLineEnding(),
-            'fixers' => $dataExtractor->getFixers(false),
-            'sets' => $dataExtractor->getSets(),
-        ];
+        $prevDir = getcwd();
+        chdir(dirname(__DIR__) . '/vendor/friendsofphp/php-cs-fixer');
+        try {
+            $data = [
+                'version' => $version,
+                'indent' => $dataExtractor->getDefaultIndent(),
+                'lineEnding' => $dataExtractor->getDefaultLineEnding(),
+                'fixers' => $dataExtractor->getFixers(false),
+                'sets' => $dataExtractor->getSets(),
+            ];
+        } finally {
+            chdir($prevDir);
+        }
         fwrite(STDOUT, "done.\n");
 
         $jsDir = dirname(__DIR__) . '/docs/data';
