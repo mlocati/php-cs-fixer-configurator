@@ -67,7 +67,7 @@ class DataExtractor
             if ($fixer->isRisky()) {
                 $fixerData['risky'] = true;
             }
-            if ($fixer instanceof Fixer\ConfigurationDefinitionFixerInterface) {
+            if ($fixer instanceof Fixer\ConfigurationDefinitionFixerInterface || $fixer instanceof Fixer\ConfigurableFixerInterface) {
                 foreach ($fixer->getConfigurationDefinition()->getOptions() as $option) {
                     $o = [
                         'name' => $option->getName(),
@@ -138,7 +138,7 @@ class DataExtractor
                     return strcasecmp($option1['name'], $option2['name']);
                 });
             }
-            if ($fixer instanceof Fixer\DefinedFixerInterface) {
+            if (!interface_exists(Fixer\DefinedFixerInterface::class) || $fixer instanceof Fixer\DefinedFixerInterface) {
                 $definition = $fixer->getDefinition();
                 $s = (string) $definition->getSummary();
                 if ($s !== '') {
@@ -280,13 +280,15 @@ class DataExtractor
     }
 
     /**
+     * @param \PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface|\PhpCsFixer\Fixer\ConfigurableFixerInterface $fixer
+     *
      * @return \MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue
      */
-    private function guessOptionEmptyArrayType(FixerConfiguration\FixerOptionInterface $option, Fixer\ConfigurationDefinitionFixerInterface $fixer)
+    private function guessOptionEmptyArrayType(FixerConfiguration\FixerOptionInterface $option, object $fixer)
     {
         $result = new EmptyArrayValue();
 
-        if ($fixer instanceof Fixer\DefinedFixerInterface) {
+        if (!interface_exists(Fixer\DefinedFixerInterface::class) || $fixer instanceof Fixer\DefinedFixerInterface) {
             foreach ($fixer->getDefinition()->getCodeSamples() as $codeSample) {
                 $sampleConfiguration = $codeSample->getConfiguration();
                 if (is_array($sampleConfiguration) && isset($sampleConfiguration[$option->getName()])) {
