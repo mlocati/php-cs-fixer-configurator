@@ -23,7 +23,14 @@ class DataExtractor
      */
     public function getVersion()
     {
-        return Application::VERSION;
+        
+        switch (Application::VERSION)
+        {
+            case '2.18.4-DEV';
+                return '2.18.4';
+            default:
+                return Application::VERSION;
+        }
     }
 
     /**
