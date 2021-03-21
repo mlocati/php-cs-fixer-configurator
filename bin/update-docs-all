@@ -101,13 +101,46 @@ class PCFCWorker
         $wantedVersions = [];
         $packageData = json_decode(file_get_contents('https://repo.packagist.org/p/friendsofphp/php-cs-fixer.json'), true);
         foreach (array_keys($packageData['packages']['friendsofphp/php-cs-fixer']) as $rawVersion) {
-            if (preg_match('/^(?:v\.?\s*)?((\d+\.\d+).\d+)$/', $rawVersion, $match)) {
-                if (version_compare($match[1], '2.2.0') >= 0) {
-                    if (!isset($wantedVersions[$match[2]]) || version_compare($match[1], $wantedVersions[$match[2]]) >= 0) {
-                        $wantedVersions[$match[2]] = $match[1];
-                    }
+            if (!preg_match('/^(?:v\.?\s*)?(?<version>((?<majorMinor>\d+\.\d+).\d+)(?<dev>\W?(a|alpha|b|beta|rc)\W?\d*)?)$/i', $rawVersion, $match)) {
+                continue;
+            }
+            $majorMinor = $match['majorMinor'];
+            if (version_compare($majorMinor, '2.2') < 0) {
+                continue;
+            }
+            $version = $match['version'];
+            $isDev = !empty($match['dev']);
+            if (isset($wantedVersions[$majorMinor])) {
+                if ($isDev && $wantedVersions[$majorMinor]['dev'] === false) {
+                    continue;
+                }
+                if (version_compare($version, $wantedVersions[$majorMinor]['version']) < 0) {
+                    continue;
                 }
             }
+            $wantedVersions[$majorMinor] = [
+                'version' => $version,
+                'dev' => $isDev,
+            ];
+        }
+        uksort(
+            $wantedVersions,
+            static function (string $a, string $b): int
+            {
+                return -version_compare($a, $b);
+            }
+        );
+        $keepDev = true;
+        foreach (array_keys($wantedVersions) as $majorMinor) {
+            if ($wantedVersions[$majorMinor]['dev']) {
+                if (!$keepDev) {
+                    unset($wantedVersions[$majorMinor]);
+                    continue;
+                }
+            } else {
+                $keepDev = false;
+            }
+            $wantedVersions[$majorMinor] = $wantedVersions[$majorMinor]['version'];
         }
         $wantedVersions = array_values($wantedVersions);
         usort($wantedVersions, function ($a, $b) {

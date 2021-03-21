@@ -132,7 +132,7 @@ export default class Version {
      */
     constructor(fullVersion: string) {
         this.fullVersion = fullVersion;
-        const matches = /^(\d+\.\d+)\.\d+$/.exec(fullVersion);
+        const matches = /^(\d+\.\d+)/.exec(fullVersion);
         this.majorMinorVersion = matches === null ? fullVersion : matches[1];
     }
 
