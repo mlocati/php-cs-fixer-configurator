@@ -1,5 +1,5 @@
 {
-    "version": "2.18.4",
+    "version": "2.18.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -2188,6 +2188,13 @@
                         "header": "Made with love.",
                         "comment_type": "comment",
                         "location": "after_declare_strict"
+                    }
+                },
+                {
+                    "from": "<?php\ndeclare(strict_types=1);\n\n\/*\n * Comment is not wanted here.\n *\/\n\nnamespace A\\B;\n\necho 1;\n",
+                    "to": "<?php\ndeclare(strict_types=1);\n\nnamespace A\\B;\n\necho 1;\n",
+                    "configuration": {
+                        "header": ""
                     }
                 }
             ],

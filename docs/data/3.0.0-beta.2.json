@@ -1,5 +1,5 @@
 {
-    "version": "3.0.0-beta.1",
+    "version": "3.0.0-beta.2",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -2107,6 +2107,13 @@
                         "header": "Made with love.",
                         "comment_type": "comment",
                         "location": "after_declare_strict"
+                    }
+                },
+                {
+                    "from": "<?php\ndeclare(strict_types=1);\n\n\/*\n * Comment is not wanted here.\n *\/\n\nnamespace A\\B;\n\necho 1;\n",
+                    "to": "<?php\ndeclare(strict_types=1);\n\nnamespace A\\B;\n\necho 1;\n",
+                    "configuration": {
+                        "header": ""
                     }
                 }
             ],
@@ -6707,7 +6714,12 @@
             "single_line_after_imports": null,
             "switch_case_semicolon_to_colon": null,
             "switch_case_space": null,
-            "visibility_required": null,
+            "visibility_required": {
+                "elements": [
+                    "method",
+                    "property"
+                ]
+            },
             "encoding": null,
             "full_opening_tag": null
         },
