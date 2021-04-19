@@ -1,5 +1,5 @@
 {
-    "version": "2.18.5",
+    "version": "3.0.0-rc.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -66,7 +66,7 @@
                 {
                     "name": "syntax",
                     "description": "Whether to use the `long` or `short` array syntax.",
-                    "defaultValue": "long",
+                    "defaultValue": "short",
                     "allowedValues": [
                         "long",
                         "short"
@@ -76,14 +76,14 @@
             "summary": "PHP arrays should be declared using the configured syntax.",
             "codeSamples": [
                 {
-                    "from": "<?php\n[1,2];\n",
-                    "to": "<?php\narray(1,2);\n"
+                    "from": "<?php\narray(1,2);\n",
+                    "to": "<?php\n[1,2];\n"
                 },
                 {
-                    "from": "<?php\narray(1,2);\n",
-                    "to": "<?php\n[1,2];\n",
+                    "from": "<?php\n[1,2];\n",
+                    "to": "<?php\narray(1,2);\n",
                     "configuration": {
-                        "syntax": "short"
+                        "syntax": "long"
                     }
                 }
             ],
@@ -102,26 +102,6 @@
         },
         "binary_operator_spaces": {
             "configuration": [
-                {
-                    "name": "align_double_arrow",
-                    "description": "Whether to apply, remove or ignore double arrows alignment.",
-                    "defaultValue": false,
-                    "allowedValues": [
-                        true,
-                        false,
-                        null
-                    ]
-                },
-                {
-                    "name": "align_equals",
-                    "description": "Whether to apply, remove or ignore equals alignment.",
-                    "defaultValue": false,
-                    "allowedValues": [
-                        true,
-                        false,
-                        null
-                    ]
-                },
                 {
                     "name": "default",
                     "description": "Default fix strategy.",
@@ -250,19 +230,6 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\BlankLineAfterOpeningTagFixer"
         },
-        "blank_line_before_return": {
-            "summary": "An empty line feed should precede a return statement.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfunction A()\n{\n    echo 1;\n    return 1;\n}\n",
-                    "to": "<?php\nfunction A()\n{\n    echo 1;\n\n    return 1;\n}\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "blank_line_before_statement"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\ReturnNotation\\BlankLineBeforeReturnFixer"
-        },
         "blank_line_before_statement": {
             "configuration": [
                 {
@@ -286,7 +253,6 @@
                             "continue",
                             "declare",
                             "default",
-                            "die",
                             "do",
                             "exit",
                             "for",
@@ -566,7 +532,6 @@
             "configuration": [
                 {
                     "name": "multi_line_extends_each_single_line",
-                    "alias": "multiLineExtendsEachSingleLine",
                     "description": "Whether definitions should be multiline.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -575,7 +540,6 @@
                 },
                 {
                     "name": "single_item_single_line",
-                    "alias": "singleItemSingleLine",
                     "description": "Whether definitions should be single line when including a single item.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -584,7 +548,6 @@
                 },
                 {
                     "name": "single_line",
-                    "alias": "singleLine",
                     "description": "Whether definitions should be single line.",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -941,6 +904,8 @@
                         "package_version",
                         "enduml",
                         "startuml",
+                        "psalm",
+                        "phpstan",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1066,6 +1031,8 @@
                         "package_version",
                         "enduml",
                         "startuml",
+                        "psalm",
+                        "phpstan",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1191,6 +1158,8 @@
                         "package_version",
                         "enduml",
                         "startuml",
+                        "psalm",
+                        "phpstan",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1251,22 +1220,6 @@
                     "defaultValue": true,
                     "allowedTypes": [
                         "null",
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "around_argument_assignments",
-                    "description": "Whether to fix spaces around argument assignment operator.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                },
-                {
-                    "name": "around_array_assignments",
-                    "description": "Whether to fix spaces around array assignment operators.",
-                    "defaultValue": true,
-                    "allowedTypes": [
                         "bool"
                     ]
                 },
@@ -1401,6 +1354,8 @@
                         "package_version",
                         "enduml",
                         "startuml",
+                        "psalm",
+                        "phpstan",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1681,14 +1636,15 @@
             "configuration": [
                 {
                     "name": "annotation_exclude",
-                    "alias": "annotation-black-list",
                     "description": "Class level annotations tags that must be omitted to fix the class, even if all of the white list ones are used as well. (case insensitive)",
                     "defaultValue": [
                         "@final",
                         "@Entity",
                         "@ORM\\Entity",
                         "@ORM\\Mapping\\Entity",
-                        "@Mapping\\Entity"
+                        "@Mapping\\Entity",
+                        "@Document",
+                        "@ODM\\Document"
                     ],
                     "allowedTypes": [
                         "array"
@@ -1696,7 +1652,6 @@
                 },
                 {
                     "name": "annotation_include",
-                    "alias": "annotation-white-list",
                     "description": "Class level annotations tags that must be set in order to fix the class. (case insensitive)",
                     "defaultValue": [
                         "@internal"
@@ -1707,7 +1662,6 @@
                 },
                 {
                     "name": "consider_absent_docblock_as_internal_class",
-                    "alias": "consider-absent-docblock-as-internal-class",
                     "description": "Should classes without any DocBlock be fixed to final?",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -1749,19 +1703,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\FinalPublicMethodForAbstractClassFixer"
-        },
-        "final_static_access": {
-            "summary": "Converts `static` access to `self` access in `final` classes.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfinal class Sample\n{\n    public function getFoo()\n    {\n        return static::class;\n    }\n}\n",
-                    "to": "<?php\nfinal class Sample\n{\n    public function getFoo()\n    {\n        return self::class;\n    }\n}\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "self_static_accessor"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\FinalStaticAccessFixer"
         },
         "fopen_flag_order": {
             "risky": true,
@@ -1870,7 +1811,9 @@
                     "name": "functions",
                     "description": "List of function names to fix.",
                     "defaultValue": [
+                        "get_called_class",
                         "get_class",
+                        "get_class_this",
                         "php_sapi_name",
                         "phpversion",
                         "pi"
@@ -1895,7 +1838,7 @@
             "codeSamples": [
                 {
                     "from": "<?php\necho phpversion();\necho pi();\necho php_sapi_name();\nclass Foo\n{\n    public function Bar()\n    {\n        echo get_class();\n        echo get_called_class();\n    }\n}\n",
-                    "to": "<?php\necho PHP_VERSION;\necho M_PI;\necho PHP_SAPI;\nclass Foo\n{\n    public function Bar()\n    {\n        echo __CLASS__;\n        echo get_called_class();\n    }\n}\n"
+                    "to": "<?php\necho PHP_VERSION;\necho M_PI;\necho PHP_SAPI;\nclass Foo\n{\n    public function Bar()\n    {\n        echo __CLASS__;\n        echo static::class;\n    }\n}\n"
                 },
                 {
                     "from": "<?php\necho phpversion();\necho pi();\nclass Foo\n{\n    public function Bar()\n    {\n        echo get_class();\n        get_class($this);\n        echo get_called_class();\n    }\n}\n",
@@ -2109,24 +2052,10 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Import\\GroupImportFixer"
         },
-        "hash_to_slash_comment": {
-            "summary": "Single line comments should use double slashes `\/\/` and not hash `#`.",
-            "codeSamples": [
-                {
-                    "from": "<?php # comment\n",
-                    "to": "<?php \/\/ comment\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "single_line_comment_style"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Comment\\HashToSlashCommentFixer"
-        },
         "header_comment": {
             "configuration": [
                 {
                     "name": "comment_type",
-                    "alias": "commentType",
                     "description": "Comment syntax type.",
                     "defaultValue": "comment",
                     "allowedValues": [
@@ -2308,16 +2237,6 @@
         },
         "is_null": {
             "risky": true,
-            "configuration": [
-                {
-                    "name": "use_yoda_style",
-                    "description": "Whether Yoda style conditions should be used.",
-                    "defaultValue": true,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                }
-            ],
             "summary": "Replaces `is_null($var)` expression with `null === $var`.",
             "riskyDescription": "Risky when the function `is_null` is overridden.",
             "codeSamples": [
@@ -2363,7 +2282,7 @@
                 {
                     "name": "syntax",
                     "description": "Whether to use the `long` or `short` `list` syntax.",
-                    "defaultValue": "long",
+                    "defaultValue": "short",
                     "allowedValues": [
                         "long",
                         "short"
@@ -2373,14 +2292,14 @@
             "summary": "List (`array` destructuring) assignment should be declared using the configured syntax. Requires PHP >= 7.1.",
             "codeSamples": [
                 {
-                    "from": "<?php\n[$sample] = $array;\n",
-                    "to": "<?php\nlist($sample) = $array;\n"
+                    "from": "<?php\nlist($sample) = $array;\n",
+                    "to": "<?php\n[$sample] = $array;\n"
                 },
                 {
-                    "from": "<?php\nlist($sample) = $array;\n",
-                    "to": "<?php\n[$sample] = $array;\n",
+                    "from": "<?php\n[$sample] = $array;\n",
+                    "to": "<?php\nlist($sample) = $array;\n",
                     "configuration": {
-                        "syntax": "short"
+                        "syntax": "long"
                     }
                 }
             ],
@@ -2411,19 +2330,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\LowercaseCastFixer"
-        },
-        "lowercase_constants": {
-            "summary": "The PHP constants `true`, `false`, and `null` MUST be in lower case.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n$a = FALSE;\n$b = True;\n$c = nuLL;\n",
-                    "to": "<?php\n$a = false;\n$b = true;\n$c = null;\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "constant_case"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Casing\\LowercaseConstantsFixer"
         },
         "lowercase_keywords": {
             "summary": "PHP keywords MUST be in lower case.",
@@ -2496,14 +2402,6 @@
                     ]
                 },
                 {
-                    "name": "ensure_fully_multiline",
-                    "description": "ensure every argument of a multiline argument list is on its own line",
-                    "defaultValue": false,
-                    "allowedTypes": [
-                        "bool"
-                    ]
-                },
-                {
                     "name": "keep_multiple_spaces_after_comma",
                     "description": "Whether keep multiple spaces after comma.",
                     "defaultValue": false,
@@ -2514,7 +2412,7 @@
                 {
                     "name": "on_multiline",
                     "description": "Defines how to handle function arguments lists that contain newlines.",
-                    "defaultValue": "ignore",
+                    "defaultValue": "ensure_fully_multiline",
                     "allowedValues": [
                         "ignore",
                         "ensure_single_line",
@@ -2591,19 +2489,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\MethodChainingIndentationFixer"
-        },
-        "method_separation": {
-            "summary": "Methods must be separated with one blank line.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n    protected function bar()\n    {\n    }\n}\n",
-                    "to": "<?php\nfinal class Sample\n{\n    protected function foo()\n    {\n    }\n\n    protected function bar()\n    {\n    }\n}\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "class_attributes_separation"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\MethodSeparationFixer"
         },
         "modernize_types_casting": {
             "risky": true,
@@ -2698,7 +2583,7 @@
                 {
                     "name": "strict",
                     "description": "Whether leading `\\` of constant invocation not meant to have it should be removed.",
-                    "defaultValue": false,
+                    "defaultValue": true,
                     "allowedTypes": [
                         "bool"
                     ]
@@ -2774,7 +2659,7 @@
                     "name": "include",
                     "description": "List of function names or sets to fix. Defined sets are `@internal` (all native functions), `@all` (all global functions) and `@compiler_optimized` (functions that are specially optimized by Zend).",
                     "defaultValue": [
-                        "@internal"
+                        "@compiler_optimized"
                     ],
                     "allowedTypes": [
                         "array"
@@ -2792,7 +2677,7 @@
                 {
                     "name": "strict",
                     "description": "Whether leading `\\` of function call not meant to have it should be removed.",
-                    "defaultValue": false,
+                    "defaultValue": true,
                     "allowedTypes": [
                         "bool"
                     ]
@@ -2803,7 +2688,7 @@
             "codeSamples": [
                 {
                     "from": "<?php\n\nfunction baz($options)\n{\n    if (!array_key_exists(\"foo\", $options)) {\n        throw new \\InvalidArgumentException();\n    }\n\n    return json_encode($options);\n}\n",
-                    "to": "<?php\n\nfunction baz($options)\n{\n    if (!\\array_key_exists(\"foo\", $options)) {\n        throw new \\InvalidArgumentException();\n    }\n\n    return \\json_encode($options);\n}\n"
+                    "to": "<?php\n\nfunction baz($options)\n{\n    if (!\\array_key_exists(\"foo\", $options)) {\n        throw new \\InvalidArgumentException();\n    }\n\n    return json_encode($options);\n}\n"
                 },
                 {
                     "from": "<?php\n\nfunction baz($options)\n{\n    if (!array_key_exists(\"foo\", $options)) {\n        throw new \\InvalidArgumentException();\n    }\n\n    return json_encode($options);\n}\n",
@@ -3120,7 +3005,6 @@
                             "switch",
                             "throw",
                             "use",
-                            "useTrait",
                             "use_trait"
                         ]
                     ]
@@ -3236,150 +3120,6 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoExtraBlankLinesFixer"
         },
-        "no_extra_consecutive_blank_lines": {
-            "configuration": [
-                {
-                    "name": "tokens",
-                    "description": "List of tokens to fix.",
-                    "defaultValue": [
-                        "extra"
-                    ],
-                    "allowedTypes": [
-                        "array"
-                    ],
-                    "allowedValues": [
-                        [
-                            "break",
-                            "case",
-                            "continue",
-                            "curly_brace_block",
-                            "default",
-                            "extra",
-                            "parenthesis_brace_block",
-                            "return",
-                            "square_brace_block",
-                            "switch",
-                            "throw",
-                            "use",
-                            "useTrait",
-                            "use_trait"
-                        ]
-                    ]
-                }
-            ],
-            "summary": "Removes extra blank lines and\/or blank lines following configuration.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\n$foo = array(\"foo\");\n\n\n$bar = \"bar\";\n",
-                    "to": "<?php\n\n$foo = array(\"foo\");\n\n$bar = \"bar\";\n"
-                },
-                {
-                    "from": "<?php\n\nswitch ($foo) {\n    case 41:\n        echo \"foo\";\n        break;\n\n    case 42:\n        break;\n}\n",
-                    "to": "<?php\n\nswitch ($foo) {\n    case 41:\n        echo \"foo\";\n        break;\n    case 42:\n        break;\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "break"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nfor ($i = 0; $i < 9000; ++$i) {\n    if (true) {\n        continue;\n\n    }\n}\n",
-                    "to": "<?php\n\nfor ($i = 0; $i < 9000; ++$i) {\n    if (true) {\n        continue;\n    }\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "continue"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nfor ($i = 0; $i < 9000; ++$i) {\n\n    echo $i;\n\n}\n",
-                    "to": "<?php\n\nfor ($i = 0; $i < 9000; ++$i) {\n    echo $i;\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "curly_brace_block"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\n$foo = array(\"foo\");\n\n\n$bar = \"bar\";\n",
-                    "to": "<?php\n\n$foo = array(\"foo\");\n\n$bar = \"bar\";\n",
-                    "configuration": {
-                        "tokens": [
-                            "extra"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\n$foo = array(\n\n    \"foo\"\n\n);\n",
-                    "to": "<?php\n\n$foo = array(\n    \"foo\"\n);\n",
-                    "configuration": {
-                        "tokens": [
-                            "parenthesis_brace_block"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nfunction foo($bar)\n{\n    return $bar;\n\n}\n",
-                    "to": "<?php\n\nfunction foo($bar)\n{\n    return $bar;\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "return"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\n$foo = [\n\n    \"foo\"\n\n];\n",
-                    "to": "<?php\n\n$foo = [\n    \"foo\"\n];\n",
-                    "configuration": {
-                        "tokens": [
-                            "square_brace_block"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nfunction foo($bar)\n{\n    throw new \\Exception(\"Hello!\");\n\n}\n",
-                    "to": "<?php\n\nfunction foo($bar)\n{\n    throw new \\Exception(\"Hello!\");\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "throw"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nnamespace Foo;\n\nuse Bar\\Baz;\n\nuse Baz\\Bar;\n\nclass Bar\n{\n}\n",
-                    "to": "<?php\n\nnamespace Foo;\n\nuse Bar\\Baz;\nuse Baz\\Bar;\n\nclass Bar\n{\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "use"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\n\nclass Foo\n{\n    use Bar;\n\n    use Baz;\n}\n",
-                    "to": "<?php\n\nclass Foo\n{\n    use Bar;\n    use Baz;\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "use_trait"
-                        ]
-                    }
-                },
-                {
-                    "from": "<?php\nswitch($a) {\n\n    case 1:\n\n    default:\n\n        echo 3;\n}\n",
-                    "to": "<?php\nswitch($a) {\n    case 1:\n    default:\n        echo 3;\n}\n",
-                    "configuration": {
-                        "tokens": [
-                            "switch",
-                            "case",
-                            "default"
-                        ]
-                    }
-                }
-            ],
-            "deprecated_switchTo": [
-                "no_extra_blank_lines"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoExtraConsecutiveBlankLinesFixer"
-        },
         "no_homoglyph_names": {
             "risky": true,
             "summary": "Replace accidental usage of homoglyphs (non ascii characters) in names.",
@@ -3450,19 +3190,6 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\NoMultilineWhitespaceAroundDoubleArrowFixer"
         },
-        "no_multiline_whitespace_before_semicolons": {
-            "summary": "Multi-line whitespace before closing semicolon are prohibited.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nfunction foo () {\n    return 1 + 2\n        ;\n}\n",
-                    "to": "<?php\nfunction foo () {\n    return 1 + 2;\n}\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "multiline_whitespace_before_semicolons"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Semicolon\\NoMultilineWhitespaceBeforeSemicolonsFixer"
-        },
         "no_null_property_initialization": {
             "summary": "Properties MUST not be explicitly initialized with `null` except when they have a type declaration (PHP 7.4).",
             "codeSamples": [
@@ -3494,19 +3221,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\NoShortBoolCastFixer"
-        },
-        "no_short_echo_tag": {
-            "summary": "Replaces short-echo `<?=` with long format `<?php echo` syntax.",
-            "codeSamples": [
-                {
-                    "from": "<?= \"foo\";\n",
-                    "to": "<?php echo \"foo\";\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "echo_tag_syntax"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\PhpTag\\NoShortEchoTagFixer"
         },
         "no_singleline_whitespace_before_semicolons": {
             "summary": "Single-line whitespace before closing semicolon are prohibited.",
@@ -3925,7 +3639,7 @@
                 {
                     "name": "use_escape_sequences_in_strings",
                     "description": "Whether characters should be replaced with escape sequences in strings.",
-                    "defaultValue": false,
+                    "defaultValue": true,
                     "allowedTypes": [
                         "bool"
                     ]
@@ -3936,13 +3650,13 @@
             "codeSamples": [
                 {
                     "from": "<?php echo \"\u200bHello\u2007World\u00a0!\";\n",
-                    "to": "<?php echo \"Hello World !\";\n"
+                    "to": "<?php echo \"\\u{200b}Hello\\u{2007}World\\u{a0}!\";\n"
                 },
                 {
                     "from": "<?php echo \"\u200bHello\u2007World\u00a0!\";\n",
-                    "to": "<?php echo \"\\u{200b}Hello\\u{2007}World\\u{a0}!\";\n",
+                    "to": "<?php echo \"Hello World !\";\n",
                     "configuration": {
-                        "use_escape_sequences_in_strings": true
+                        "use_escape_sequences_in_strings": false
                     }
                 }
             ],
@@ -4007,7 +3721,7 @@
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixer"
         },
         "object_operator_without_whitespace": {
-            "summary": "There should not be space before or after object `T_OBJECT_OPERATOR` `->`.",
+            "summary": "There should not be space before or after object operators `->` and `?->`.",
             "codeSamples": [
                 {
                     "from": "<?php $a  ->  b;\n",
@@ -4116,7 +3830,6 @@
                 },
                 {
                     "name": "sort_algorithm",
-                    "alias": "sortAlgorithm",
                     "description": "How multiple occurrences of same type statements should be sorted",
                     "defaultValue": "none",
                     "allowedValues": [
@@ -4158,7 +3871,6 @@
             "configuration": [
                 {
                     "name": "imports_order",
-                    "alias": "importsOrder",
                     "description": "Defines the order of import types.",
                     "defaultValue": null,
                     "allowedTypes": [
@@ -4168,7 +3880,6 @@
                 },
                 {
                     "name": "sort_algorithm",
-                    "alias": "sortAlgorithm",
                     "description": "whether the statements should be sorted alphabetically or by length, or not sorted",
                     "defaultValue": "alpha",
                     "allowedValues": [
@@ -4349,43 +4060,9 @@
             "risky": true,
             "configuration": [
                 {
-                    "name": "functions",
-                    "description": "List of assertions to fix (overrides `target`).",
-                    "defaultValue": null,
-                    "allowedTypes": [
-                        "null",
-                        "array"
-                    ],
-                    "allowedValues": [
-                        [
-                            "array_key_exists",
-                            "empty",
-                            "file_exists",
-                            "is_array",
-                            "is_bool",
-                            "is_callable",
-                            "is_double",
-                            "is_float",
-                            "is_infinite",
-                            "is_int",
-                            "is_integer",
-                            "is_long",
-                            "is_nan",
-                            "is_null",
-                            "is_numeric",
-                            "is_object",
-                            "is_real",
-                            "is_resource",
-                            "is_scalar",
-                            "is_string"
-                        ],
-                        null
-                    ]
-                },
-                {
                     "name": "target",
                     "description": "Target version of PHPUnit.",
-                    "defaultValue": "5.0",
+                    "defaultValue": "newest",
                     "allowedTypes": [
                         "string"
                     ],
@@ -4698,19 +4375,6 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitNoExpectationAnnotationFixer"
         },
-        "php_unit_ordered_covers": {
-            "summary": "Order `@covers` annotation of PHPUnit tests.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\/**\n * @covers Foo\n * @covers Bar\n *\/\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{}\n",
-                    "to": "<?php\n\/**\n * @covers Bar\n * @covers Foo\n *\/\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{}\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "phpdoc_order_by_value"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\PhpUnit\\PhpUnitOrderedCoversFixer"
-        },
         "php_unit_set_up_tear_down_visibility": {
             "risky": true,
             "summary": "Changes the visibility of the `setUp()` and `tearDown()` functions of PHPUnit to `protected`, to match the PHPUnit TestCase.",
@@ -4800,15 +4464,6 @@
         "php_unit_test_annotation": {
             "risky": true,
             "configuration": [
-                {
-                    "name": "case",
-                    "description": "Whether to camel or snake case when adding the test prefix",
-                    "defaultValue": "camel",
-                    "allowedValues": [
-                        "camel",
-                        "snake"
-                    ]
-                },
                 {
                     "name": "style",
                     "description": "Whether to use the @test annotation or not.",
@@ -4940,7 +4595,9 @@
                     "name": "tags",
                     "description": "The tags that should be aligned.",
                     "defaultValue": [
+                        "method",
                         "param",
+                        "property",
                         "return",
                         "throws",
                         "type",
@@ -5006,21 +4663,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocIndentFixer"
-        },
-        "phpdoc_inline_tag": {
-            "summary": "Fix PHPDoc inline tags, make `@inheritdoc` always inline.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n\/**\n * @{TUTORIAL}\n * {{ @link }}\n * {@examples}\n * @inheritdocs\n *\/\n",
-                    "to": "<?php\n\/**\n * {@TUTORIAL}\n * {@link}\n * {@example}\n * {@inheritdoc}\n *\/\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "general_phpdoc_tag_rename",
-                "phpdoc_inline_tag_normalizer",
-                "phpdoc_tag_type"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocInlineTagFixer"
         },
         "phpdoc_inline_tag_normalizer": {
             "configuration": [
@@ -5291,6 +4933,7 @@
                     "description": "A list of types to fix.",
                     "defaultValue": [
                         "boolean",
+                        "callback",
                         "double",
                         "integer",
                         "real",
@@ -5659,19 +5302,6 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Alias\\PowToExponentiationFixer"
         },
-        "pre_increment": {
-            "summary": "Pre incrementation\/decrementation should be used if possible.",
-            "codeSamples": [
-                {
-                    "from": "<?php\n$a++;\n$b--;\n",
-                    "to": "<?php\n++$a;\n--$b;\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "increment_style"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Operator\\PreIncrementFixer"
-        },
         "protected_to_private": {
             "summary": "Converts `protected` variables and methods to `private` where possible.",
             "codeSamples": [
@@ -5681,53 +5311,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\ProtectedToPrivateFixer"
-        },
-        "psr0": {
-            "risky": true,
-            "configuration": [
-                {
-                    "name": "dir",
-                    "description": "The directory where the project code is placed.",
-                    "defaultValue": "",
-                    "allowedTypes": [
-                        "string"
-                    ]
-                }
-            ],
-            "summary": "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name.",
-            "riskyDescription": "This fixer may change your class name, which will break the code that depends on the old name.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass PsrAutoloadingFixer {}\n"
-                },
-                {
-                    "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\Fixer\\Basic;\nclass PsrAutoloadingFixer {}\n",
-                    "configuration": {
-                        "dir": ".\/src"
-                    }
-                }
-            ],
-            "deprecated_switchTo": [
-                "psr_autoloading"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\Psr0Fixer"
-        },
-        "psr4": {
-            "risky": true,
-            "summary": "Class names should match the file name.",
-            "riskyDescription": "This fixer may change your class name, which will break the code that depends on the old name.",
-            "codeSamples": [
-                {
-                    "from": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass InvalidName {}\n",
-                    "to": "<?php\nnamespace PhpCsFixer\\FIXER\\Basic;\nclass PsrAutoloadingFixer {}\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "psr_autoloading"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\Psr4Fixer"
         },
         "psr_autoloading": {
             "risky": true,
@@ -5934,21 +5517,6 @@
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\CastNotation\\ShortScalarCastFixer"
-        },
-        "silenced_deprecation_error": {
-            "risky": true,
-            "summary": "Ensures deprecation notices are silenced.",
-            "riskyDescription": "Silencing of deprecation errors might cause changes to code behaviour.",
-            "codeSamples": [
-                {
-                    "from": "<?php\ntrigger_error('Warning.', E_USER_DEPRECATED);\n",
-                    "to": "<?php\n@trigger_error('Warning.', E_USER_DEPRECATED);\n"
-                }
-            ],
-            "deprecated_switchTo": [
-                "error_suppression"
-            ],
-            "fullClassName": "PhpCsFixer\\Fixer\\LanguageConstruct\\SilencedDeprecationErrorFixer"
         },
         "simple_to_complex_string_variable": {
             "summary": "Converts explicit variables in double-quoted strings and heredoc syntax from simple to complex format (`${` to `{$`).",
@@ -6564,7 +6132,8 @@
                     "description": "The structural elements to fix (PHP >= 7.1 required for `const`).",
                     "defaultValue": [
                         "property",
-                        "method"
+                        "method",
+                        "const"
                     ],
                     "allowedTypes": [
                         "array"
@@ -6703,30 +6272,19 @@
             }
         },
         "@PHP54Migration": {
-            "array_syntax": {
-                "syntax": "short"
-            }
-        },
-        "@PHP56Migration": {
-            "array_syntax": {
-                "syntax": "short"
-            }
+            "array_syntax": null
         },
         "@PHP56Migration:risky": {
             "pow_to_exponentiation": null
         },
         "@PHP70Migration": {
             "ternary_to_null_coalescing": null,
-            "array_syntax": {
-                "syntax": "short"
-            }
+            "array_syntax": null
         },
         "@PHP70Migration:risky": {
             "combine_nested_dirname": null,
             "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
+            "non_printable_character": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
@@ -6736,9 +6294,7 @@
             "pow_to_exponentiation": null
         },
         "@PHP71Migration": {
-            "list_syntax": {
-                "syntax": "short"
-            },
+            "list_syntax": null,
             "visibility_required": {
                 "elements": [
                     "const",
@@ -6747,17 +6303,13 @@
                 ]
             },
             "ternary_to_null_coalescing": null,
-            "array_syntax": {
-                "syntax": "short"
-            }
+            "array_syntax": null
         },
         "@PHP71Migration:risky": {
             "void_return": null,
             "combine_nested_dirname": null,
             "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
+            "non_printable_character": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
@@ -6777,9 +6329,7 @@
             "trailing_comma_in_multiline_array": {
                 "after_heredoc": true
             },
-            "list_syntax": {
-                "syntax": "short"
-            },
+            "list_syntax": null,
             "visibility_required": {
                 "elements": [
                     "const",
@@ -6788,9 +6338,7 @@
                 ]
             },
             "ternary_to_null_coalescing": null,
-            "array_syntax": {
-                "syntax": "short"
-            }
+            "array_syntax": null
         },
         "@PHP74Migration": {
             "normalize_index_brace": null,
@@ -6805,9 +6353,7 @@
             "trailing_comma_in_multiline_array": {
                 "after_heredoc": true
             },
-            "list_syntax": {
-                "syntax": "short"
-            },
+            "list_syntax": null,
             "visibility_required": {
                 "elements": [
                     "const",
@@ -6816,9 +6362,7 @@
                 ]
             },
             "ternary_to_null_coalescing": null,
-            "array_syntax": {
-                "syntax": "short"
-            }
+            "array_syntax": null
         },
         "@PHP74Migration:risky": {
             "implode_call": null,
@@ -6827,9 +6371,7 @@
             "void_return": null,
             "combine_nested_dirname": null,
             "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
+            "non_printable_character": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
@@ -6853,9 +6395,7 @@
             "trailing_comma_in_multiline_array": {
                 "after_heredoc": true
             },
-            "list_syntax": {
-                "syntax": "short"
-            },
+            "list_syntax": null,
             "visibility_required": {
                 "elements": [
                     "const",
@@ -6864,9 +6404,7 @@
                 ]
             },
             "ternary_to_null_coalescing": null,
-            "array_syntax": {
-                "syntax": "short"
-            }
+            "array_syntax": null
         },
         "@PHP80Migration:risky": {
             "no_alias_functions": {
@@ -6882,9 +6420,7 @@
             "void_return": null,
             "combine_nested_dirname": null,
             "declare_strict_types": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
+            "non_printable_character": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
@@ -6934,7 +6470,9 @@
             }
         },
         "@PHPUnit50Migration:risky": {
-            "php_unit_dedicate_assert": null,
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -6946,7 +6484,9 @@
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": null,
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -6961,7 +6501,9 @@
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": null,
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -6976,7 +6518,9 @@
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": null,
+            "php_unit_dedicate_assert": {
+                "target": "5.0"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -7180,7 +6724,12 @@
             "single_line_after_imports": null,
             "switch_case_semicolon_to_colon": null,
             "switch_case_space": null,
-            "visibility_required": null,
+            "visibility_required": {
+                "elements": [
+                    "method",
+                    "property"
+                ]
+            },
             "encoding": null,
             "full_opening_tag": null
         },
@@ -7256,9 +6805,7 @@
             "return_assignment": null,
             "simple_to_complex_string_variable": null,
             "single_line_comment_style": null,
-            "array_syntax": {
-                "syntax": "short"
-            },
+            "array_syntax": null,
             "backtick_to_shell_exec": null,
             "binary_operator_spaces": null,
             "braces": {
@@ -7334,17 +6881,7 @@
             "ordered_imports": null,
             "php_unit_fqcn_annotation": null,
             "php_unit_method_casing": null,
-            "phpdoc_align": {
-                "tags": [
-                    "method",
-                    "param",
-                    "property",
-                    "return",
-                    "throws",
-                    "type",
-                    "var"
-                ]
-            },
+            "phpdoc_align": null,
             "phpdoc_annotation_without_dot": null,
             "phpdoc_indent": null,
             "phpdoc_inline_tag_normalizer": null,
@@ -7453,16 +6990,7 @@
             "fopen_flags": {
                 "b_mode": false
             },
-            "function_to_constant": {
-                "functions": [
-                    "get_called_class",
-                    "get_class",
-                    "get_class_this",
-                    "php_sapi_name",
-                    "phpversion",
-                    "pi"
-                ]
-            },
+            "function_to_constant": null,
             "implode_call": null,
             "is_null": null,
             "logical_operators": null,
@@ -7478,9 +7006,7 @@
             "no_php4_constructor": null,
             "no_unneeded_final_method": null,
             "no_useless_sprintf": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
+            "non_printable_character": null,
             "ordered_traits": null,
             "php_unit_construct": null,
             "php_unit_mock_short_will_return": null,
@@ -7495,9 +7021,7 @@
             "no_trailing_whitespace_in_string": null
         },
         "@Symfony": {
-            "array_syntax": {
-                "syntax": "short"
-            },
+            "array_syntax": null,
             "backtick_to_shell_exec": null,
             "binary_operator_spaces": null,
             "blank_line_before_statement": {
@@ -7534,7 +7058,9 @@
             "linebreak_after_opening_tag": null,
             "magic_constant_casing": null,
             "magic_method_casing": null,
-            "method_argument_space": null,
+            "method_argument_space": {
+                "on_multiline": "ignore"
+            },
             "native_function_casing": null,
             "native_function_type_declaration_casing": null,
             "no_alias_language_construct_call": null,
@@ -7594,17 +7120,7 @@
             "ordered_imports": null,
             "php_unit_fqcn_annotation": null,
             "php_unit_method_casing": null,
-            "phpdoc_align": {
-                "tags": [
-                    "method",
-                    "param",
-                    "property",
-                    "return",
-                    "throws",
-                    "type",
-                    "var"
-                ]
-            },
+            "phpdoc_align": null,
             "phpdoc_annotation_without_dot": null,
             "phpdoc_indent": null,
             "phpdoc_inline_tag_normalizer": null,
@@ -7704,16 +7220,7 @@
             "fopen_flags": {
                 "b_mode": false
             },
-            "function_to_constant": {
-                "functions": [
-                    "get_called_class",
-                    "get_class",
-                    "get_class_this",
-                    "php_sapi_name",
-                    "phpversion",
-                    "pi"
-                ]
-            },
+            "function_to_constant": null,
             "implode_call": null,
             "is_null": null,
             "logical_operators": null,
@@ -7731,9 +7238,7 @@
             "no_php4_constructor": null,
             "no_unneeded_final_method": null,
             "no_useless_sprintf": null,
-            "non_printable_character": {
-                "use_escape_sequences_in_strings": true
-            },
+            "non_printable_character": null,
             "ordered_traits": null,
             "php_unit_construct": null,
             "php_unit_mock_short_will_return": null,
