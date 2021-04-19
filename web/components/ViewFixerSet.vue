@@ -9,7 +9,6 @@
             This preset contains risky fixers!
         </b-alert>
         <p>This preset uses these fixers</p>
-        {{ highlightFixer ? highlightFixer.name : 'nooo' }}
         <table class="table table-border">
             <thead>
                 <tr>
