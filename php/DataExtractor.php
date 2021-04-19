@@ -61,7 +61,12 @@ class DataExtractor
     public function getFixers($ignoreErrors)
     {
         $result = [];
-        $factory = FixerFactory::create()->registerBuiltInFixers();
+        if (method_exists(FixerFactory::class, 'create')) {
+            $factory = FixerFactory::create();
+        } else {
+            $factory = new FixerFactory();
+        }
+        $factory->registerBuiltInFixers();
         foreach ($factory->getFixers() as $fixer) {
             $fixerData = [];
             if ($fixer->isRisky()) {
