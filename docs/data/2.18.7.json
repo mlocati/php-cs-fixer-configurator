@@ -1,5 +1,5 @@
 {
-    "version": "2.18.6",
+    "version": "2.18.7",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -5460,6 +5460,16 @@
         },
         "phpdoc_to_param_type": {
             "risky": true,
+            "configuration": [
+                {
+                    "name": "scalar_types",
+                    "description": "Fix also scalar types; may have unexpected behaviour due to PHP bad type coercion system.",
+                    "defaultValue": true,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "EXPERIMENTAL: Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.",
             "riskyDescription": "This rule is EXPERIMENTAL and [1] is not covered with backward compatibility promise. [2] `@param` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. [3] Manual actions are required if inherited signatures are not properly documented.",
             "codeSamples": [
@@ -5470,6 +5480,13 @@
                 {
                     "from": "<?php\n\n\/** @param string|null $bar *\/\nfunction my_foo($bar)\n{}\n",
                     "to": "<?php\n\n\/** @param string|null $bar *\/\nfunction my_foo(?string $bar)\n{}\n"
+                },
+                {
+                    "from": "<?php\n\/** @param Foo $foo *\/\nfunction foo($foo) {}\n\/** @param string $foo *\/\nfunction bar($foo) {}\n",
+                    "to": "<?php\n\/** @param Foo $foo *\/\nfunction foo(Foo $foo) {}\n\/** @param string $foo *\/\nfunction bar($foo) {}\n",
+                    "configuration": {
+                        "scalar_types": false
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\PhpdocToParamTypeFixer"
