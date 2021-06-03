@@ -30,7 +30,8 @@ export default class PhpCsExporter implements ExporterInterface {
             ' * https://mlocati.github.io/php-cs-fixer-configurator/#version:' + configuration.version + '|configurator',
             ' * you can change this configuration by importing this file.',
             ' */',
-            'return PhpCsFixer\\Config::create()'
+            '$config = new PhpCsFixer\\Config();',
+            'return $config'
         ];
         if (configuration.risky) {
             lines.push(INDENT + '->setRiskyAllowed(true)');
