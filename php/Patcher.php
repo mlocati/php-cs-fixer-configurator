@@ -37,7 +37,7 @@ class Patcher
     {
         return array_merge(
             $this->fixNoSuperfluousElseifFixerRegex($vendorDir),
-            $this->PhpUnitNoExpectationAnnotationFixerImplode($vendorDir),
+            $this->PhpUnitNoExpectationAnnotationFixerImplode($vendorDir)
         );
     }
 

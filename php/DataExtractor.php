@@ -17,13 +17,22 @@ use Throwable;
 class DataExtractor
 {
     /**
+     * @var \MLocati\PhpCsFixerConfigurator\FixerRunnerLauncher
+     */
+    private $fixerRunnerLauncher;
+
+    public function __construct()
+    {
+        $this->fixerRunnerLauncher = new FixerRunnerLauncher();
+    }
+
+    /**
      * Get the PHP-CS-Fixer version.
      *
      * @return string
      */
     public function getVersion()
     {
-        
         switch (Application::VERSION)
         {
             case '2.18.4-DEV';
@@ -54,11 +63,9 @@ class DataExtractor
     }
 
     /**
-     * @param bool $ignoreErrors
-     *
      * @return array
      */
-    public function getFixers($ignoreErrors)
+    public function getFixers()
     {
         $result = [];
         if (method_exists(FixerFactory::class, 'create')) {
@@ -157,56 +164,11 @@ class DataExtractor
                 if ($s !== '') {
                     $fixerData['riskyDescription'] = str_replace(PHP_EOL, "\n", $s);
                 }
-                foreach ($definition->getCodeSamples() as $codeSample) {
-                    $old = $codeSample->getCode();
-                    $originalConfiguration = $codeSample->getConfiguration();
-                    $configuration = $originalConfiguration === null ? [] : $originalConfiguration;
-                    $new = null;
-                    if ($ignoreErrors) {
-                        try {
-                            $tokens = $this->extractTokens($old);
-                        } catch (Exception $x) {
-                            $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
-                        } catch (Throwable $x) {
-                            $new = '*** Tokens::fromCode() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
-                        }
-                    } else {
-                        $tokens = $this->extractTokens($old);
-                    }
-                    if ($new === null) {
-                        if ($fixer instanceof Fixer\ConfigurableFixerInterface) {
-                            if ($ignoreErrors) {
-                                try {
-                                    $fixer->configure($configuration);
-                                } catch (Exception $x) {
-                                    $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
-                                } catch (Exception $x) {
-                                    $new = '*** FixerInterface::configure() failed with ' . get_class($x) . ': ' . $x->getMessage() . ' *** ';
-                                }
-                            } else {
-                                $fixer->configure($configuration);
-                            }
-                        }
-                        if ($new === null) {
-                            $file = $codeSample instanceof FixerDefinition\FileSpecificCodeSampleInterface ? $codeSample->getSplFileInfo() : new StdinFileInfo();
-                            $fixer->fix($file, $tokens);
-                            $new = $tokens->generateCode();
-                        }
-                    }
-                    if (!isset($fixerData['codeSamples'])) {
-                        $fixerData['codeSamples'] = [];
-                    }
-                    if ($fixer instanceof Fixer\Basic\Psr0Fixer || $fixer instanceof Fixer\Basic\PsrAutoloadingFixer) {
-                        $new = $this->anonymizePSR0Code($new);
-                    }
-                    $codeSampleData = [
-                        'from' => $old,
-                        'to' => $new,
-                    ];
-                    if ($originalConfiguration !== null) {
-                        $codeSampleData['configuration'] = $this->anonymizePaths($originalConfiguration);
-                    }
-                    $fixerData['codeSamples'][] = $codeSampleData;
+                $requiredPHPVersion = $this->getFixerRequiredPHPVersion($fixer->getName());
+                if ($requiredPHPVersion) {
+                    $fixerData += $this->fixerRunnerLauncher->run($requiredPHPVersion, $fixer);
+                } else {
+                    $fixerData += $this->getFixerSamples($fixer);
                 }
             }
             if ($fixer instanceof Fixer\DeprecatedFixerInterface) {
@@ -240,6 +202,39 @@ class DataExtractor
         return $result;
     }
 
+    public function getFixerSamples($fixer)
+    {
+        $result = [];
+        $definition = $fixer->getDefinition();
+        foreach ($definition->getCodeSamples() as $codeSample) {
+            $old = $codeSample->getCode();
+            // if ($fixer->getName() === 'clean_namespace') echo $old, "\n";
+            $originalConfiguration = $codeSample->getConfiguration();
+            $tokens = $this->extractTokens($old);
+            if ($fixer instanceof Fixer\ConfigurableFixerInterface) {
+                $fixer->configure($originalConfiguration === null ? [] : $originalConfiguration);
+            }
+            $file = $codeSample instanceof FixerDefinition\FileSpecificCodeSampleInterface ? $codeSample->getSplFileInfo() : new StdinFileInfo();
+            $fixer->fix($file, $tokens);
+            $new = $tokens->generateCode();
+            if (!isset($result['codeSamples'])) {
+                $result['codeSamples'] = [];
+            }
+            if ($fixer instanceof Fixer\Basic\Psr0Fixer || $fixer instanceof Fixer\Basic\PsrAutoloadingFixer) {
+                $new = $this->anonymizePSR0Code($new);
+            }
+            $codeSampleData = [
+                'from' => $old,
+                'to' => $new,
+            ];
+            if ($originalConfiguration !== null) {
+                $codeSampleData['configuration'] = $this->anonymizePaths($originalConfiguration);
+            }
+            $result['codeSamples'][] = $codeSampleData;
+        }
+
+        return $result;
+    }
     /**
      * @param string $value
      *
@@ -352,5 +347,30 @@ class DataExtractor
         }
 
         return RuleSet::create($set);
+    }
+
+    /**
+     * @param string $fixerName
+     *
+     * @return string[]
+     */
+    private function getFixerRequiredPHPVersion($fixerName)
+    {
+        switch ($fixerName) {
+            // The (real) cast has been removed, use (float) instead
+            case 'lowercase_cast':
+            case 'short_scalar_cast':
+                return PHP_MAJOR_VERSION > 7 ? '7.4' : '';
+            // syntax error, unexpected token "\", expecting "{"
+            // When parsing
+            // namespace Foo \ Bar;
+            case 'clean_namespace':
+                return PHP_MAJOR_VERSION > 7 ? '7.4' : '';
+            // "parameters" option can only be enabled with PHP 8.0+
+            case 'trailing_comma_in_multiline':
+                return PHP_MAJOR_VERSION < 8 ? '8.0' : '';
+            default:
+                return '';
+        }
     }
 }

@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+use MLocati\PhpCsFixerConfigurator\DataExtractor;
+use PhpCsFixer\FixerFactory;
+
+require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+
+$fixername = $argv[1];
+
+if (method_exists(FixerFactory::class, 'create')) {
+    $factory = FixerFactory::create();
+} else {
+    $factory = new FixerFactory();
+}
+$factory->registerBuiltInFixers();
+
+$fixers = array_filter(
+    $factory->getFixers(),
+    static function ($fixer) use ($fixername) {
+        return $fixer->getName() === $fixername;
+    }
+);
+$fixer = array_shift($fixers);
+if ($fixer === null) {
+    fwrite(STDERR, "Failed to find a fixer named {$fixername}");
+    exit(-1);
+}
+
+$dataExtractor = new DataExtractor();
+$array = $dataExtractor->getFixerSamples($fixer);
+$serialized = serialize($array);
+$encoded = base64_encode($serialized);
+
+echo chunk_split($encoded);
+exit(0);

@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+use MLocati\PhpCsFixerConfigurator\Docker;
+
+require_once dirname(__DIR__) . '/php/Docker.php';
+$docker = new Docker();
+
+$arguments = $argv;
+array_shift($arguments);
+$docker->run('update-docs', $arguments);

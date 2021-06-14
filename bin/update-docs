@@ -2,6 +2,7 @@
 <?php
 
 use MLocati\PhpCsFixerConfigurator\DataExtractor;
+use MLocati\PhpCsFixerConfigurator\FixerRunnerLauncher;
 use MLocati\PhpCsFixerConfigurator\JsonEncoder;
 use MLocati\PhpCsFixerConfigurator\Patcher;
 
@@ -58,7 +59,6 @@ try {
         $cmd = ['composer'];
         $cmd[] = '--ignore-platform-reqs';
         $cmd[] = '--no-progress';
-        $cmd[] = '--no-suggest';
         $cmd[] = '--optimize-autoloader';
         $cmd[] = '--quiet';
         $cmd[] = '--no-ansi';
@@ -91,7 +91,7 @@ try {
                 'version' => $version,
                 'indent' => $dataExtractor->getDefaultIndent(),
                 'lineEnding' => $dataExtractor->getDefaultLineEnding(),
-                'fixers' => $dataExtractor->getFixers(false),
+                'fixers' => $dataExtractor->getFixers(),
                 'sets' => $dataExtractor->getSets(),
             ];
         } finally {
