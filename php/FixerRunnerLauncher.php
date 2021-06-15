@@ -48,12 +48,13 @@ class FixerRunnerLauncher
             if (getenv('PHPCSFIXERCONFIGURATOR_DOCKER') === 'y') {
                 $binary = "/usr/bin/php{$version}";
             } else {
-                $binary = getenv("PHP{$version}");
+                $variableName = 'PHP' . str_replace('.', '_', $version);
+                $binary = getenv($variableName);
                 if ($binary === false) {
-                    throw new RuntimeException("The script requires that you have PHP {$version} installed, and that you have a PHP{$version} environment variable containing its full path");
+                    throw new RuntimeException("The script requires that you have PHP {$version} installed, and that you have a {$variableName} environment variable containing its full path");
                 }
                 if ($binary === '') {
-                    throw new RuntimeException("The PHP{$version} environment variable is empty");
+                    throw new RuntimeException("The {$variableName} environment variable is empty");
                 }
             }
             if (!is_file($binary)) {
