@@ -5527,7 +5527,7 @@
                 },
                 {
                     "from": "<?php\nfinal class Foo {\n    \/**\n     * @return static\n     *\/\n    public function create($prototype) {\n        return new static($prototype);\n    }\n}\n",
-                    "to": "<?php\nfinal class Foo {\n    \/**\n     * @return static\n     *\/\n    public function create($prototype): self {\n        return new static($prototype);\n    }\n}\n"
+                    "to": "<?php\nfinal class Foo {\n    \/**\n     * @return static\n     *\/\n    public function create($prototype): static {\n        return new static($prototype);\n    }\n}\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixer"

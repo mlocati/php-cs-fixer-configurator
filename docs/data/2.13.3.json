@@ -2216,8 +2216,8 @@
             "riskyDescription": "Risky when any of the constants are namespaced or overridden.",
             "codeSamples": [
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\r\n"
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, MY_CUSTOM_PI);\n"
                 },
                 {
                     "from": "<?php\nnamespace space1 {\n    echo PHP_VERSION;\n}\nnamespace {\n    echo M_PI;\n}\n",
@@ -2227,8 +2227,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, \\MY_CUSTOM_PI);\r\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, \\M_PI, \\MY_CUSTOM_PI);\n",
                     "configuration": {
                         "include": [
                             "MY_CUSTOM_PI"
@@ -2236,8 +2236,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(PHP_VERSION, M_PI, \\MY_CUSTOM_PI);\r\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(PHP_VERSION, M_PI, \\MY_CUSTOM_PI);\n",
                     "configuration": {
                         "fix_built_in": false,
                         "include": [
@@ -2246,8 +2246,8 @@
                     }
                 },
                 {
-                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
-                    "to": "<?php var_dump(\\PHP_VERSION, M_PI, MY_CUSTOM_PI);\r\n",
+                    "from": "<?php var_dump(PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
+                    "to": "<?php var_dump(\\PHP_VERSION, M_PI, MY_CUSTOM_PI);\n",
                     "configuration": {
                         "exclude": [
                             "M_PI"
