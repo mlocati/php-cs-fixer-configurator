@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-if (PHP_VERSION_ID < 70400) {
-    fwrite(STDERR, "This script must be run with PHP 7.4+.\n");
+if (PHP_VERSION_ID < 70103) {
+    fwrite(STDERR, "This script must be run with PHP 7.1.3+.\n");
     exit(1);
 }
 
@@ -125,7 +125,7 @@ class PCFCWorker
         }
         uksort(
             $wantedVersions,
-            static function (string $a, string $b): int
+            static function ($a, $b)
             {
                 return -version_compare($a, $b);
             }
@@ -243,7 +243,7 @@ class PCFCWorker
             'composer',
             escapeshellarg('--working-dir=' . $rootDir),
             '--no-update',
-            'require', escapeshellarg('friendsofphp/php-cs-fixer:2.*'),
+            'require', escapeshellarg('friendsofphp/php-cs-fixer:^2 || ^3'),
         ];
         passthru(implode(' ', $args));
         if (is_file($rootDir . '/composer.lock')) {
