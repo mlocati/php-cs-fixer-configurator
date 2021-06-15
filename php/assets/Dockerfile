@@ -33,7 +33,7 @@ RUN set -o errexit ;\
         exit 1; \
     fi ;\
     php /composer-installer --install-dir=/usr/local/bin --filename=composer --2 ;\
-	rm /composer-installer ;\
+    rm /composer-installer ;\
     echo 'Cleanup' ;\
     rm -rf /var/lib/apt/lists/* ;\
     echo 'All done'
