@@ -5898,64 +5898,66 @@
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
+            "pow_to_exponentiation": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
                     "rand": "random_int"
                 }
-            },
-            "pow_to_exponentiation": null
+            }
         },
         "@PHP71Migration": {
+            "ternary_to_null_coalescing": null,
             "visibility_required": {
                 "elements": [
                     "const",
                     "method",
                     "property"
                 ]
-            },
-            "ternary_to_null_coalescing": null
+            }
         },
         "@PHP71Migration:risky": {
-            "void_return": null,
             "combine_nested_dirname": null,
             "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
+            "pow_to_exponentiation": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
                     "rand": "random_int"
                 }
             },
-            "pow_to_exponentiation": null
+            "void_return": null
         },
         "@PHP73Migration": {
             "heredoc_indentation": null,
+            "ternary_to_null_coalescing": null,
             "visibility_required": {
                 "elements": [
                     "const",
                     "method",
                     "property"
                 ]
-            },
-            "ternary_to_null_coalescing": null
+            }
         },
         "@PHP80Migration": {
+            "heredoc_indentation": null,
             "no_unset_cast": null,
             "normalize_index_brace": null,
-            "heredoc_indentation": null,
+            "ternary_to_null_coalescing": null,
             "visibility_required": {
                 "elements": [
                     "const",
                     "method",
                     "property"
                 ]
-            },
-            "ternary_to_null_coalescing": null
+            }
         },
         "@PHP80Migration:risky": {
+            "combine_nested_dirname": null,
+            "declare_strict_types": null,
             "implode_call": null,
             "no_alias_functions": {
                 "sets": [
@@ -5965,19 +5967,17 @@
             "no_php4_constructor": null,
             "no_unneeded_final_method": null,
             "no_unreachable_default_argument_value": null,
-            "void_return": null,
-            "combine_nested_dirname": null,
-            "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
+            "pow_to_exponentiation": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
                     "rand": "random_int"
                 }
             },
-            "pow_to_exponentiation": null
+            "void_return": null
         },
         "@PHPUnit30Migration:risky": {
             "php_unit_dedicate_assert": {
@@ -5985,11 +5985,11 @@
             }
         },
         "@PHPUnit32Migration:risky": {
-            "php_unit_no_expectation_annotation": {
-                "target": "3.2"
-            },
             "php_unit_dedicate_assert": {
                 "target": "3.0"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "3.2"
             }
         },
         "@PHPUnit35Migration:risky": {
@@ -6001,22 +6001,22 @@
             }
         },
         "@PHPUnit43Migration:risky": {
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            },
             "php_unit_dedicate_assert": {
                 "target": "3.5"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
             }
         },
         "@PHPUnit48Migration:risky": {
+            "php_unit_dedicate_assert": {
+                "target": "3.5"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "3.5"
             }
         },
         "@PHPUnit50Migration:risky": {
@@ -6029,10 +6029,10 @@
             }
         },
         "@PHPUnit52Migration:risky": {
+            "php_unit_dedicate_assert": null,
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": null,
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -6041,13 +6041,13 @@
             }
         },
         "@PHPUnit54Migration:risky": {
-            "php_unit_mock": {
-                "target": "5.4"
-            },
+            "php_unit_dedicate_assert": null,
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": null,
+            "php_unit_mock": {
+                "target": "5.4"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -6056,13 +6056,13 @@
             }
         },
         "@PHPUnit55Migration:risky": {
-            "php_unit_mock": {
-                "target": "5.5"
-            },
+            "php_unit_dedicate_assert": null,
             "php_unit_expectation": {
                 "target": "5.2"
             },
-            "php_unit_dedicate_assert": null,
+            "php_unit_mock": {
+                "target": "5.5"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -6088,9 +6088,6 @@
             }
         },
         "@PHPUnit57Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "5.7"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.6"
             },
@@ -6099,15 +6096,15 @@
             },
             "php_unit_mock": {
                 "target": "5.5"
+            },
+            "php_unit_namespaced": {
+                "target": "5.7"
             },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
             }
         },
         "@PHPUnit60Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "6.0"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.6"
             },
@@ -6116,26 +6113,29 @@
             },
             "php_unit_mock": {
                 "target": "5.5"
+            },
+            "php_unit_namespaced": {
+                "target": "6.0"
             },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
             }
         },
         "@PHPUnit75Migration:risky": {
-            "php_unit_dedicate_assert_internal_type": {
-                "target": "7.5"
-            },
-            "php_unit_namespaced": {
-                "target": "6.0"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.6"
+            },
+            "php_unit_dedicate_assert_internal_type": {
+                "target": "7.5"
             },
             "php_unit_expectation": {
                 "target": "5.6"
             },
             "php_unit_mock": {
                 "target": "5.5"
+            },
+            "php_unit_namespaced": {
+                "target": "6.0"
             },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
@@ -6151,6 +6151,8 @@
             "class_definition": null,
             "constant_case": null,
             "elseif": null,
+            "encoding": null,
+            "full_opening_tag": null,
             "function_declaration": null,
             "indentation_type": null,
             "line_ending": null,
@@ -6174,22 +6176,55 @@
             "single_line_after_imports": null,
             "switch_case_semicolon_to_colon": null,
             "switch_case_space": null,
-            "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "visibility_required": null
         },
         "@PhpCsFixer": {
             "align_multiline_comment": null,
             "array_indentation": null,
+            "array_syntax": {
+                "syntax": "short"
+            },
+            "binary_operator_spaces": null,
+            "blank_line_after_namespace": null,
+            "blank_line_after_opening_tag": null,
             "blank_line_before_statement": null,
+            "braces": {
+                "allow_single_line_closure": true
+            },
+            "cast_spaces": null,
+            "class_attributes_separation": {
+                "elements": [
+                    "method"
+                ]
+            },
+            "class_definition": {
+                "single_line": true
+            },
             "combine_consecutive_issets": null,
             "combine_consecutive_unsets": null,
             "compact_nullable_typehint": null,
+            "concat_space": null,
+            "constant_case": null,
+            "declare_equal_normalize": null,
+            "elseif": null,
+            "encoding": null,
             "escape_implicit_backslashes": null,
             "explicit_indirect_variable": null,
             "explicit_string_variable": null,
+            "full_opening_tag": null,
             "fully_qualified_strict_types": null,
+            "function_declaration": null,
+            "function_typehint_space": null,
             "heredoc_to_nowdoc": null,
+            "include": null,
+            "increment_style": null,
+            "indentation_type": null,
+            "line_ending": null,
+            "lowercase_cast": null,
+            "lowercase_keywords": null,
+            "lowercase_static_reference": null,
+            "magic_constant_casing": null,
+            "magic_method_casing": null,
             "method_argument_space": {
                 "on_multiline": "ensure_fully_multiline"
             },
@@ -6198,8 +6233,18 @@
             "multiline_whitespace_before_semicolons": {
                 "strategy": "new_line_for_chained_calls"
             },
+            "native_function_casing": null,
+            "native_function_type_declaration_casing": null,
+            "new_with_braces": null,
             "no_alternative_syntax": null,
             "no_binary_string": null,
+            "no_blank_lines_after_class_opening": null,
+            "no_blank_lines_after_phpdoc": null,
+            "no_break_comment": null,
+            "no_closing_tag": null,
+            "no_empty_comment": null,
+            "no_empty_phpdoc": null,
+            "no_empty_statement": null,
             "no_extra_blank_lines": {
                 "tokens": [
                     "break",
@@ -6213,84 +6258,46 @@
                     "use"
                 ]
             },
-            "no_null_property_initialization": null,
-            "no_short_echo_tag": null,
-            "no_superfluous_elseif": null,
-            "no_unset_cast": null,
-            "no_useless_else": null,
-            "no_useless_return": null,
-            "ordered_class_elements": null,
-            "php_unit_internal_class": null,
-            "php_unit_method_casing": null,
-            "php_unit_ordered_covers": null,
-            "php_unit_test_class_requires_covers": null,
-            "phpdoc_add_missing_param_annotation": null,
-            "phpdoc_no_empty_return": null,
-            "phpdoc_order": null,
-            "phpdoc_types_order": null,
-            "phpdoc_var_annotation_correct_order": null,
-            "protected_to_private": null,
-            "return_assignment": null,
-            "simple_to_complex_string_variable": null,
-            "single_line_comment_style": null,
-            "array_syntax": {
-                "syntax": "short"
-            },
-            "binary_operator_spaces": null,
-            "blank_line_after_opening_tag": null,
-            "braces": {
-                "allow_single_line_closure": true
-            },
-            "cast_spaces": null,
-            "class_attributes_separation": {
-                "elements": [
-                    "method"
-                ]
-            },
-            "class_definition": {
-                "single_line": true
-            },
-            "concat_space": null,
-            "declare_equal_normalize": null,
-            "function_typehint_space": null,
-            "include": null,
-            "increment_style": null,
-            "lowercase_cast": null,
-            "lowercase_static_reference": null,
-            "magic_constant_casing": null,
-            "magic_method_casing": null,
-            "native_function_casing": null,
-            "native_function_type_declaration_casing": null,
-            "new_with_braces": null,
-            "no_blank_lines_after_class_opening": null,
-            "no_blank_lines_after_phpdoc": null,
-            "no_empty_comment": null,
-            "no_empty_phpdoc": null,
-            "no_empty_statement": null,
             "no_leading_import_slash": null,
             "no_leading_namespace_whitespace": null,
             "no_mixed_echo_print": null,
             "no_multiline_whitespace_around_double_arrow": null,
+            "no_null_property_initialization": null,
             "no_short_bool_cast": null,
+            "no_short_echo_tag": null,
             "no_singleline_whitespace_before_semicolons": null,
+            "no_spaces_after_function_name": null,
             "no_spaces_around_offset": null,
+            "no_spaces_inside_parenthesis": null,
+            "no_superfluous_elseif": null,
             "no_superfluous_phpdoc_tags": {
                 "allow_mixed": true,
                 "allow_unused_params": true
             },
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
+            "no_trailing_whitespace": null,
+            "no_trailing_whitespace_in_comment": null,
             "no_unneeded_control_parentheses": null,
             "no_unneeded_curly_braces": {
                 "namespaces": true
             },
+            "no_unset_cast": null,
             "no_unused_imports": null,
+            "no_useless_else": null,
+            "no_useless_return": null,
             "no_whitespace_before_comma_in_array": null,
             "no_whitespace_in_blank_line": null,
             "normalize_index_brace": null,
             "object_operator_without_whitespace": null,
+            "ordered_class_elements": null,
             "ordered_imports": null,
             "php_unit_fqcn_annotation": null,
+            "php_unit_internal_class": null,
+            "php_unit_method_casing": null,
+            "php_unit_ordered_covers": null,
+            "php_unit_test_class_requires_covers": null,
+            "phpdoc_add_missing_param_annotation": null,
             "phpdoc_align": {
                 "tags": [
                     "method",
@@ -6307,8 +6314,10 @@
             "phpdoc_inline_tag": null,
             "phpdoc_no_access": null,
             "phpdoc_no_alias_tag": null,
+            "phpdoc_no_empty_return": null,
             "phpdoc_no_package": null,
             "phpdoc_no_useless_inheritdoc": null,
+            "phpdoc_order": null,
             "phpdoc_return_self_reference": null,
             "phpdoc_scalar": null,
             "phpdoc_separation": null,
@@ -6318,12 +6327,21 @@
             "phpdoc_trim": null,
             "phpdoc_trim_consecutive_blank_line_separation": null,
             "phpdoc_types": null,
+            "phpdoc_types_order": null,
+            "phpdoc_var_annotation_correct_order": null,
             "phpdoc_var_without_name": null,
+            "protected_to_private": null,
+            "return_assignment": null,
             "return_type_declaration": null,
             "semicolon_after_instruction": null,
             "short_scalar_cast": null,
+            "simple_to_complex_string_variable": null,
+            "single_blank_line_at_eof": null,
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
+            "single_import_per_statement": null,
+            "single_line_after_imports": null,
+            "single_line_comment_style": null,
             "single_quote": null,
             "single_trait_insert_per_statement": null,
             "space_after_semicolon": {
@@ -6331,55 +6349,22 @@
             },
             "standardize_increment": null,
             "standardize_not_equals": null,
+            "switch_case_semicolon_to_colon": null,
+            "switch_case_space": null,
             "ternary_operator_spaces": null,
             "trailing_comma_in_multiline_array": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
-            "whitespace_after_comma_in_array": null,
-            "yoda_style": null,
-            "blank_line_after_namespace": null,
-            "constant_case": null,
-            "elseif": null,
-            "function_declaration": null,
-            "indentation_type": null,
-            "line_ending": null,
-            "lowercase_keywords": null,
-            "no_break_comment": null,
-            "no_closing_tag": null,
-            "no_spaces_after_function_name": null,
-            "no_spaces_inside_parenthesis": null,
-            "no_trailing_whitespace": null,
-            "no_trailing_whitespace_in_comment": null,
-            "single_blank_line_at_eof": null,
-            "single_import_per_statement": null,
-            "single_line_after_imports": null,
-            "switch_case_semicolon_to_colon": null,
-            "switch_case_space": null,
             "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "whitespace_after_comma_in_array": null,
+            "yoda_style": null
         },
         "@PhpCsFixer:risky": {
             "comment_to_phpdoc": null,
-            "final_internal_class": null,
-            "logical_operators": null,
-            "no_alias_functions": {
-                "sets": [
-                    "@all"
-                ]
-            },
-            "no_unreachable_default_argument_value": null,
-            "no_unset_on_property": null,
-            "php_unit_set_up_tear_down_visibility": null,
-            "php_unit_strict": null,
-            "php_unit_test_annotation": null,
-            "php_unit_test_case_static_method_calls": null,
-            "strict_comparison": null,
-            "strict_param": null,
-            "string_line_ending": null,
             "dir_constant": null,
             "ereg_to_preg": null,
             "error_suppression": null,
+            "final_internal_class": null,
             "fopen_flag_order": null,
             "fopen_flags": {
                 "b_mode": false
@@ -6396,6 +6381,7 @@
             },
             "implode_call": null,
             "is_null": null,
+            "logical_operators": null,
             "modernize_types_casting": null,
             "native_constant_invocation": {
                 "fix_built_in": false,
@@ -6413,21 +6399,36 @@
                 "scope": "namespaced",
                 "strict": true
             },
+            "no_alias_functions": {
+                "sets": [
+                    "@all"
+                ]
+            },
             "no_homoglyph_names": null,
             "no_php4_constructor": null,
             "no_unneeded_final_method": null,
+            "no_unreachable_default_argument_value": null,
+            "no_unset_on_property": null,
             "non_printable_character": null,
             "php_unit_construct": null,
             "php_unit_mock_short_will_return": null,
+            "php_unit_set_up_tear_down_visibility": null,
+            "php_unit_strict": null,
+            "php_unit_test_annotation": null,
+            "php_unit_test_case_static_method_calls": null,
             "psr4": null,
             "self_accessor": null,
-            "set_type_to_cast": null
+            "set_type_to_cast": null,
+            "strict_comparison": null,
+            "strict_param": null,
+            "string_line_ending": null
         },
         "@Symfony": {
             "array_syntax": {
                 "syntax": "short"
             },
             "binary_operator_spaces": null,
+            "blank_line_after_namespace": null,
             "blank_line_after_opening_tag": null,
             "blank_line_before_statement": {
                 "statements": [
@@ -6447,11 +6448,19 @@
                 "single_line": true
             },
             "concat_space": null,
+            "constant_case": null,
             "declare_equal_normalize": null,
+            "elseif": null,
+            "encoding": null,
+            "full_opening_tag": null,
+            "function_declaration": null,
             "function_typehint_space": null,
             "include": null,
             "increment_style": null,
+            "indentation_type": null,
+            "line_ending": null,
             "lowercase_cast": null,
+            "lowercase_keywords": null,
             "lowercase_static_reference": null,
             "magic_constant_casing": null,
             "magic_method_casing": null,
@@ -6461,6 +6470,8 @@
             "new_with_braces": null,
             "no_blank_lines_after_class_opening": null,
             "no_blank_lines_after_phpdoc": null,
+            "no_break_comment": null,
+            "no_closing_tag": null,
             "no_empty_comment": null,
             "no_empty_phpdoc": null,
             "no_empty_statement": null,
@@ -6480,13 +6491,17 @@
             "no_multiline_whitespace_around_double_arrow": null,
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
+            "no_spaces_after_function_name": null,
             "no_spaces_around_offset": null,
+            "no_spaces_inside_parenthesis": null,
             "no_superfluous_phpdoc_tags": {
                 "allow_mixed": true,
                 "allow_unused_params": true
             },
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
+            "no_trailing_whitespace": null,
+            "no_trailing_whitespace_in_comment": null,
             "no_unneeded_control_parentheses": null,
             "no_unneeded_curly_braces": {
                 "namespaces": true
@@ -6533,8 +6548,11 @@
             "return_type_declaration": null,
             "semicolon_after_instruction": null,
             "short_scalar_cast": null,
+            "single_blank_line_at_eof": null,
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
+            "single_import_per_statement": null,
+            "single_line_after_imports": null,
             "single_line_comment_style": {
                 "comment_types": [
                     "hash"
@@ -6548,33 +6566,15 @@
             },
             "standardize_increment": null,
             "standardize_not_equals": null,
+            "switch_case_semicolon_to_colon": null,
+            "switch_case_space": null,
             "ternary_operator_spaces": null,
             "trailing_comma_in_multiline_array": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
-            "whitespace_after_comma_in_array": null,
-            "yoda_style": null,
-            "blank_line_after_namespace": null,
-            "constant_case": null,
-            "elseif": null,
-            "function_declaration": null,
-            "indentation_type": null,
-            "line_ending": null,
-            "lowercase_keywords": null,
-            "no_break_comment": null,
-            "no_closing_tag": null,
-            "no_spaces_after_function_name": null,
-            "no_spaces_inside_parenthesis": null,
-            "no_trailing_whitespace": null,
-            "no_trailing_whitespace_in_comment": null,
-            "single_blank_line_at_eof": null,
-            "single_import_per_statement": null,
-            "single_line_after_imports": null,
-            "switch_case_semicolon_to_colon": null,
-            "switch_case_space": null,
             "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "whitespace_after_comma_in_array": null,
+            "yoda_style": null
         },
         "@Symfony:risky": {
             "dir_constant": null,

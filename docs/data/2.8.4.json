@@ -3716,37 +3716,37 @@
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
+            "pow_to_exponentiation": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
                     "rand": "random_int"
                 }
-            },
-            "pow_to_exponentiation": null
+            }
         },
         "@PHP71Migration": {
+            "ternary_to_null_coalescing": null,
             "visibility_required": {
                 "elements": [
                     "const",
                     "method",
                     "property"
                 ]
-            },
-            "ternary_to_null_coalescing": null
+            }
         },
         "@PHP71Migration:risky": {
-            "void_return": null,
             "declare_strict_types": null,
             "non_printable_character": {
                 "use_escape_sequences_in_strings": true
             },
+            "pow_to_exponentiation": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
                     "rand": "random_int"
                 }
             },
-            "pow_to_exponentiation": null
+            "void_return": null
         },
         "@PHPUnit30Migration:risky": {
             "php_unit_dedicate_assert": {
@@ -3754,11 +3754,11 @@
             }
         },
         "@PHPUnit32Migration:risky": {
-            "php_unit_no_expectation_annotation": {
-                "target": "3.2"
-            },
             "php_unit_dedicate_assert": {
                 "target": "3.0"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "3.2"
             }
         },
         "@PHPUnit35Migration:risky": {
@@ -3770,22 +3770,22 @@
             }
         },
         "@PHPUnit43Migration:risky": {
-            "php_unit_no_expectation_annotation": {
-                "target": "4.3"
-            },
             "php_unit_dedicate_assert": {
                 "target": "3.5"
+            },
+            "php_unit_no_expectation_annotation": {
+                "target": "4.3"
             }
         },
         "@PHPUnit48Migration:risky": {
+            "php_unit_dedicate_assert": {
+                "target": "3.5"
+            },
             "php_unit_namespaced": {
                 "target": "4.8"
             },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
-            },
-            "php_unit_dedicate_assert": {
-                "target": "3.5"
             }
         },
         "@PHPUnit50Migration:risky": {
@@ -3800,11 +3800,11 @@
             }
         },
         "@PHPUnit52Migration:risky": {
-            "php_unit_expectation": {
-                "target": "5.2"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.0"
+            },
+            "php_unit_expectation": {
+                "target": "5.2"
             },
             "php_unit_namespaced": {
                 "target": "4.8"
@@ -3814,13 +3814,13 @@
             }
         },
         "@PHPUnit54Migration:risky": {
-            "php_unit_mock": null,
-            "php_unit_expectation": {
-                "target": "5.2"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.0"
             },
+            "php_unit_expectation": {
+                "target": "5.2"
+            },
+            "php_unit_mock": null,
             "php_unit_namespaced": {
                 "target": "4.8"
             },
@@ -3844,9 +3844,6 @@
             }
         },
         "@PHPUnit57Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "5.7"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.6"
             },
@@ -3854,14 +3851,14 @@
                 "target": "5.6"
             },
             "php_unit_mock": null,
+            "php_unit_namespaced": {
+                "target": "5.7"
+            },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
             }
         },
         "@PHPUnit60Migration:risky": {
-            "php_unit_namespaced": {
-                "target": "6.0"
-            },
             "php_unit_dedicate_assert": {
                 "target": "5.6"
             },
@@ -3869,6 +3866,9 @@
                 "target": "5.6"
             },
             "php_unit_mock": null,
+            "php_unit_namespaced": {
+                "target": "6.0"
+            },
             "php_unit_no_expectation_annotation": {
                 "target": "4.3"
             }
@@ -3882,6 +3882,8 @@
             "braces": null,
             "class_definition": null,
             "elseif": null,
+            "encoding": null,
+            "full_opening_tag": null,
             "function_declaration": null,
             "indentation_type": null,
             "line_ending": null,
@@ -3906,12 +3908,11 @@
             "single_line_after_imports": null,
             "switch_case_semicolon_to_colon": null,
             "switch_case_space": null,
-            "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "visibility_required": null
         },
         "@Symfony": {
             "binary_operator_spaces": null,
+            "blank_line_after_namespace": null,
             "blank_line_after_opening_tag": null,
             "blank_line_before_statement": {
                 "statements": [
@@ -3929,10 +3930,18 @@
                 "spacing": "none"
             },
             "declare_equal_normalize": null,
+            "elseif": null,
+            "encoding": null,
+            "full_opening_tag": null,
+            "function_declaration": null,
             "function_typehint_space": null,
             "include": null,
             "increment_style": null,
+            "indentation_type": null,
+            "line_ending": null,
             "lowercase_cast": null,
+            "lowercase_constants": null,
+            "lowercase_keywords": null,
             "magic_constant_casing": null,
             "method_argument_space": null,
             "method_separation": null,
@@ -3940,6 +3949,8 @@
             "new_with_braces": null,
             "no_blank_lines_after_class_opening": null,
             "no_blank_lines_after_phpdoc": null,
+            "no_break_comment": null,
+            "no_closing_tag": null,
             "no_empty_comment": null,
             "no_empty_phpdoc": null,
             "no_empty_statement": null,
@@ -3961,9 +3972,13 @@
             "no_multiline_whitespace_around_double_arrow": null,
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
+            "no_spaces_after_function_name": null,
             "no_spaces_around_offset": null,
+            "no_spaces_inside_parenthesis": null,
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
+            "no_trailing_whitespace": null,
+            "no_trailing_whitespace_in_comment": null,
             "no_unneeded_control_parentheses": null,
             "no_unneeded_curly_braces": null,
             "no_unneeded_final_method": null,
@@ -3996,8 +4011,11 @@
             "self_accessor": null,
             "semicolon_after_instruction": null,
             "short_scalar_cast": null,
+            "single_blank_line_at_eof": null,
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
+            "single_import_per_statement": null,
+            "single_line_after_imports": null,
             "single_line_comment_style": {
                 "comment_types": [
                     "hash"
@@ -4008,33 +4026,15 @@
                 "remove_in_empty_for_expressions": true
             },
             "standardize_not_equals": null,
+            "switch_case_semicolon_to_colon": null,
+            "switch_case_space": null,
             "ternary_operator_spaces": null,
             "trailing_comma_in_multiline_array": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
-            "whitespace_after_comma_in_array": null,
-            "yoda_style": null,
-            "blank_line_after_namespace": null,
-            "elseif": null,
-            "function_declaration": null,
-            "indentation_type": null,
-            "line_ending": null,
-            "lowercase_constants": null,
-            "lowercase_keywords": null,
-            "no_break_comment": null,
-            "no_closing_tag": null,
-            "no_spaces_after_function_name": null,
-            "no_spaces_inside_parenthesis": null,
-            "no_trailing_whitespace": null,
-            "no_trailing_whitespace_in_comment": null,
-            "single_blank_line_at_eof": null,
-            "single_import_per_statement": null,
-            "single_line_after_imports": null,
-            "switch_case_semicolon_to_colon": null,
-            "switch_case_space": null,
             "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "whitespace_after_comma_in_array": null,
+            "yoda_style": null
         },
         "@Symfony:risky": {
             "dir_constant": null,

@@ -2758,6 +2758,20 @@
             "pow_to_exponentiation": null
         },
         "@PHP70Migration": {
+            "pow_to_exponentiation": null,
+            "random_api_migration": {
+                "replacements": {
+                    "mt_rand": "random_int",
+                    "rand": "random_int"
+                }
+            },
+            "ternary_to_null_coalescing": null
+        },
+        "@PHP70Migration:risky": {
+            "declare_strict_types": null
+        },
+        "@PHP71Migration": {
+            "pow_to_exponentiation": null,
             "random_api_migration": {
                 "replacements": {
                     "mt_rand": "random_int",
@@ -2765,27 +2779,13 @@
                 }
             },
             "ternary_to_null_coalescing": null,
-            "pow_to_exponentiation": null
-        },
-        "@PHP70Migration:risky": {
-            "declare_strict_types": null
-        },
-        "@PHP71Migration": {
             "visibility_required": {
                 "elements": [
                     "const",
                     "method",
                     "property"
                 ]
-            },
-            "random_api_migration": {
-                "replacements": {
-                    "mt_rand": "random_int",
-                    "rand": "random_int"
-                }
-            },
-            "ternary_to_null_coalescing": null,
-            "pow_to_exponentiation": null
+            }
         },
         "@PSR1": {
             "encoding": null,
@@ -2796,6 +2796,8 @@
             "braces": null,
             "class_definition": null,
             "elseif": null,
+            "encoding": null,
+            "full_opening_tag": null,
             "function_declaration": null,
             "indentation_type": null,
             "line_ending": null,
@@ -2817,15 +2819,14 @@
             "single_line_after_imports": null,
             "switch_case_semicolon_to_colon": null,
             "switch_case_space": null,
-            "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "visibility_required": null
         },
         "@Symfony": {
             "binary_operator_spaces": {
                 "align_double_arrow": false,
                 "align_equals": false
             },
+            "blank_line_after_namespace": null,
             "blank_line_after_opening_tag": null,
             "blank_line_before_return": null,
             "braces": {
@@ -2839,16 +2840,26 @@
                 "spacing": "none"
             },
             "declare_equal_normalize": null,
+            "elseif": null,
+            "encoding": null,
+            "full_opening_tag": null,
+            "function_declaration": null,
             "function_typehint_space": null,
             "hash_to_slash_comment": null,
             "include": null,
+            "indentation_type": null,
+            "line_ending": null,
             "lowercase_cast": null,
+            "lowercase_constants": null,
+            "lowercase_keywords": null,
             "magic_constant_casing": null,
+            "method_argument_space": null,
             "method_separation": null,
             "native_function_casing": null,
             "new_with_braces": null,
             "no_blank_lines_after_class_opening": null,
             "no_blank_lines_after_phpdoc": null,
+            "no_closing_tag": null,
             "no_empty_comment": null,
             "no_empty_phpdoc": null,
             "no_empty_statement": null,
@@ -2870,9 +2881,13 @@
             "no_multiline_whitespace_around_double_arrow": null,
             "no_short_bool_cast": null,
             "no_singleline_whitespace_before_semicolons": null,
+            "no_spaces_after_function_name": null,
             "no_spaces_around_offset": null,
+            "no_spaces_inside_parenthesis": null,
             "no_trailing_comma_in_list_call": null,
             "no_trailing_comma_in_singleline_array": null,
+            "no_trailing_whitespace": null,
+            "no_trailing_whitespace_in_comment": null,
             "no_unneeded_control_parentheses": null,
             "no_unused_imports": null,
             "no_whitespace_before_comma_in_array": null,
@@ -2903,37 +2918,22 @@
             "return_type_declaration": null,
             "self_accessor": null,
             "short_scalar_cast": null,
+            "single_blank_line_at_eof": null,
             "single_blank_line_before_namespace": null,
             "single_class_element_per_statement": null,
+            "single_import_per_statement": null,
+            "single_line_after_imports": null,
             "single_quote": null,
             "space_after_semicolon": null,
             "standardize_not_equals": null,
+            "switch_case_semicolon_to_colon": null,
+            "switch_case_space": null,
             "ternary_operator_spaces": null,
             "trailing_comma_in_multiline_array": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
-            "whitespace_after_comma_in_array": null,
-            "blank_line_after_namespace": null,
-            "elseif": null,
-            "function_declaration": null,
-            "indentation_type": null,
-            "line_ending": null,
-            "lowercase_constants": null,
-            "lowercase_keywords": null,
-            "method_argument_space": null,
-            "no_closing_tag": null,
-            "no_spaces_after_function_name": null,
-            "no_spaces_inside_parenthesis": null,
-            "no_trailing_whitespace": null,
-            "no_trailing_whitespace_in_comment": null,
-            "single_blank_line_at_eof": null,
-            "single_import_per_statement": null,
-            "single_line_after_imports": null,
-            "switch_case_semicolon_to_colon": null,
-            "switch_case_space": null,
             "visibility_required": null,
-            "encoding": null,
-            "full_opening_tag": null
+            "whitespace_after_comma_in_array": null
         },
         "@Symfony:risky": {
             "dir_constant": null,
