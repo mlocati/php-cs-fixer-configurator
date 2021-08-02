@@ -189,15 +189,19 @@ class DataExtractor
     {
         $result = [];
         $setNames = $this->getSetNames();
-        sort($setNames, SORT_STRING);
         foreach ($setNames as $setName) {
             $ruleSet = $this->createRuleSet([$setName => true]);
             $config = [];
             foreach ($ruleSet->getRules() as $ruleName => $ruleConfiguration) {
                 $config[$ruleName] = $ruleConfiguration === true ? null : $ruleConfiguration;
+                if (is_array($config[$ruleName])) {
+                    ksort($config[$ruleName], SORT_NATURAL);
+                }
             }
+            ksort($config, SORT_NATURAL);
             $result[$setName] = $config;
         }
+        ksort($result, SORT_NATURAL);
 
         return $result;
     }
