@@ -1,5 +1,5 @@
 {
-    "version": "3.0.0",
+    "version": "3.0.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -490,11 +490,12 @@
             "configuration": [
                 {
                     "name": "elements",
-                    "description": "Dictionary of `const|method|property` => `none|one` values.",
+                    "description": "Dictionary of `const|method|property|trait_import` => `none|one` values.",
                     "defaultValue": {
                         "const": "one",
                         "method": "one",
-                        "property": "one"
+                        "property": "one",
+                        "trait_import": "one"
                     },
                     "allowedTypes": [
                         "array"
@@ -3196,6 +3197,10 @@
                 {
                     "from": "<?php\nclass Foo {\n    public $foo = null;\n}\n",
                     "to": "<?php\nclass Foo {\n    public $foo;\n}\n"
+                },
+                {
+                    "from": "<?php\nclass Foo {\n    public static $foo = null;\n}\n",
+                    "to": "<?php\nclass Foo {\n    public static $foo;\n}\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ClassNotation\\NoNullPropertyInitializationFixer"
@@ -5404,8 +5409,8 @@
                     ]
                 }
             ],
-            "summary": "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs.",
-            "riskyDescription": "Risky when the configured functions are overridden.",
+            "summary": "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`.",
+            "riskyDescription": "Risky when the configured functions are overridden. Or when relying on the seed based generating of the numbers.",
             "codeSamples": [
                 {
                     "from": "<?php\n$a = getrandmax();\n$a = rand($b, $c);\n$a = srand();\n",
@@ -5817,6 +5822,7 @@
                         "interface",
                         "match",
                         "named_argument",
+                        "namespace",
                         "new",
                         "open_tag_with_echo",
                         "php_doc",
@@ -5879,6 +5885,7 @@
                             "interface",
                             "match",
                             "named_argument",
+                            "namespace",
                             "new",
                             "open_tag_with_echo",
                             "php_doc",
@@ -6376,13 +6383,7 @@
         },
         "@PHP71Migration": {
             "list_syntax": null,
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
+            "visibility_required": null,
             "ternary_to_null_coalescing": null,
             "array_syntax": null
         },
@@ -6411,13 +6412,7 @@
                 "after_heredoc": true
             },
             "list_syntax": null,
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
+            "visibility_required": null,
             "ternary_to_null_coalescing": null,
             "array_syntax": null
         },
@@ -6435,13 +6430,7 @@
                 "after_heredoc": true
             },
             "list_syntax": null,
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
+            "visibility_required": null,
             "ternary_to_null_coalescing": null,
             "array_syntax": null
         },
@@ -6477,13 +6466,7 @@
                 "after_heredoc": true
             },
             "list_syntax": null,
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
+            "visibility_required": null,
             "ternary_to_null_coalescing": null,
             "array_syntax": null
         },
@@ -6735,13 +6718,7 @@
             "single_blank_line_before_namespace": null,
             "single_trait_insert_per_statement": null,
             "ternary_operator_spaces": null,
-            "visibility_required": {
-                "elements": [
-                    "const",
-                    "method",
-                    "property"
-                ]
-            },
+            "visibility_required": null,
             "blank_line_after_namespace": null,
             "class_definition": null,
             "constant_case": null,
@@ -6999,7 +6976,6 @@
             "trailing_comma_in_multiline": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
-            "visibility_required": null,
             "whitespace_after_comma_in_array": null,
             "yoda_style": null,
             "blank_line_after_opening_tag": null,
@@ -7016,6 +6992,7 @@
             "single_blank_line_before_namespace": null,
             "single_trait_insert_per_statement": null,
             "ternary_operator_spaces": null,
+            "visibility_required": null,
             "blank_line_after_namespace": null,
             "constant_case": null,
             "elseif": null,
@@ -7248,7 +7225,6 @@
             "trailing_comma_in_multiline": null,
             "trim_array_spaces": null,
             "unary_operator_spaces": null,
-            "visibility_required": null,
             "whitespace_after_comma_in_array": null,
             "yoda_style": null,
             "blank_line_after_opening_tag": null,
@@ -7270,6 +7246,7 @@
             "single_blank_line_before_namespace": null,
             "single_trait_insert_per_statement": null,
             "ternary_operator_spaces": null,
+            "visibility_required": null,
             "blank_line_after_namespace": null,
             "constant_case": null,
             "elseif": null,
