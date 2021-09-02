@@ -95,7 +95,7 @@ class Docker
     /**
      * @throws \RuntimeException
      *
-     * @return string
+     * @return string[]
      */
     private function listImageTags()
     {
@@ -125,7 +125,7 @@ class Docker
     {
         $folder = str_replace('/', DIRECTORY_SEPARATOR, $this->getDockerfileFolder());
         $rc = -1;
-        passthru('docker build --tag ' . escapeshellarg(static::IMAGE_NAME . ":{$tag}") . ' ' . escapeshellarg($folder), $rc);
+        passthru('docker build --progress plain --tag ' . escapeshellarg(static::IMAGE_NAME . ":{$tag}") . ' ' . escapeshellarg($folder), $rc);
         if ($rc !== 0) {
             throw new RuntimeException('Failed to build the docker image');
         }
