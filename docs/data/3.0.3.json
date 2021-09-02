@@ -1,5 +1,5 @@
 {
-    "version": "3.0.2",
+    "version": "3.0.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -907,6 +907,7 @@
                         "startuml",
                         "psalm",
                         "phpstan",
+                        "template",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1034,6 +1035,7 @@
                         "startuml",
                         "psalm",
                         "phpstan",
+                        "template",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1161,6 +1163,7 @@
                         "startuml",
                         "psalm",
                         "phpstan",
+                        "template",
                         "fix",
                         "FIXME",
                         "fixme",
@@ -1357,6 +1360,7 @@
                         "startuml",
                         "psalm",
                         "phpstan",
+                        "template",
                         "fix",
                         "FIXME",
                         "fixme",
