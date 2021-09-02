@@ -58,7 +58,7 @@ export interface PFCFixer {
     riskyDescription?: string,
     /**
      * If this fixer is deprecated, list of the names of the fixers that should be used instead.
-     * Not empty if present.
+     * May be empty if no successor is defined.
      */
     deprecated_switchTo?: string[],
     /**

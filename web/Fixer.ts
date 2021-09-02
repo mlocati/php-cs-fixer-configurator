@@ -85,23 +85,27 @@ export default class Fixer implements FixerOrSetInterface {
 
     /**
      * If this fixer is deprecated, list of the names of the fixers that should be used instead.
-     * Empty array if not deprecated.
+     * null if not deprecated.
      */
-    public readonly deprecated_switchToNames: string[];
+    public readonly deprecated_switchToNames: string[]|null;
 
     /**
      * If this fixer is deprecated, list of the fixers that should be used instead.
-     * Empty array if not deprecated.
+     * null if not deprecated.
      * undefined is still not resolved
      */
-    private _deprecated_switchTo?: Fixer[];
+    private _deprecated_switchTo?: Fixer[]|null;
 
     /**
      * If this fixer is deprecated, list of the names of the fixers that should be used instead.
-     * Empty array if not deprecated.
+     * null if not deprecated.
      */
-    public get deprecated_switchTo(): Fixer[] {
+    public get deprecated_switchTo(): Fixer[]|null {
         if (this._deprecated_switchTo !== undefined) {
+            return this._deprecated_switchTo;
+        }
+        if (this.deprecated_switchToNames === null) {
+            this._deprecated_switchTo = null;
             return this._deprecated_switchTo;
         }
         const fixers: Fixer[] = [];
@@ -124,7 +128,7 @@ export default class Fixer implements FixerOrSetInterface {
         }
         const supersedes: Fixer[] = [];
         this.version.fixers.forEach((fixer: Fixer) => {
-            if (fixer.deprecated_switchTo.indexOf(this) >= 0) {
+            if (fixer.deprecated_switchTo !== null && fixer.deprecated_switchTo.indexOf(this) >= 0) {
                 supersedes.push(fixer);
             }
         });
@@ -169,8 +173,8 @@ export default class Fixer implements FixerOrSetInterface {
         this.codeSamples = data.codeSamples === undefined ? [] : data.codeSamples;
         this.fullClassName = data.fullClassName === undefined ? '' : data.fullClassName;
         if (data.deprecated_switchTo === undefined) {
-            this.deprecated_switchToNames = [];
-            this._deprecated_switchTo = [];
+            this.deprecated_switchToNames = null;
+            this._deprecated_switchTo = null;
         } else {
             this.deprecated_switchToNames = data.deprecated_switchTo;
             this.deprecated_switchToNames.sort((a: string, b: string) => {
@@ -341,7 +345,7 @@ export default class Fixer implements FixerOrSetInterface {
 
     public getCssClass(configuration: Configuration|null) : string {
         const classes : string[] = [];
-        if (this.deprecated_switchToNames.length > 0) {
+        if (this.deprecated_switchToNames !== null) {
             classes.push('fixer-deprecated');
         }
         if (this.risky) {

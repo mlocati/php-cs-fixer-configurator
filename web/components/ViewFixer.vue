@@ -43,7 +43,7 @@
                             </b-alert>
                         </dd>
                     </template>
-                    <template v-if="fixer.deprecated_switchTo.length">
+                    <template v-if="fixer.deprecated_switchTo !== null">
                         <dt class="col-sm-3">Deprecated</dt>
                         <dd class="col-sm-9">
                             <b-alert
@@ -54,15 +54,20 @@
                                     class="fa fa-thumbs-down"
                                     aria-hidden="true"
                                 ></i>
-                                Please use
-                                <ul class="list-unstyled">
-                                    <li
-                                        v-for="deprecated_switchTo in fixer.deprecated_switchTo"
-                                        v-bind:key="deprecated_switchTo.uniqueKey"
-                                    >
-                                        <fixer-link v-bind:fixer="deprecated_switchTo"></fixer-link>
-                                    </li>
-                                </ul>
+                                <template v-if="fixer.deprecated_switchTo.length === 0">
+                                    No successor has been defined.
+                                </template>
+                                <template v-else>
+                                    Please use
+                                    <ul class="list-unstyled">
+                                        <li
+                                            v-for="deprecated_switchTo in fixer.deprecated_switchTo"
+                                            v-bind:key="deprecated_switchTo.uniqueKey"
+                                        >
+                                            <fixer-link v-bind:fixer="deprecated_switchTo"></fixer-link>
+                                        </li>
+                                    </ul>
+                                </template>
                             </b-alert>
                         </dd>
                     </template>

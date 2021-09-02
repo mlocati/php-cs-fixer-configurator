@@ -171,17 +171,20 @@ function compareFixers(newerFixer: Fixer, olderFixer: Fixer): Difference[] {
     if (newerFixer.risky !== olderFixer.risky) {
         diffs.push({ description: newerFixer.risky ? 'The fixer became risky' : 'The fixer is no more risky' });
     }
-    if ((newerFixer.deprecated_switchTo.length !== 0) !== (olderFixer.deprecated_switchTo.length !== 0)) {
-        switch (newerFixer.deprecated_switchTo.length) {
-            case 0:
+    if ((newerFixer.deprecated_switchTo !== null) !== (olderFixer.deprecated_switchTo !== null)) {
+        switch (newerFixer.deprecated_switchTo === null ? -1 : newerFixer.deprecated_switchTo.length) {
+            case -1:
                 diffs.push({ description: 'The fixer is no more deprecated' });
                 break;
+            case 0:
+                diffs.push({ description: 'The fixer has been deprecated (no successor has been provided)' });
+                break;
             case 1:
-                diffs.push({ description: `The fixer has been deprecated in favor of \`${newerFixer.deprecated_switchTo[0].name}\`` });
+                diffs.push({ description: `The fixer has been deprecated in favor of \`${(<Fixer[]>newerFixer.deprecated_switchTo)[0].name}\`` });
                 break;
             default:
                 let newFixerNames: string[] = [];
-                newerFixer.deprecated_switchTo.forEach((fixer: Fixer): void => {
+                (<Fixer[]>newerFixer.deprecated_switchTo).forEach((fixer: Fixer): void => {
                     newFixerNames.push(fixer.name);
                 });
                 diffs.push({ description: 'The fixer has been deprecated in favor of `' + newFixerNames.join('`, `') + '`' });

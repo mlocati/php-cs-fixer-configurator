@@ -10,12 +10,20 @@
                 v-b-tooltip.html
                 v-bind:title="fixer.riskyDescriptionHtml"
             ></i>
-            <i
-                v-if="fixer.deprecated_switchTo.length !== 0"
-                class="fas fa-thumbs-down"
-                v-b-tooltip
-                v-bind:title="'Deprecated: switch to ' + fixer.deprecated_switchToNames.join(', ')"
-            ></i>
+            <template v-if="fixer.deprecated_switchTo !== null">
+                <i
+                    v-if="fixer.deprecated_switchTo.length === 0"
+                    class="fas fa-thumbs-down"
+                    v-b-tooltip
+                    title="Deprecated (no successor defined)"
+                ></i>
+                <i
+                    v-else
+                    class="fas fa-thumbs-down"
+                    v-b-tooltip
+                    v-bind:title="'Deprecated: switch to ' + fixer.deprecated_switchToNames.join(', ')"
+                ></i>
+            </template>
             <fixer-link v-bind:fixer="fixer">{{ fixer.name }}</fixer-link>
         </b-card-title>
         <b-card-text
