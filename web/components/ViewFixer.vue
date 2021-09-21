@@ -1,11 +1,28 @@
 <template>
     <div>
         <template v-if="fixer.codeSamples.length">
-            <b-select
+            <b-input-group
                 v-bind:class="manyCodeSamples ? '' : 'd-lg-none .d-xl-block'"
-                v-model="tab"
-                v-bind:options="tabOptions"
-            ></b-select>
+            >
+                <b-form-select
+                    v-model="tab"
+                    v-bind:options="tabOptions"
+                ></b-form-select>
+                <b-input-group-append v-if="tabOptions.length !== 1">
+                    <b-button
+                        v-bind:disabled="!canGoToPreviousOption"
+                        v-on:click.prevent="tab = tabOptions[tabIndex - 1].value"
+                    >
+                        <i class="fas fa-arrow-circle-left"></i>
+                    </b-button>
+                    <b-button
+                        v-bind:disabled="!canGoToNextOption"
+                        v-on:click.prevent="tab = tabOptions[tabIndex + 1].value"
+                    >
+                        <i class="fas fa-arrow-circle-right"></i>
+                    </b-button>
+                </b-input-group-append>
+            </b-input-group>
             <b-tabs
                 v-if="!manyCodeSamples"
                 class="d-none d-lg-block"
@@ -408,6 +425,23 @@ export default Vue.extend({
             }
             result.push({ value: `history`, text: `History` });
             return result;
+        },
+        tabIndex: function(): number {
+            let result = -1;
+            this.tabOptions.some((tab, tabIndex) => {
+                if (tab.value === this.tab) {
+                    result = tabIndex;
+                    return true;
+                }
+                return false;
+            });
+            return result;
+        },
+        canGoToPreviousOption: function(): boolean {
+            return this.tabIndex > 0;
+        },
+        canGoToNextOption: function(): boolean {
+            return this.tabIndex >= 0 && this.tabIndex < this.tabOptions.length - 1;
         },
         history: function() : FixerHistoryEntry[]|null {
             return this.loadingHistoryForFixer === this.fixer ? this.loadedHistory : null;
