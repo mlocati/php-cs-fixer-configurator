@@ -187,7 +187,7 @@ export default class PhpImporter implements ImporterInterface {
      * @param value
      * @throws
      */
-    protected valueToJavascript(value: any): boolean | string | number | Array<any> | Object {
+    protected valueToJavascript(value: any): boolean | string | number | Array<any> | Object | null {
         let valueKind: string = value && value.kind ? value.kind : '?';
         switch (valueKind) {
             case 'boolean':
@@ -221,6 +221,11 @@ export default class PhpImporter implements ImporterInterface {
                     }
                 });
                 return arr;
+            case 'identifier':
+                if (value.name && value.name.kind === 'classreference' && value.name.name === 'null') {
+                    return null;
+                }
+                break;
         }
         throw new Error(`Unsupported value type ${valueKind} in setRules() array.`);
     }
