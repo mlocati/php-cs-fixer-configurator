@@ -31,8 +31,17 @@ export default class PhpImporter implements ImporterInterface {
     }
 
     parse(serialized: string): SerializedConfigurationInterface {
-        let ast = this.getAST(serialized),
-            setRulesArray = this.findRelevantValue(ast, 'setRules');
+        let ast;
+        try {
+            ast = this.getAST(serialized);
+        } catch (e) {
+            try {
+                ast = this.getAST(`<?php\n${serialized}`);
+            } catch (e2) {
+                throw e;
+            }
+        }
+        let setRulesArray = this.findRelevantValue(ast, 'setRules');
         if (setRulesArray === null) {
             throw new Error('Unable to find the setRules() call, and the PHP code is not an array.');
         }
