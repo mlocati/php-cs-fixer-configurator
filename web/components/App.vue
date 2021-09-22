@@ -246,10 +246,10 @@
             title="Import"
             size="lg"
             no-fade
-            ok-title="Import"
+            v-bind:ok-title="importButtonText"
             v-on:ok.prevent="doImport()"
         >
-            <import ref="importer"></import>
+            <import ref="importer" v-on:importButtonTextChanged="importButtonText = $event"></import>
         </b-modal>
 
         <b-modal
@@ -390,6 +390,7 @@ export default Vue.extend({
             viewingFixerOrSetAndFixerPrevious: <FixerOrSetAndFixerInterface[]>[],
             configuringFixer: <Fixer | null>null,
             rememberConfiguration: PersistentStorage.getBoolean('remember-configuration', true),
+            importButtonText: '...',
         };
     },
     beforeMount: function() {

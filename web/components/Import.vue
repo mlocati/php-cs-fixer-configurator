@@ -54,7 +54,18 @@ export default Vue.extend({
             return result;
         },
     },
+    mounted: function(): void {
+        this.impotTextChanged();
+    },
+    watch: {
+        importText: function() {
+            this.impotTextChanged();
+        },
+    },
     methods: {
+        impotTextChanged: function(): void {
+            this.$emit('importButtonTextChanged', this.importText === '' ? 'Clear configuration' : 'Import');
+        },
         doImport: function(): SerializedConfigurationInterface | null {
             if (this.importText === '') {
                 return null;
