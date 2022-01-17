@@ -170,7 +170,7 @@
             show
         >
             <a
-                href="https://paypal.me/mlocati"
+                href="https://github.com/sponsors/mlocati"
                 rel="noopener noreferrer"
                 target="_blank"
             >
