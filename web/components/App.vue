@@ -19,12 +19,36 @@
                     v-bind:text="configuration.version.fullVersion"
                     v-bind:disabled="busy"
                 >
-                    <b-dropdown-item
-                        v-for="v in versions"
-                        v-bind:key="v.fullVersion"
-                        v-bind:active="v === configuration.version"
-                        v-on:click.prevent="switchToVersion(v)"
-                    >{{ v.fullVersion }}</b-dropdown-item>
+                    <template v-if="versions.length === 0">
+                        <b-dropdown-text>No versions defined</b-dropdown-text>
+                    </template>
+                    <template v-else-if="versions.length &lt;= 10">
+                        <b-dropdown-item
+                            v-for="v in versions"
+                            v-bind:key="v.fullVersion"
+                            v-bind:active="v === configuration.version"
+                            v-on:click.prevent="switchToVersion(v)"
+                        >{{ v.fullVersion }}</b-dropdown-item>
+                    </template>
+                    <template v-else>
+                        <b-dropdown-form>
+                            <b-form-group label="Version" label-for="pcfc-menu-version">
+                                <select
+                                    id="pcfc-menu-version"
+                                    class="form-control"
+                                    v-bind:disabled="busy"
+                                    v-on:change="switchToVersion(getVersionByString($event.target.value))"
+                                >
+                                    <option
+                                        v-for="v in versions"
+                                        v-bind:key="v.fullVersion"
+                                        v-bind:selected="v === configuration.version"
+                                        v-bind:value="v.fullVersion"
+                                    >{{ v.fullVersion }}</option>
+                                </select>
+                            </b-form-group>
+                        </b-dropdown-form>
+                    </template>
                     <template v-if="versions.length &gt; 1">
                         <b-dropdown-divider></b-dropdown-divider>
                         <b-dropdown-item
@@ -447,6 +471,14 @@ export default Vue.extend({
         },
     },
     methods: {
+        getVersionByString: function(versionText: string): Version|null {
+            for (const v of this.versions) {
+                if (v.fullVersion === versionText) {
+                    return v;
+                }
+            }
+            return null;
+        },
         switchToVersion: function(version: Version) {
             var my = this;
             if (my.busy || version === this.configuration.version) {
