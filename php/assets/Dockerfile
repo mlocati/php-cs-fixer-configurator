@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ARG ONDREJPHP_KEY="14AA40EC0831756756D7F66C4F4EA0AAE5267A6C"
 
-ARG PHP_VERSIONS="7.4 8.0"
+ARG PHP_VERSIONS="7.4 8.0 8.1"
 
 RUN set -o errexit ;\
     echo 'Updating the system' ;\

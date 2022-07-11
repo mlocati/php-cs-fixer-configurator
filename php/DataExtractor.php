@@ -440,6 +440,9 @@ class DataExtractor
             case 'nullable_type_declaration_for_default_null_value':
                 // nullable typehint requires PHP 7.1+
                 return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
+            case 'octal_notation':
+                // The '0o' notation required PHP 8.1+
+                return PHP_VERSION_ID < 80100 ? '8.1' : $defaultVersion;
             case 'phpdoc_to_param_type':
                 // nullable typehint requires PHP 7.1+
                 return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
