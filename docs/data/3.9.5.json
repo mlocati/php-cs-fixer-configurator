@@ -1,5 +1,5 @@
 {
-    "version": "3.9.4",
+    "version": "3.9.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -3618,6 +3618,16 @@
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\NoMultilineWhitespaceAroundDoubleArrowFixer"
         },
+        "no_multiple_statements_per_line": {
+            "summary": "There must not be more than one statement per line.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nfoo(); bar();\n",
+                    "to": "<?php\nfoo();\nbar();\n"
+                }
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Basic\\NoMultipleStatementsPerLineFixer"
+        },
         "no_null_property_initialization": {
             "summary": "Properties MUST not be explicitly initialized with `null` except when they have a type declaration (PHP 7.4).",
             "codeSamples": [
@@ -5980,7 +5990,7 @@
                     ]
                 }
             ],
-            "summary": "There should be one or no space before colon, and one space after it in return type declarations, according to configuration.",
+            "summary": "Adjust spacing around colon in return type declarations and backed enum types.",
             "description": "Rule is applied only in a PHP 7+ environment.",
             "codeSamples": [
                 {
