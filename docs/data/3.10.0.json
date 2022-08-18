@@ -1,5 +1,5 @@
 {
-    "version": "3.9.5",
+    "version": "3.10.0",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -5340,11 +5340,59 @@
             "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocNoUselessInheritdocFixer"
         },
         "phpdoc_order": {
-            "summary": "Annotations in PHPDoc should be ordered so that `@param` annotations come first, then `@throws` annotations, then `@return` annotations.",
+            "configuration": [
+                {
+                    "name": "order",
+                    "description": "Sequence in which annotations in PHPDoc should be ordered.",
+                    "defaultValue": [
+                        "param",
+                        "throws",
+                        "return"
+                    ],
+                    "allowedTypes": [
+                        "string[]"
+                    ]
+                }
+            ],
+            "summary": "Annotations in PHPDoc should be ordered in defined sequence.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/**\n * Hello there!\n *\n * @throws Exception|RuntimeException foo\n * @custom Test!\n * @return int  Return the number of changes.\n * @param string $foo\n * @param bool   $bar Bar\n *\/\n",
                     "to": "<?php\n\/**\n * Hello there!\n *\n * @custom Test!\n * @param string $foo\n * @param bool   $bar Bar\n * @throws Exception|RuntimeException foo\n * @return int  Return the number of changes.\n *\/\n"
+                },
+                {
+                    "from": "<?php\n\/**\n * Hello there!\n *\n * @throws Exception|RuntimeException foo\n * @custom Test!\n * @return int  Return the number of changes.\n * @param string $foo\n * @param bool   $bar Bar\n *\/\n",
+                    "to": "<?php\n\/**\n * Hello there!\n *\n * @custom Test!\n * @param string $foo\n * @param bool   $bar Bar\n * @throws Exception|RuntimeException foo\n * @return int  Return the number of changes.\n *\/\n",
+                    "configuration": {
+                        "order": [
+                            "param",
+                            "throws",
+                            "return"
+                        ]
+                    }
+                },
+                {
+                    "from": "<?php\n\/**\n * Hello there!\n *\n * @throws Exception|RuntimeException foo\n * @custom Test!\n * @return int  Return the number of changes.\n * @param string $foo\n * @param bool   $bar Bar\n *\/\n",
+                    "to": "<?php\n\/**\n * Hello there!\n *\n * @custom Test!\n * @param string $foo\n * @param bool   $bar Bar\n * @return int  Return the number of changes.\n * @throws Exception|RuntimeException foo\n *\/\n",
+                    "configuration": {
+                        "order": [
+                            "param",
+                            "return",
+                            "throws"
+                        ]
+                    }
+                },
+                {
+                    "from": "<?php\n\/**\n * Hello there!\n *\n * @throws Exception|RuntimeException foo\n * @custom Test!\n * @return int  Return the number of changes.\n * @param string $foo\n * @param bool   $bar Bar\n *\/\n",
+                    "to": "<?php\n\/**\n * Hello there!\n *\n * @param string $foo\n * @param bool   $bar Bar\n * @custom Test!\n * @throws Exception|RuntimeException foo\n * @return int  Return the number of changes.\n *\/\n",
+                    "configuration": {
+                        "order": [
+                            "param",
+                            "custom",
+                            "throws",
+                            "return"
+                        ]
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Phpdoc\\PhpdocOrderFixer"
@@ -6767,7 +6815,7 @@
             "configuration": [
                 {
                     "name": "space",
-                    "description": "spacing to apply around union type operator.",
+                    "description": "spacing to apply around union type and intersection type operators.",
                     "defaultValue": "none",
                     "allowedValues": [
                         "none",
@@ -6785,7 +6833,7 @@
                     ]
                 }
             ],
-            "summary": "A single space or none should be around union type operator.",
+            "summary": "A single space or none should be around union type and intersection type operators.",
             "codeSamples": [
                 {
                     "from": "<?php\ntry\n{\n    new Foo();\n} catch (ErrorA | ErrorB $e) {\necho'error';}\n",
@@ -6880,11 +6928,28 @@
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\VoidReturnFixer"
         },
         "whitespace_after_comma_in_array": {
+            "configuration": [
+                {
+                    "name": "ensure_single_space",
+                    "description": "If there are only horizontal whitespaces after the comma then ensure it is a single space.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "In array declaration, there MUST be a whitespace after each comma.",
             "codeSamples": [
                 {
                     "from": "<?php\n$sample = array(1,'a',$b,);\n",
                     "to": "<?php\n$sample = array(1, 'a', $b, );\n"
+                },
+                {
+                    "from": "<?php\n$sample = [1,2, 3,  4,    5];\n",
+                    "to": "<?php\n$sample = [1, 2, 3, 4, 5];\n",
+                    "configuration": {
+                        "ensure_single_space": true
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ArrayNotation\\WhitespaceAfterCommaInArrayFixer"
@@ -7739,7 +7804,9 @@
             "types_spaces": null,
             "unary_operator_spaces": null,
             "visibility_required": null,
-            "whitespace_after_comma_in_array": null,
+            "whitespace_after_comma_in_array": {
+                "ensure_single_space": true
+            },
             "yoda_style": null
         },
         "@PhpCsFixer:risky": {
@@ -7956,6 +8023,13 @@
             "phpdoc_no_alias_tag": null,
             "phpdoc_no_package": null,
             "phpdoc_no_useless_inheritdoc": null,
+            "phpdoc_order": {
+                "order": [
+                    "param",
+                    "return",
+                    "throws"
+                ]
+            },
             "phpdoc_return_self_reference": null,
             "phpdoc_scalar": null,
             "phpdoc_separation": null,
