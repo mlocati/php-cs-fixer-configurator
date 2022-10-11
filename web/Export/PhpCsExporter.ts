@@ -73,7 +73,6 @@ export default class PhpCsExporter implements ExporterInterface {
         }
         lines.push(INDENT + '])');
         lines.push(INDENT + '->setFinder(PhpCsFixer\\Finder::create()');
-        lines.push(INDENT + INDENT + '->exclude(\'vendor\')');
         lines.push(INDENT + INDENT + '->in(__DIR__)');
         lines.push(INDENT + ')');
         lines.push(';');
