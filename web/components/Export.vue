@@ -87,10 +87,13 @@ import ExporterInterface from '../Export/ExporterInterface';
 import Exporters from '../Export/Exporters';
 import * as PersistentStorage from '../PersistentStorage';
 import Prism from './Prism.vue';
-import Version from '../Version';
 import Vue from 'vue';
-import { version } from 'punycode';
 import { setTimeout } from 'timers';
+
+const LS_EXPORTER = 'export.exporter';
+const LS_EXPAND_FIXERSETS = 'export.expandFixerSets';
+const LS_EXPORT_FIXER_DESCRIPTIONS = 'export.exportFixerDescriptions';
+const LS_IMPORT_FIXER_CLASSES = 'export.importFixerClasses';
 
 export default Vue.extend({
     components: {
@@ -108,15 +111,15 @@ export default Vue.extend({
             exporterHandles.push(exporter.handle);
         });
         return {
-            exporterHandle: PersistentStorage.getString('exporter', exporterHandles[0], exporterHandles),
+            exporterHandle: PersistentStorage.getString(LS_EXPORTER, exporterHandles[0], exporterHandles),
             exporters: Exporters,
             indents: [{ value: '  ', text: '2 spaces' }, { value: '    ', text: '4 spaces' }, { value: '\t', text: 'tab' }],
             lineEndings: [{ value: '\n', text: '*nix (\\n)' }, { value: '\r\n', text: 'Windows (\\r\\n)' }, { value: '\r', text: 'Old Mac (\\r)' }],
             output: '',
             outputError: null,
-            expandFixerSets: false,
-            exportFixerDescriptions: false,
-            importFixerClasses: false
+            expandFixerSets: PersistentStorage.getBoolean(LS_EXPAND_FIXERSETS),
+            exportFixerDescriptions: PersistentStorage.getBoolean(LS_EXPORT_FIXER_DESCRIPTIONS),
+            importFixerClasses: PersistentStorage.getBoolean(LS_IMPORT_FIXER_CLASSES),
         };
     },
     mounted: function() {
@@ -139,16 +142,19 @@ export default Vue.extend({
     },
     watch: {
         exporterHandle: function(exporterHandle) {
-            PersistentStorage.setString('exporter', exporterHandle);
+            PersistentStorage.setString(LS_EXPORTER, exporterHandle);
             this.refreshOutput(false);
         },
         expandFixerSets: function() {
+            PersistentStorage.setBoolean(LS_EXPAND_FIXERSETS, this.expandFixerSets);
             this.refreshOutput(false);
         },
         exportFixerDescriptions: function() {
+            PersistentStorage.setBoolean(LS_EXPORT_FIXER_DESCRIPTIONS, this.exportFixerDescriptions);
             this.refreshOutput(false);
         },
         importFixerClasses: function() {
+            PersistentStorage.setBoolean(LS_IMPORT_FIXER_CLASSES, this.importFixerClasses),
             this.refreshOutput(false);
         },
     },
