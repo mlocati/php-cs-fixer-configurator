@@ -4,7 +4,6 @@ import JsonImporter from "./JsonImporter";
 import PhpImporter from "./PhpImporter";
 import PhpECSImporter from "./PhpECSImporter";
 import YamlImporter from "./YamlImporter";
-import PhpECSExporter from "../Export/PhpECSExporter";
 
 const ActualImporters = [
     new PhpImporter(),
