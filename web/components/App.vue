@@ -176,6 +176,7 @@
                         </b-button>
                         <b-button
                             v-if="configuring"
+                            accesskey="e"
                             v-bind:disabled="busy"
                             v-b-modal.export-modal
                             title="Export"

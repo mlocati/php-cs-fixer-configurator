@@ -72,10 +72,12 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v1
         with:
-          node-version: "14"
+          node-version: "18"
       - name: Install dependencies
         run: npm ci
       - name: Build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         run: npm run-script production
       - name: Check changes
         if: github.event_name != 'pull_request'
