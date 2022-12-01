@@ -93,6 +93,10 @@
                     <i class="fas fa-cog"></i>
                 </dt>
                 <dd class="col-9">Toggle configurator</dd>
+                <dt class="col-3">
+                    <i class="fas fa-thumbs-down"></i>
+                </dt>
+                <dd class="col-9">Show / hide deprecated fixers</dd>
             </dl>
         </fieldset>
 
