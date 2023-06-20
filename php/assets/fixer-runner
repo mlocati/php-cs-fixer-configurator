@@ -13,7 +13,9 @@ if (method_exists(FixerFactory::class, 'create')) {
 } else {
     $factory = new FixerFactory();
 }
+set_error_handler(static function () {}, E_DEPRECATED);
 $factory->registerBuiltInFixers();
+restore_error_handler();
 
 $fixers = array_filter(
     $factory->getFixers(),

@@ -1,10 +1,12 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG ONDREJPHP_KEY="14AA40EC0831756756D7F66C4F4EA0AAE5267A6C"
 
-ARG PHP_VERSIONS="7.4 8.0 8.1"
+ARG PHP_VERSIONS="7.4 8.2"
+
+ARG DEFAULT_PHP_VERSION="8.2"
 
 RUN set -o errexit ;\
     echo 'Updating the system' ;\
@@ -14,7 +16,7 @@ RUN set -o errexit ;\
     echo 'Installing required system packages' ;\
     apt-get install -qy --no-install-recommends apt-transport-https ca-certificates gnupg2 curl unzip ;\
     echo 'Adding Ondrej PHP' ;\
-    printf 'deb http://ppa.launchpad.net/ondrej/php/ubuntu %s main\n' "$(. /etc/os-release && echo $VERSION_CODENAME)" >/etc/apt/sources.list.d/ondrej-php.list ;\
+    printf 'deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu %s main\n' "$(. /etc/os-release && echo $VERSION_CODENAME)" >/etc/apt/sources.list.d/ondrej-php.list ;\
     LC_ALL=C.UTF-8 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$ONDREJPHP_KEY" || LC_ALL=C.UTF-8 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$ONDREJPHP_KEY" ;\
     apt-get update -q ;\
     echo 'Configuring PHP versions' ;\
@@ -24,6 +26,9 @@ RUN set -o errexit ;\
     done ;\
     echo 'Installing PHP versions' ;\
     apt-get install -qy --no-install-recommends $APT_PACKAGES ;\
+    update-alternatives --set php /usr/bin/php$DEFAULT_PHP_VERSION ;\
+    update-alternatives --set phar /usr/bin/phar$DEFAULT_PHP_VERSION ;\
+    update-alternatives --set phar.phar /usr/bin/phar.phar$DEFAULT_PHP_VERSION ;\
     echo 'Installing Composer' ;\
     curl -sSLf -o /composer-installer https://getcomposer.org/installer ;\
     EXPECTED_DOCKER_SIGNATURE="$(curl -sSLf https://composer.github.io/installer.sig)" ;\

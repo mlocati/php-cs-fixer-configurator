@@ -1,7 +1,6 @@
 <?php
 namespace MLocati\PhpCsFixerConfigurator;
 
-use Exception;
 use MLocati\PhpCsFixerConfigurator\ExtractedData\EmptyArrayValue;
 use PhpCsFixer\Config;
 use PhpCsFixer\Console\Application;
@@ -12,7 +11,6 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
 use PhpCsFixer\StdinFileInfo;
 use PhpCsFixer\Tokenizer\Tokens;
-use Throwable;
 
 class DataExtractor
 {
@@ -33,8 +31,7 @@ class DataExtractor
      */
     public function getVersion()
     {
-        switch (Application::VERSION)
-        {
+        switch (Application::VERSION) {
             case '2.18.4-DEV';
                 return '2.18.4';
             default:
@@ -73,7 +70,9 @@ class DataExtractor
         } else {
             $factory = new FixerFactory();
         }
+        set_error_handler(static function () {}, E_DEPRECATED);
         $factory->registerBuiltInFixers();
+        restore_error_handler();
         foreach ($factory->getFixers() as $fixer) {
             $fixerData = [];
             if ($fixer->isRisky()) {
@@ -164,7 +163,7 @@ class DataExtractor
                 if ($s !== '') {
                     $fixerData['riskyDescription'] = str_replace(PHP_EOL, "\n", $s);
                 }
-                $requiredPHPVersion = $this->getFixerRequiredPHPVersion($fixer->getName());
+                $requiredPHPVersion = $this->getOverrideRequiredPHPVersion($fixer->getName());
                 if ($requiredPHPVersion) {
                     $fixerData += $this->fixerRunnerLauncher->run($requiredPHPVersion, $fixer);
                 } else {
@@ -375,120 +374,44 @@ class DataExtractor
     /**
      * @param string $fixerName
      *
-     * @return string[]
+     * @return string
+     */
+    private function getOverrideRequiredPHPVersion($fixerName)
+    {
+        $phpVersion = $this->getFixerRequiredPHPVersion($fixerName);
+        list($major, $minor) = explode('.', $phpVersion);
+        $major = (int) $major;
+        $minor  = (int) $minor;
+
+        return $major === PHP_MAJOR_VERSION && $minor === PHP_MINOR_VERSION ? '' : $phpVersion;
+    }
+
+    /**
+     * @param string $fixerName
+     *
+     * @return string
      */
     private function getFixerRequiredPHPVersion($fixerName)
     {
-        if (PHP_MAJOR_VERSION >= 8 && version_compare($this->getVersion(), '2.15.9') < 0) {
+        if (version_compare($this->getVersion(), '2.15.9') < 0) {
             // SplFixedArray::rewind has been removed in PHP 8.0
-            $defaultVersion = '7.4';
-        } else {
-            $defaultVersion = '';
+            return '7.4';
         }
         switch ($fixerName) {
-            case 'array_push':
-                // The fixer requires PHP 7.0+ (I don't know why - see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/v2.17.5/src/Fixer/Alias/ArrayPushFixer.php#L47)
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
+            case 'binary_operator_spaces':
+                // Function utf8_decode() is deprecated
+                return version_compare($this->getVersion(), '3.12') < 0 ? '7.4': '8.2';
             case 'clean_namespace':
                 // 'syntax error, unexpected token "\", expecting "{"' when parsing 'namespace Foo \ Bar;'
-                return PHP_MAJOR_VERSION > 7 ? '7.4' : $defaultVersion;
-            case 'combine_nested_dirname':
-                // The second parameter of dirname requires PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'compact_nullable_typehint':
-                // nullable typehint requires PHP 7.1+
-                return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
-            case 'declare_strict_types':
-                // declare(strict_types=1) requires PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'explicit_indirect_variable':
-                // curly braces to indirect variables requires PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'fully_qualified_strict_types':
-                // This fixer requires PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'function_declaration':
-                // Arrow functions require 7.4+
-                return PHP_VERSION_ID < 70400 ? '7.4' : $defaultVersion;
-            case 'group_import':
-                // Group import requires PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'heredoc_indentation':
-                // New heredoc/nowdoc indentation syntax requires PHP 7.3+
-                return PHP_VERSION_ID < 70300 ? '7.4' : $defaultVersion;
-            case 'list_syntax':
-                // short array destructuring requires PHP 7.1+
-                return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
+                return '7.4';
             case 'lowercase_cast':
                 // The (real) cast has been removed in PHP 8.0
-                return PHP_MAJOR_VERSION > 7 ? '7.4' : $defaultVersion;
-            case 'method_argument_space':
-                // "after_heredoc" option requires PHP 7.3+
-                return PHP_VERSION_ID < 70300 ? '7.4' : $defaultVersion;
-            case 'native_function_type_declaration_casing':
-                // Nullable return types require PHP 7.2+
-                return PHP_VERSION_ID < 70200 ? '7.4' : $defaultVersion;
-            case 'no_superfluous_phpdoc_tags':
-                // Object return type requires PHP 7.2+
-                return PHP_VERSION_ID < 70200 ? '7.4' : $defaultVersion;
-            case 'no_whitespace_before_comma_in_array':
-                // "after_heredoc" option requires 7.3+
-                return PHP_VERSION_ID < 70300 ? '7.4' : $defaultVersion;
-            case 'non_printable_character':
-                // Escape sequences require PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'nullable_type_declaration_for_default_null_value':
-                // nullable typehint requires PHP 7.1+
-                return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
-            case 'octal_notation':
-                // The '0o' notation required PHP 8.1+
-                return PHP_VERSION_ID < 80100 ? '8.1' : $defaultVersion;
-            case 'phpdoc_to_param_type':
-                // nullable typehint requires PHP 7.1+
-                return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
-            case 'phpdoc_to_property_type':
-                // Full support for property types requires PHP 7.4+
-                return PHP_MAJOR_VERSION < 70400 ? '7.4' : $defaultVersion;
-            case 'phpdoc_to_return_type':
-                if (version_compare($this->getVersion(), '2.15.9') < 0) {
-                    // Nullable return types require PHP 7.2+
-                    // SplFixedArray::rewind has been removed in PHP 8.0
-                    return PHP_VERSION_ID < 70200 ? '7.4' : $defaultVersion;
-                }
-                // 'static' return type requires PHP 8.0
-                return PHP_MAJOR_VERSION < 8 ? '8.0' : $defaultVersion;
-            case 'regular_callable_call':
-                // Closure calls require PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'return_type_declaration':
-                // return type requires PHP 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
+                return '7.4';
             case 'short_scalar_cast':
                 // The (real) cast has been removed in PHP 8.0
-                return PHP_MAJOR_VERSION > 7 ? '7.4' : $defaultVersion;
-            case 'single_space_after_construct':
-                // yeld from requires PHP 7.0
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'ternary_to_null_coalescing':
-                // null coalescing operator (??) requires 7.0+
-                return PHP_MAJOR_VERSION < 7 ? '7.4' : $defaultVersion;
-            case 'trailing_comma_in_multiline':
-                // "parameters" option requires PHP 8.0+
-                return PHP_MAJOR_VERSION < 8 ? '8.0' : $defaultVersion;
-            case 'trailing_comma_in_multiline_array':
-                // New heredoc/nowdoc indentation syntax requires PHP 7.3+
-                return PHP_VERSION_ID < 70300 ? '7.4' : $defaultVersion;
-            case 'use_arrow_functions':
-                // Arrow functions require 7.4+
-                return PHP_VERSION_ID < 70400 ? '7.4' : $defaultVersion;
-            case 'visibility_required':
-                // "const" option requires PHP 7.1+
-                return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
-            case 'void_return':
-                // void return type requires PHP 7.1+
-                return PHP_VERSION_ID < 70100 ? '7.4' : $defaultVersion;
-            default:
-                return $defaultVersion;
+                return '7.4';
         }
+
+        return '8.2';
     }
 }
