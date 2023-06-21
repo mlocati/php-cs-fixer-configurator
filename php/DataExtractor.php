@@ -410,6 +410,9 @@ class DataExtractor
             case 'short_scalar_cast':
                 // The (real) cast has been removed in PHP 8.0
                 return '7.4';
+            case 'unary_operator_spaces':
+                // Fixer broken on PHP 8.1+ before version 3.2
+                return version_compare($this->getVersion(), '3.2') < 0 ? '7.4': '8.2';
         }
 
         return '8.2';
