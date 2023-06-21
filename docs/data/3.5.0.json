@@ -3949,7 +3949,7 @@
             "codeSamples": [
                 {
                     "from": "<?php $foo = 0123;\n",
-                    "to": "<?php $foo = 0123;\n"
+                    "to": "<?php $foo = 0o123;\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Basic\\OctalNotationFixer"
