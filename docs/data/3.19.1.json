@@ -1,5 +1,5 @@
 {
-    "version": "3.19.0",
+    "version": "3.19.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -575,8 +575,8 @@
                 "curly_braces_position",
                 "control_structure_continuation_position",
                 "declare_parentheses",
-                "statement_indentation",
                 "no_multiple_statements_per_line",
+                "statement_indentation",
                 "no_extra_blank_lines"
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Basic\\BracesFixer"
