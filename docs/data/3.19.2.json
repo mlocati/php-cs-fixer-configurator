@@ -1,5 +1,5 @@
 {
-    "version": "3.19.1",
+    "version": "3.19.2",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -572,10 +572,10 @@
             "deprecated_switchTo": [
                 "single_space_around_construct",
                 "control_structure_braces",
-                "curly_braces_position",
                 "control_structure_continuation_position",
                 "declare_parentheses",
                 "no_multiple_statements_per_line",
+                "curly_braces_position",
                 "statement_indentation",
                 "no_extra_blank_lines"
             ],
