@@ -314,7 +314,7 @@ function compareFixerSets(newerFixerSet: FixerSet, olderFixerSet: FixerSet): Dif
             return false;
         });
         if (newerDefinition === null) {
-            diffs.push({ description: `The fixer \`${olderDefinition.fixer.name}\` has been removed to this set` });
+            diffs.push({ description: `The fixer \`${olderDefinition.fixer.name}\` has been removed from this set` });
         }
     });
     return diffs;
