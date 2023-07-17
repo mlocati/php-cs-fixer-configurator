@@ -1,5 +1,5 @@
 {
-    "version": "3.21.1",
+    "version": "3.21.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -2049,7 +2049,7 @@
         },
         "explicit_string_variable": {
             "summary": "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax.",
-            "description": "The reasoning behind this rule is the following:\n- When there are two valid ways of doing the same thing, using both is confusing, there should be a coding standard to follow\n- PHP manual marks `\"$var\"` syntax as implicit and `\"${var}\"` syntax as explicit: explicit code should always be preferred\n- Explicit syntax allows word concatenation inside strings, e.g. `\"${var}IsAVar\"`, implicit doesn't\n- Explicit syntax is easier to detect for IDE\/editors and therefore has colors\/highlight with higher contrast, which is easier to read\nBacktick operator is skipped because it is harder to handle; you can use `backtick_to_shell_exec` fixer to normalize backticks to strings",
+            "description": "The reasoning behind this rule is the following:\n- When there are two valid ways of doing the same thing, using both is confusing, there should be a coding standard to follow.\n- PHP manual marks `\"$var\"` syntax as implicit and `\"${var}\"` syntax as explicit: explicit code should always be preferred.\n- Explicit syntax allows word concatenation inside strings, e.g. `\"${var}IsAVar\"`, implicit doesn't.\n- Explicit syntax is easier to detect for IDE\/editors and therefore has colors\/highlight with higher contrast, which is easier to read.\nBacktick operator is skipped because it is harder to handle; you can use `backtick_to_shell_exec` fixer to normalize backticks to strings.",
             "codeSamples": [
                 {
                     "from": "<?php\n$a = \"My name is $name !\";\n$b = \"I live in $state->country !\";\n$c = \"I have $farm[0] chickens !\";\n",
@@ -3836,8 +3836,8 @@
             "summary": "There must be no space around double colons (also called Scope Resolution Operator or Paamayim Nekudotayim).",
             "codeSamples": [
                 {
-                    "from": "\n<?php echo Foo\\Bar :: class;\n",
-                    "to": "\n<?php echo Foo\\Bar::class;\n"
+                    "from": "<?php\n\necho Foo\\Bar :: class;\n",
+                    "to": "<?php\n\necho Foo\\Bar::class;\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Operator\\NoSpaceAroundDoubleColonFixer"
@@ -4606,7 +4606,7 @@
                 }
             ],
             "summary": "Orders the elements of classes\/interfaces\/traits\/enums.",
-            "description": "Accepts a subset of pre-defined element types, special element groups, and custom patterns.\n\nElement types: `['use_trait', 'public', 'protected', 'private', 'case', 'constant', 'constant_public', 'constant_protected', 'constant_private', 'property', 'property_static', 'property_public', 'property_protected', 'property_private', 'property_public_readonly', 'property_protected_readonly', 'property_private_readonly', 'property_public_static', 'property_protected_static', 'property_private_static', 'method', 'method_abstract', 'method_static', 'method_public', 'method_protected', 'method_private', 'method_public_abstract', 'method_protected_abstract', 'method_private_abstract', 'method_public_abstract_static', 'method_protected_abstract_static', 'method_private_abstract_static', 'method_public_static', 'method_protected_static', 'method_private_static']`\n\nSpecial element types: `['construct', 'destruct', 'magic', 'phpunit']`\n\nCustom values:\n\n- `method:*`: specify a single method name (e.g. `method:__invoke`) to set the order of that specific method",
+            "description": "Accepts a subset of pre-defined element types, special element groups, and custom patterns.\n\nElement types: `['use_trait', 'public', 'protected', 'private', 'case', 'constant', 'constant_public', 'constant_protected', 'constant_private', 'property', 'property_static', 'property_public', 'property_protected', 'property_private', 'property_public_readonly', 'property_protected_readonly', 'property_private_readonly', 'property_public_static', 'property_protected_static', 'property_private_static', 'method', 'method_abstract', 'method_static', 'method_public', 'method_protected', 'method_private', 'method_public_abstract', 'method_protected_abstract', 'method_private_abstract', 'method_public_abstract_static', 'method_protected_abstract_static', 'method_private_abstract_static', 'method_public_static', 'method_protected_static', 'method_private_static']`\n\nSpecial element types: `['construct', 'destruct', 'magic', 'phpunit']`\n\nCustom values:\n\n- `method:*`: specify a single method name (e.g. `method:__invoke`) to set the order of that specific method.",
             "codeSamples": [
                 {
                     "from": "<?php\nfinal class Example\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public $pubProp1;\n    protected $protProp;\n    var $pubProp2;\n    private static $privStatProp;\n    private $privProp;\n    public static $pubStatProp2;\n    public $pubProp3;\n    protected function __construct() {}\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    public function __toString() {}\n    protected function protFunc() {}\n    function pubFunc2() {}\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static function pubStatFunc3() {}\n    protected static function protStatFunc() {}\n    public function __destruct() {}\n}\n",
