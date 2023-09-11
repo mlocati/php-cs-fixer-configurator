@@ -291,7 +291,7 @@ export default class Fixer implements FixerOrSetInterface {
                     case 'string':
                         typeFound = valueType === ValueType.STRING;
                         break;
-                    case 'integer':
+                    case 'int':
                         typeFound = valueType === ValueType.INTEGER;
                         break;
                     case 'double':
