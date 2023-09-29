@@ -378,43 +378,59 @@ class DataExtractor
      */
     private function getOverrideRequiredPHPVersion($fixerName)
     {
-        $phpVersion = $this->getFixerRequiredPHPVersion($fixerName);
-        list($major, $minor) = explode('.', $phpVersion);
-        $major = (int) $major;
-        $minor  = (int) $minor;
-
-        return $major === PHP_MAJOR_VERSION && $minor === PHP_MINOR_VERSION ? '' : $phpVersion;
+        list($minPhpVersion, $maxPhpVersion) = $this->getFixerRequiredPHPVersion($fixerName);
+        $currentPhpVerion = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+        if ($minPhpVersion !== null && version_compare($currentPhpVerion, $minPhpVersion) < 0) {
+            return $minPhpVersion;
+        }
+        if ($maxPhpVersion !== null && version_compare($currentPhpVerion, $maxPhpVersion) > 0) {
+            return $maxPhpVersion;
+        }
+        
+        return '';
     }
 
     /**
      * @param string $fixerName
      *
-     * @return string
+     * @return string[]
      */
     private function getFixerRequiredPHPVersion($fixerName)
     {
         if (version_compare($this->getVersion(), '2.15.9') < 0) {
             // SplFixedArray::rewind has been removed in PHP 8.0
-            return '7.4';
+            return [null, '7.4'];
         }
         switch ($fixerName) {
             case 'binary_operator_spaces':
                 // Function utf8_decode() is deprecated
-                return version_compare($this->getVersion(), '3.12') < 0 ? '7.4': '8.2';
+                if (version_compare($this->getVersion(), '3.12') < 0) {
+                    return [null, '7.4'];
+                }
+                break;
             case 'clean_namespace':
                 // 'syntax error, unexpected token "\", expecting "{"' when parsing 'namespace Foo \ Bar;'
-                return '7.4';
+                return [null, '7.4'];
             case 'lowercase_cast':
                 // The (real) cast has been removed in PHP 8.0
-                return '7.4';
+                return [null, '7.4'];
+            case 'native_type_declaration_casing':
+                // syntax error, unexpected identifier "BAR", expecting "=" in  on line 4
+                if (version_compare($this->getVersion(), '3.33.0') >= 0) {
+                    return ['8.3', null];
+                }
+                break;
             case 'short_scalar_cast':
                 // The (real) cast has been removed in PHP 8.0
-                return '7.4';
+                return [null, '7.4'];
             case 'unary_operator_spaces':
                 // Fixer broken on PHP 8.1+ before version 3.2
-                return version_compare($this->getVersion(), '3.2') < 0 ? '7.4': '8.2';
+                if (version_compare($this->getVersion(), '3.2') < 0) {
+                    return [null, '7.4'];
+                }
+                break;
         }
 
-        return '8.2';
+        return ['8.3', null];
     }
 }
