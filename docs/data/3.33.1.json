@@ -1,5 +1,5 @@
 {
-    "version": "3.32.0",
+    "version": "3.33.1",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -3514,7 +3514,24 @@
                     "to": "<?php\nfunction Foo(object $a)\n{\n    return 'hi!';\n}\n"
                 }
             ],
+            "deprecated_switchTo": [
+                "native_type_declaration_casing"
+            ],
             "fullClassName": "PhpCsFixer\\Fixer\\Casing\\NativeFunctionTypeDeclarationCasingFixer"
+        },
+        "native_type_declaration_casing": {
+            "summary": "Native type declarations should be used in the correct case.",
+            "codeSamples": [
+                {
+                    "from": "<?php\nclass Bar {\n    public function Foo(CALLABLE $bar): INT\n    {\n        return 1;\n    }\n}\n",
+                    "to": "<?php\nclass Bar {\n    public function Foo(callable $bar): int\n    {\n        return 1;\n    }\n}\n"
+                },
+                {
+                    "from": "<?php\nclass Foo\n{\n    const INT BAR = 1;\n}\n",
+                    "to": "<?php\nclass Foo\n{\n    const int BAR = 1;\n}\n"
+                }
+            ],
+            "fullClassName": "PhpCsFixer\\Fixer\\Casing\\NativeTypeDeclarationCasingFixer"
         },
         "new_with_braces": {
             "configuration": [
@@ -9220,7 +9237,7 @@
                 "strategy": "new_line_for_chained_calls"
             },
             "native_function_casing": null,
-            "native_function_type_declaration_casing": null,
+            "native_type_declaration_casing": null,
             "new_with_parentheses": null,
             "no_alias_language_construct_call": null,
             "no_alternative_syntax": null,
@@ -9530,7 +9547,7 @@
                 "on_multiline": "ignore"
             },
             "native_function_casing": null,
-            "native_function_type_declaration_casing": null,
+            "native_type_declaration_casing": null,
             "new_with_parentheses": null,
             "no_alias_language_construct_call": null,
             "no_alternative_syntax": null,
