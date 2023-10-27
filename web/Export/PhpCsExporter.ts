@@ -6,7 +6,7 @@ export default class PhpCsExporter implements ExporterInterface {
 
     readonly handle: string = 'php-cs';
 
-    readonly name: string = '.php_cs / .php_cs.dist file';
+    readonly name: string = '.php-cs-fixer.php / .php_cs file';
 
     readonly language: string = 'php';
 
@@ -72,9 +72,14 @@ export default class PhpCsExporter implements ExporterInterface {
             });
         }
         lines.push(INDENT + '])');
-        lines.push(INDENT + '->setFinder(PhpCsFixer\\Finder::create()');
-        lines.push(INDENT + INDENT + '// ->exclude(\'folder-to-exclude\') // if you want to exclude some folders, you can do it like this!');
-        lines.push(INDENT + INDENT + '->in(__DIR__)');
+        lines.push(INDENT + `->setFinder(PhpCsFixer\\Finder::create()`);
+        lines.push(INDENT + INDENT + `->in(__DIR__)`);
+        lines.push(INDENT + INDENT + `// ->exclude([`);
+        lines.push(INDENT + INDENT + `// ${INDENT}'folder-to-exclude',`);
+        lines.push(INDENT + INDENT + `// ])`);
+        lines.push(INDENT + INDENT + `// ->append([`);
+        lines.push(INDENT + INDENT + `// ${INDENT}'file-to-include',`);
+        lines.push(INDENT + INDENT + `// ])`);
         lines.push(INDENT + ')');
         lines.push(';');
         lines.push('');
