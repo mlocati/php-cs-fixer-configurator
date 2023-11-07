@@ -5,7 +5,6 @@ import * as PersistentStorage from './PersistentStorage';
 import Version from './Version';
 import Vue from 'vue';
 import { SerializedConfigurationInterface } from './Configuration';
-import { WSAENAMETOOLONG } from 'constants';
 
 Vue.use(BootstrapVue);
 
