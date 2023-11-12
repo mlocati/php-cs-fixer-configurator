@@ -5,6 +5,7 @@ import PhpECSExporter from "./PhpECSExporter";
 import StyleCIExporter from "./StyleCIExporter";
 import YamlExporter from "./YamlExporter";
 import PhpArrayExporter from "./PhpArrayExporter";
+import LaravelPintExporter from "./LaravelPintExporter";
 
 const Exporters: ExporterInterface[] = [
     new PhpCsExporter(),
@@ -13,6 +14,7 @@ const Exporters: ExporterInterface[] = [
     new YamlExporter(),
     new StyleCIExporter(),
     new PhpArrayExporter(),
+    new LaravelPintExporter(),
 ];
 
 export default Exporters;
