@@ -46,6 +46,9 @@ export default class StyleCIExporter implements ExporterInterface {
                 }
             });
         }
+        if (Object.keys(converted).length === 0) {
+            return converted;
+        }
         if (converted.enabled.length === 0) {
             delete converted.enabled;
         }
