@@ -45,12 +45,12 @@ export default class StyleCIExporter implements ExporterInterface {
                     throw new Error('StyleCI does not support configured fixers');
                 }
             });
-        }
-        if (converted.enabled.length === 0) {
-            delete converted.enabled;
-        }
-        if (converted.disabled.length === 0) {
-            delete converted.disabled;
+            if (converted.enabled.length === 0) {
+                delete converted.enabled;
+            }
+            if (converted.disabled.length === 0) {
+                delete converted.disabled;
+            }
         }
         return converted;
     }
