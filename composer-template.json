@@ -1,0 +1,29 @@
+{
+	"name": "mlocati/php-cs-fixer-configurator",
+	"description": "Inspect PHP-CS-Fixer fixers and easily configure it",
+	"license": "MIT",
+	"type": "project",
+	"keywords": ["php-cs-fixer"],
+	"authors": [
+		{
+		  	"name": "Michele Locati",
+		  	"email": "mlocati@gmail.com",
+		  	"homepage": "https://mlocati.github.io",
+		  	"role": "Author"
+		}
+	],
+	"homepage": "https://github.com/mlocati/php-cs-fixer-configurator",
+	"support": {
+    	"issues": "https://github.com/mlocati/php-cs-fixer-configurator/issues",
+    	"source": "https://github.com/mlocati/php-cs-fixer-configurator"
+  	},
+    "autoload": {
+		"psr-4": {
+	        "MLocati\\PhpCsFixerConfigurator\\": "php"
+	    }
+  	},
+	"config": {
+		"lock": false
+	},
+	"$schema": "https://raw.githubusercontent.com/composer/composer/main/res/composer-schema.json"
+}

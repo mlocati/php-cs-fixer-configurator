@@ -236,22 +236,12 @@ class PCFCWorker
         }
     }
 
-    public function resetComposerJson()
+    public function deleteComposerStuff()
     {
         $rootDir = $this->getRootDir();
-        $args = [
-            'composer',
-            escapeshellarg('--working-dir=' . $rootDir),
-            '--no-update',
-            'require', escapeshellarg('friendsofphp/php-cs-fixer:^2 || ^3'),
-        ];
-        passthru(implode(' ', $args));
-        if (is_file($rootDir . '/composer.lock')) {
-            unlink($rootDir . '/composer.lock');
-        }
-        if (is_dir($rootDir . '/vendor')) {
-            $this->unlink($rootDir . '/vendor');
-        }
+        $this->unlink("{$rootDir}/composer.json");
+        $this->unlink("{$rootDir}/composer.lock");
+        $this->unlink("{$rootDir}/vendor");
     }
 
     /**
@@ -273,7 +263,7 @@ class PCFCWorker
      */
     private function unlink($path)
     {
-        if (is_dir($path)) {
+        if (is_dir($path) && !is_link($path)) {
             foreach (scandir($path) as $entry) {
                 $entryPath = $path . '/' . $entry;
                 switch ($entry) {
@@ -286,7 +276,7 @@ class PCFCWorker
                 }
             }
             rmdir($path);
-        } else {
+        } elseif (is_file($path)) {
             unlink($path);
         }
     }
@@ -394,8 +384,8 @@ try {
         }
     } finally {
         if ($someVersionParsed) {
-            fwrite(STDOUT, "Resetting composer.json.\n");
-            $worker->resetComposerJson();
+            fwrite(STDOUT, "Deleting composer stuff.\n");
+            $worker->deleteComposerStuff();
         }
     }
 } catch (RuntimeException $x) {
