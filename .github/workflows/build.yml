@@ -9,12 +9,25 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
   repository_dispatch:
     types:
       - build
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     env:
       PUSH_CHANGES: n
     name: Build
@@ -87,6 +100,14 @@ jobs:
             git add --all docs
             echo 'PUSH_CHANGES=y' >> "$GITHUB_ENV"
           fi
+      - name: Setup Pages
+        if: env.PUSH_CHANGES == 'y'
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        if: env.PUSH_CHANGES == 'y'
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: 'docs'
       - name: Commit and push
         if: env.PUSH_CHANGES == 'y'
         run: |
@@ -98,3 +119,7 @@ jobs:
           git commit -m '[skip ci] Automatic assets rebuilding'
           echo 'Pushing'
           git push
+      - name: Deploy to GitHub Pages
+        if: env.PUSH_CHANGES == 'y'
+        id: deployment
+        uses: actions/deploy-pages@v2
