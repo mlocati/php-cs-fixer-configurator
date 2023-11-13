@@ -166,7 +166,7 @@
             show
         >
             This tool uses some great open source tools.
-            You can find their licenses <a href="https://github.com/mlocati/php-cs-fixer-configurator/tree/master/licenses" target="_blank" rel="noopener noreferrer">here</a>.
+            You can find their licenses <a href="https://github.com/mlocati/php-cs-fixer-configurator/tree/main/licenses" target="_blank" rel="noopener noreferrer">here</a>.
         </b-alert>
 
         <b-alert
