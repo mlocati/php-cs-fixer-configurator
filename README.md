@@ -17,17 +17,12 @@ The PHP-CS-Fixer data is extracted by a couple of PHP scripts.
 
 1. install [PHP](https://php.net/)
 2. install [Composer](https://getcomposer.org/) and add it to the `PATH` environment variable, so that it can be executed by running `composer`
-3. run
-   ```sh
-   composer install
-   ```
 
 ### Updating the data to the most recent versions
 
 ```sh
 ./bin/update-docs-all
 ```
-
 
 ### (Re)Generate the data for all the versions
 

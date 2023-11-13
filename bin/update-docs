@@ -51,10 +51,10 @@ function deleteFromFilesystem($path)
 
 try {
     if (isset($argv[1])) {
-        if (is_file(dirname(__DIR__) . '/composer.lock')) {
-            @unlink(dirname(__DIR__) . '/composer.lock');
-        }
+        deleteFromFilesystem(dirname(__DIR__) . '/composer.json');
+        deleteFromFilesystem(dirname(__DIR__) . '/composer.lock');
         deleteFromFilesystem(dirname(__DIR__) . '/vendor');
+        copy(dirname(__DIR__) . '/composer-template.json', dirname(__DIR__) .  '/composer.json');
         fwrite(STDOUT, "Installing PHP-CS-Fixer version {$argv[1]}... ");
         $cmd = ['composer'];
         $cmd[] = '--prefer-lowest';
@@ -76,6 +76,9 @@ try {
             exit($rc);
         }
         fwrite(STDOUT, "done.\n");
+    } elseif (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+        fwrite(STDERR, "Dependencies not installed yet.\nPlease specify the version you want to work on.\n");
+        exit(1);
     }
 
     require_once dirname(__DIR__) . '/php/Patcher.php';
