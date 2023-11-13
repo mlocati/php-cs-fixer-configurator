@@ -20,11 +20,11 @@ export default class LaravelPintExporter implements ExporterInterface {
 
         if (configuration.fixerSets !== undefined) {
             if (configuration.fixerSets.length > 1) {
-                throw new Error('Laravel Pint supports up to 1 preset; Try to expand them');
+                throw new Error('Laravel Pint supports up to 1 preset: try expanding the presets.');
             }
-
-            if (!['@Symfony', '@PER', '@PSR12'].includes(configuration.fixerSets[0])) {
-                throw new Error('Laravel Pint only supports the following presets: psr12, symfony, per; Try to expand them');
+            const supportedPresets: string[] = ['@Symfony', '@PER', '@PSR12'];
+            if (!supportedPresets.includes(configuration.fixerSets[0])) {
+                throw new Error(`Laravel Pint only supports the following presets:\n- ${supportedPresets.join('\n- ')}\n\nTry expanding the preset.`);
             }
 
             converted.preset = configuration.fixerSets[0].substr(1).toLowerCase();
