@@ -12,6 +12,11 @@ interface ImporterInterface {
     readonly name: string;
 
     /**
+     * Set to true for "generic" importers (yaml, json, ...)
+     */
+    readonly isGeneric: boolean;
+
+    /**
      * The text to be displayed in the import dialog.
      */
     readonly pastePlaceholder: string;

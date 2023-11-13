@@ -9,6 +9,8 @@ export default class PhpECSImporter implements ImporterInterface {
 
     readonly name: string = 'PHP Easy Coding Standard (ecs.php)';
 
+    readonly isGeneric: boolean = false;
+
     readonly pastePlaceholder: string = 'Paste here the full contents of your ecs.php files';
 
     private readonly parser: any;

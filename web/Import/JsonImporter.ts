@@ -6,6 +6,8 @@ export default class JsonImporter extends ObjectImporter implements ImporterInte
     readonly handle: string = 'json';
 
     readonly name: string = 'JSON';
+    
+    readonly isGeneric: boolean = true;
 
     readonly pastePlaceholder: string = '';
 
