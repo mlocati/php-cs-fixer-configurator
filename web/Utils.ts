@@ -126,9 +126,8 @@ function valueToPhp(value: any, pretty: boolean, indentLevel: number): string {
     }
     if (typeof value === 'object') {
         const values: string[] = [];
-        const KEYVALUE_SEPARATOR = pretty ? ' => ' : '=>';
         Object.keys(value).forEach((key: string) => {
-            values.push(valueToPhp(key, pretty, indentLevel + 1) + KEYVALUE_SEPARATOR + valueToPhp(value[key], pretty, indentLevel + 1));
+            values.push(valueToPhp(key, pretty, indentLevel + 1) + ' => ' + valueToPhp(value[key], pretty, indentLevel + 1));
         });
         if (pretty && value.length > 0) {
             return '[\n' + INDENT1.repeat(indentLevel + 1) + values.join(',\n' + INDENT1.repeat(indentLevel + 1)) + ',\n' + INDENT1.repeat(indentLevel) + ']';
