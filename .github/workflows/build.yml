@@ -3,12 +3,12 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - main
     tags-ignore:
       - "**"
   pull_request:
     branches:
-      - master
+      - main
   repository_dispatch:
     types:
       - build
