@@ -1,4 +1,4 @@
-[![TravisCI Build Status](https://travis-ci.com/mlocati/php-cs-fixer-configurator.svg?branch=master)](https://travis-ci.com/mlocati/php-cs-fixer-configurator)
+[![Build](https://github.com/mlocati/php-cs-fixer-configurator/actions/workflows/build.yml/badge.svg)](https://github.com/mlocati/php-cs-fixer-configurator/actions/workflows/build.yml)
 
 # PHP-CS-Fixer Configurator
 
@@ -80,7 +80,7 @@ So, please don't add these files to your commits when submitting pull requests.
 
 [PHP-CS-Fixer Configurator](https://mlocati.github.io/php-cs-fixer-configurator/) uses some great open source tools.
 
-You can find their licenses in the [licenses](https://github.com/mlocati/php-cs-fixer-configurator/tree/master/licenses) directory.
+You can find their licenses in the [licenses](https://github.com/mlocati/php-cs-fixer-configurator/tree/main/licenses) directory.
 
 
 ## Do you want to really say thank you?
