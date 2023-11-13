@@ -78,7 +78,7 @@ jobs:
       - name: Build
         run: npm run-script production
       - name: Check changes
-        if: github.event_name != 'pull_request'
+        if: github.repository == 'mlocati/php-cs-fixer-configurator' && github.event_name != 'pull_request'
         run: |
           if test -z "$(git status --porcelain -- docs)"; then
             echo 'No changes detected in built app'
