@@ -61,6 +61,8 @@
         <b-alert
             show
             v-if="outputError"
+            variant="danger"
+            class="output-error"
         >{{ outputError}}</b-alert>
         <template v-else>
             <b-button
@@ -193,5 +195,8 @@ export default Vue.extend({
 .copy-button {
     position: absolute;
     right: 16px;
+}
+.output-error {
+    white-space: pre-wrap;
 }
 </style>
