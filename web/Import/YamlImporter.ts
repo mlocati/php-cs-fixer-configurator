@@ -8,6 +8,8 @@ export default class YamlImporter extends ObjectImporter implements ImporterInte
 
     readonly name: string = 'YAML';
 
+    readonly isGeneric: boolean = true;
+
     readonly pastePlaceholder: string = '';
 
     protected unserialize(serialized: string): any {

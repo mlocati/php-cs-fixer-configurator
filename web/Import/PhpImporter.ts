@@ -8,6 +8,8 @@ export default class PhpImporter implements ImporterInterface {
 
     readonly name: string = 'PHP';
 
+    readonly isGeneric: boolean = true;
+
     readonly pastePlaceholder: string = 'Paste here the full contents of your .php_cs / .php_cs.dist files (or just the array with the rules).';
 
     private readonly parser: any;

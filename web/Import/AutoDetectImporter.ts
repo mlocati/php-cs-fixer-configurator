@@ -16,6 +16,8 @@ export default class AutoDetectImporter implements ImporterInterface {
 
     readonly name: string = 'Auto-detect';
 
+    readonly isGeneric: boolean = false;
+
     readonly pastePlaceholder: string = "Paste here the state in any of the supported formats.\n\nWe'll try to auto - detect its format.";
 
     public constructor(actualImporters: ImporterInterface[]) {
@@ -33,11 +35,11 @@ export default class AutoDetectImporter implements ImporterInterface {
             } catch {
                 return false;
             }
-            if (found === undefined || found.importer instanceof YamlImporter && importer instanceof JsonImporter) {
+            if (found === undefined || found.importer.isGeneric && !importer.isGeneric) {
                 found = { configuration: configuration, importer: importer };
                 return false;
             }
-            if (found.importer instanceof JsonImporter && importer instanceof YamlImporter) {
+            if (importer.isGeneric && !found.importer.isGeneric) {
                 return false;
             }
             found = undefined;
