@@ -1,6 +1,39 @@
 <template>
     <div>
         <b-alert
+            v-if="fixerSet.description !== ''"
+            show
+            variant="info"
+        >
+            {{  fixerSet.description }}
+        </b-alert>
+        <b-alert
+            v-if="fixerSet.deprecated_switchToNames !== null"
+            show
+            variant="warning"
+        >
+            <div>
+                <b>
+                    <i
+                        class="fa fa-thumbs-down"
+                        aria-hidden="true"
+                    ></i>
+                    Deprecated!
+                </b>
+            </div>
+            <div v-if="fixerSet.deprecated_switchToNames.length === 0">
+                No successor has been defined.
+            </div>
+            <template v-else>
+                Please use
+                <template
+                    v-for="deprecated_switchTo in fixerSet.deprecated_switchTo"
+                >
+                    <fixer-set-link v-bind:fixerSet="deprecated_switchTo"></fixer-set-link>
+                </template>
+            </template>
+        </b-alert>
+        <b-alert
             v-if="fixerSet.risky"
             show
             variant="danger"
@@ -52,6 +85,7 @@
 
 <script lang="ts">
 import FixerLink from './FixerLink.vue';
+import FixerSetLink from './FixerSetLink.vue';
 import Fixer from '../Fixer';
 import FixerSet from '../FixerSet';
 import Prism from './Prism.vue';
@@ -63,6 +97,7 @@ import Vue from 'vue';
 export default Vue.extend({
     components: {
         FixerLink,
+        FixerSetLink,
         Prism,
     },
     props: {

@@ -73,14 +73,27 @@ export default class Fixer implements FixerOrSetInterface {
         }
         const fixerSets: FixerSet[] = [];
         this.version.fixerSets.forEach((fixerSet: FixerSet) => {
-            fixerSet.fixers.forEach((fixerSetFixer: FixerSetFixer) => {
-                if (fixerSetFixer.fixer === this) {
-                    fixerSets.push(fixerSet);
-                }
-            });
+            if (fixerSet.usesFixer(this)) {
+                fixerSets.push(fixerSet);
+            }
         });
         this._fixerSets = fixerSets;
         return this._fixerSets;
+    }
+
+    private _directFixerSets?: FixerSet[];
+    public get directFixerSets(): FixerSet[] {
+        if (this._directFixerSets !== undefined) {
+            return this._directFixerSets;
+        }
+        const directFixerSets: FixerSet[] = [];
+        this.version.fixerSets.forEach((fixerSet: FixerSet) => {
+            if (fixerSet.usesFixer(this, true)) {
+                directFixerSets.push(fixerSet);
+            }
+        });
+        this._directFixerSets = directFixerSets;
+        return this._directFixerSets;
     }
 
     /**
