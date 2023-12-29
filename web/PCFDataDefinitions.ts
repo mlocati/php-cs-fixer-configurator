@@ -29,7 +29,7 @@ export interface PCFData {
     /**
      * The list of available fixer sets.
      */
-    sets: { [name: string]: { [fixerName: string]: object | null } },
+    sets: { [name: string]: PFCFixerSet },
 }
 
 /**
@@ -71,11 +71,37 @@ export interface PFCFixer {
      * Not empty if present.
      */
     codeSamples?: PFCFixerCodeSample[],
-
     /**
      * The full class name of the fixer including the namespace.
      */
     fullClassName: string,
+}
+
+/**
+ * Represent a single fixer implemented by PHP-CS-Fixer.
+ */
+export interface PFCFixerSet {
+    /**
+     * The list of rules and their (optional) configuration.
+     */
+    rules: { [fixerName: string]: object | null },
+    /**
+     * The fixer set description (if available).
+     */
+    description?: string,
+    /**
+     * Is the fixer set risky (if known).
+     */
+    risky?: boolean,
+    /**
+     * If this fixer set is deprecated, list of the names of the fixer sets that should be used instead.
+     * May be empty if no successor is defined.
+     */
+     deprecated_switchTo?: string[],
+     /**
+      * List of fixer sets used by this fixer set (if any).
+      */
+     extends?: string[],
 }
 
 /**

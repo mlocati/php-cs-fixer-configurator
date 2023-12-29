@@ -76,14 +76,14 @@ try {
             exit($rc);
         }
         fwrite(STDOUT, "done.\n");
-    } elseif (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+    } elseif (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
         fwrite(STDERR, "Dependencies not installed yet.\nPlease specify the version you want to work on.\n");
         exit(1);
     }
 
     require_once dirname(__DIR__) . '/php/Patcher.php';
     Patcher::withPatches(static function () {
-        require_once dirname(__DIR__) . '/vendor/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
 
         fwrite(STDOUT, 'Extracting data... ');
         $dataExtractor = new DataExtractor();

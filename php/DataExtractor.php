@@ -11,6 +11,7 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
 use PhpCsFixer\StdinFileInfo;
 use PhpCsFixer\Tokenizer\Tokens;
+use RuntimeException;
 
 class DataExtractor
 {
@@ -189,16 +190,39 @@ class DataExtractor
         $result = [];
         $setNames = $this->getSetNames();
         foreach ($setNames as $setName) {
-            $ruleSet = $this->createRuleSet([$setName => true]);
-            $config = [];
+            $ruleSet = $this->createRuleSet($setName);
+            $rulesConfig = [];
+            $extends = [];
             foreach ($ruleSet->getRules() as $ruleName => $ruleConfiguration) {
-                $config[$ruleName] = $ruleConfiguration === true ? null : $ruleConfiguration;
-                if (is_array($config[$ruleName])) {
-                    ksort($config[$ruleName], SORT_NATURAL);
+                if ($ruleName[0] === '@') {
+                    if ($ruleConfiguration !== true) {
+                        throw new RuntimeException("Rule set {$setName} extends {$ruleName} with a configuration??\n" . json_encode($ruleConfiguration, JSON_PRETTY_PRINT));
+                    }
+                    $extends[] = $ruleName;
+                } else {
+                    $rulesConfig[$ruleName] = $ruleConfiguration === true ? null : $ruleConfiguration;
+                    if (is_array($rulesConfig[$ruleName])) {
+                        ksort($rulesConfig[$ruleName], SORT_NATURAL);
+                    }
                 }
             }
-            ksort($config, SORT_NATURAL);
-            $result[$setName] = $config;
+            ksort($rulesConfig, SORT_NATURAL);
+            $result[$setName] = ['rules' => $rulesConfig];
+            if ($extends !== []) {
+                sort($extends, SORT_NATURAL);
+                $result[$setName]['extends'] = $extends;
+            }
+            if ($ruleSet instanceof RuleSet\RuleSetDescriptionInterface) {
+                if ($ruleSet->getDescription() !== '') {
+                    $result[$setName]['description'] = $ruleSet->getDescription();
+                }
+                if ($ruleSet->isRisky()) {
+                    $result[$setName]['risky'] = true;
+                }
+            }
+            if ($ruleSet instanceof RuleSet\DeprecatedRuleSetDescriptionInterface) {
+                $result[$setName]['deprecated_switchTo'] = $ruleSet->getSuccessorsNames();
+            }
         }
         ksort($result, SORT_NATURAL);
 
@@ -356,24 +380,28 @@ class DataExtractor
             return RuleSet\RuleSets::getSetDefinitionNames();
         }
 
-        return $this->createRuleSet()->getSetDefinitionNames();
+        return $this->createRuleSet('')->getSetDefinitionNames();
     }
 
     /**
-     * @return \PhpCsFixer\RuleSet\RuleSet|\PhpCsFixer\RuleSet\RuleSet
+     * @param string $setName
+     * @return \PhpCsFixer\RuleSet\RuleSetDescriptionInterface|\PhpCsFixer\RuleSet\RuleSet|\PhpCsFixer\RuleSet
      */
-    private function createRuleSet(array $set = [])
+    private function createRuleSet($setName)
     {
-        if (class_exists(RuleSet\RuleSet::class)) {
+        if ($setName !== '' && class_exists(RuleSet\RuleSets::class) && method_exists(RuleSet\RuleSets::class, 'getSetDefinition')) {
             set_error_handler(static function () {}, E_USER_DEPRECATED);
             try {
-                return new RuleSet\RuleSet($set);
+                return RuleSet\RuleSets::getSetDefinition($setName);
             } finally {
                 restore_error_handler();
             }
         }
+        if (class_exists(RuleSet\RuleSet::class)) {
+            return new RuleSet\RuleSet($setName === '' ? [] : [$setName => true]);
+        }
 
-        return RuleSet::create($set);
+        return RuleSet::create($setName === '' ? [] : [$setName => true]);
     }
 
     /**
