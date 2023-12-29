@@ -365,7 +365,12 @@ class DataExtractor
     private function createRuleSet(array $set = [])
     {
         if (class_exists(RuleSet\RuleSet::class)) {
-            return new RuleSet\RuleSet($set);
+            set_error_handler(static function () {}, E_USER_DEPRECATED);
+            try {
+                return new RuleSet\RuleSet($set);
+            } finally {
+                restore_error_handler();
+            }
         }
 
         return RuleSet::create($set);
