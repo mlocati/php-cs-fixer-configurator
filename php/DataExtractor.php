@@ -90,6 +90,9 @@ class DataExtractor
                             $o['alias'] = $s;
                         }
                     }
+                    if ($option instanceof FixerConfiguration\DeprecatedFixerOption) {
+                        $o['deprecationReason'] = $option->getDeprecationMessage() ?: 'Deprecated';
+                    }
                     $s = (string) $option->getDescription();
                     if ($s !== '') {
                         $o['description'] = str_replace(PHP_EOL, "\n", $s);
@@ -239,7 +242,12 @@ class DataExtractor
             $originalConfiguration = $codeSample->getConfiguration();
             $tokens = $this->extractTokens($old);
             if ($fixer instanceof Fixer\ConfigurableFixerInterface) {
-                $fixer->configure($originalConfiguration === null ? [] : $originalConfiguration);
+                set_error_handler(static function () {}, E_DEPRECATED);
+                try {
+                    $fixer->configure($originalConfiguration === null ? [] : $originalConfiguration);
+                } finally {
+                    restore_error_handler();
+                }
             }
             $file = $codeSample instanceof FixerDefinition\FileSpecificCodeSampleInterface ? $codeSample->getSplFileInfo() : new StdinFileInfo();
             $fixer->fix($file, $tokens);

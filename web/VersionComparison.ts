@@ -203,6 +203,13 @@ function compareFixers(newerFixer: Fixer, olderFixer: Fixer): Difference[] {
         if (newerOption.name !== olderOption.name) {
             diffs.push({ description: `The name of the option \`${olderOption.name}\` changed to \`${newerOption.name}\` (previous name is still usable)` });
         }
+        if ((newerOption.deprecationReason === undefined) !== (olderOption.deprecationReason === undefined)) {
+            diffs.push({
+                description: newerOption.deprecationReason !== undefined ?
+                    `The \`${newerOption.name}\` option has been deprecated` :
+                    `The \`${newerOption.name}\` option is no more deprecated`
+            });
+        }
         if ((newerOption.defaultValue === undefined) !== (olderOption.defaultValue === undefined)) {
             diffs.push({
                 description: newerOption.defaultValue !== undefined ?

@@ -143,6 +143,19 @@
                         <b-card-text v-if="option.description">
                             <div v-html="textToHtml(option.description)"></div>
                         </b-card-text>
+                        <b-card-text v-if="option.hasOwnProperty('deprecationReason')">
+                            <b-alert
+                                show
+                                variant="danger"
+                            >
+                                <b><i
+                                    class="fa fa-thumbs-down"
+                                    aria-hidden="true"
+                                ></i> Deprecated</b>
+
+                                <div v-html="textToHtml(option.deprecationReason || '')"></div>
+                            </b-alert>
+                        </b-card-text>
                         <dl class="row">
                             <template v-if="option.alias">
                                 <dt class="col-sm-3">Alias</dt>

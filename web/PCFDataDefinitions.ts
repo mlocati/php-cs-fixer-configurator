@@ -136,6 +136,11 @@ export interface PFCFixerOption {
      * Not empty if present.
      */
     allowedValues?: any[],
+    /**
+     * If the option is deprecated: a description of the deprecation.
+     * Not empty if present.
+     */
+    deprecationReason?: string,
 }
 
 /**

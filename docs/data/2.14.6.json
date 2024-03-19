@@ -92,6 +92,7 @@
             "configuration": [
                 {
                     "name": "align_double_arrow",
+                    "deprecationReason": "Use options `operators` and `default` instead.",
                     "description": "Whether to apply, remove or ignore double arrows alignment.",
                     "defaultValue": false,
                     "allowedValues": [
@@ -102,6 +103,7 @@
                 },
                 {
                     "name": "align_equals",
+                    "deprecationReason": "Use options `operators` and `default` instead.",
                     "description": "Whether to apply, remove or ignore equals alignment.",
                     "defaultValue": false,
                     "allowedValues": [
@@ -1154,6 +1156,7 @@
                 },
                 {
                     "name": "around_argument_assignments",
+                    "deprecationReason": "Use options `before_argument_assignments` and `after_argument_assignments` instead.",
                     "description": "Whether to fix spaces around argument assignment operator.",
                     "defaultValue": true,
                     "allowedTypes": [
@@ -1162,6 +1165,7 @@
                 },
                 {
                     "name": "around_array_assignments",
+                    "deprecationReason": "Use options `before_array_assignments_equals`, `after_array_assignments_equals`, `before_array_assignments_colon` and `after_array_assignments_colon` instead.",
                     "description": "Whether to fix spaces around array assignment operators.",
                     "defaultValue": true,
                     "allowedTypes": [
@@ -1877,6 +1881,7 @@
             "configuration": [
                 {
                     "name": "use_yoda_style",
+                    "deprecationReason": "Use `yoda_style` fixer instead.",
                     "description": "Whether Yoda style conditions should be used.",
                     "defaultValue": true,
                     "allowedTypes": [
@@ -2038,6 +2043,7 @@
             "configuration": [
                 {
                     "name": "ensure_fully_multiline",
+                    "deprecationReason": "Use option `on_multiline` instead.",
                     "description": "ensure every argument of a multiline argument list is on its own line",
                     "defaultValue": false,
                     "allowedTypes": [
@@ -3578,6 +3584,7 @@
             "configuration": [
                 {
                     "name": "functions",
+                    "deprecationReason": "Use option `target` instead.",
                     "description": "List of assertions to fix (overrides `target`).",
                     "defaultValue": null,
                     "allowedTypes": [
@@ -3928,6 +3935,7 @@
             "configuration": [
                 {
                     "name": "case",
+                    "deprecationReason": "Use `php_unit_method_casing` fixer instead.",
                     "description": "Whether to camel or snake case when adding the test prefix",
                     "defaultValue": "camel",
                     "allowedValues": [
