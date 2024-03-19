@@ -2255,6 +2255,7 @@
             "configuration": [
                 {
                     "name": "annotation_exclude",
+                    "deprecationReason": "Use `exclude` to configure PHPDoc annotations tags and attributes.",
                     "description": "Class level attribute or annotation tags that must be omitted to fix the class, even if all of the white list ones are used as well (case insensitive).",
                     "defaultValue": [
                         "@final",
@@ -2271,6 +2272,7 @@
                 },
                 {
                     "name": "annotation_include",
+                    "deprecationReason": "Use `include` to configure PHPDoc annotations tags and attributes.",
                     "description": "Class level attribute or annotation tags that must be set in order to fix the class (case insensitive).",
                     "defaultValue": [
                         "@internal"
