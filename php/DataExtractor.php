@@ -90,6 +90,9 @@ class DataExtractor
                             $o['alias'] = $s;
                         }
                     }
+                    if ($option instanceof FixerConfiguration\DeprecatedFixerOption) {
+                        $o['deprecationReason'] = $option->getDeprecationMessage() ?: 'Deprecated';
+                    }
                     $s = (string) $option->getDescription();
                     if ($s !== '') {
                         $o['description'] = str_replace(PHP_EOL, "\n", $s);
