@@ -90,6 +90,10 @@ jobs:
       - name: Commit and push
         if: env.PUSH_CHANGES == 'y'
         run: |
+          printf 'Configuring git... '
+          git config --local user.name GitHub
+          git config --local user.email noreply@github.com
+          echo 'done.'
           echo 'Committing changes'
           git commit -m '[skip ci] Automatic assets rebuilding'
           echo 'Pushing'
