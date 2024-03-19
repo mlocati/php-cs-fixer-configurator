@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check changed files
@@ -70,7 +70,7 @@ jobs:
             fi
           fi
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: "18"
       - name: Install dependencies
@@ -90,10 +90,6 @@ jobs:
       - name: Commit and push
         if: env.PUSH_CHANGES == 'y'
         run: |
-          printf 'Configuring git... '
-          git config --local user.name 'Michele Locati'
-          git config --local user.email 'michele@locati.it'
-          echo 'done.'
           echo 'Committing changes'
           git commit -m '[skip ci] Automatic assets rebuilding'
           echo 'Pushing'
