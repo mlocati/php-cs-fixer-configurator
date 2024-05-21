@@ -313,6 +313,9 @@ export default class Fixer implements FixerOrSetInterface {
                     case 'null':
                         typeFound = valueType === ValueType.NULL;
                         break;
+                    case 'string[]':
+                        typeFound = valueType === ValueType.ARRAY;
+                        break;
                 }
                 return typeFound;
             });

@@ -1,5 +1,5 @@
 {
-    "version": "3.57.1",
+    "version": "3.57.2",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -312,7 +312,7 @@
                         "try"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -779,7 +779,7 @@
                         "case": "none"
                     },
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -1003,7 +1003,7 @@
                     "description": "List of ignored tags.",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -1463,7 +1463,7 @@
                         "override"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -1591,7 +1591,7 @@
                         "override"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -1719,7 +1719,7 @@
                         "override"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -1916,7 +1916,7 @@
                         "override"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -2124,7 +2124,7 @@
                     "description": "List of global functions to exclude from removing `@`.",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -2267,7 +2267,7 @@
                         "@ODM\\Document"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -2278,7 +2278,7 @@
                         "@internal"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -2302,7 +2302,7 @@
                         "ODM\\Document"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -2312,7 +2312,7 @@
                         "internal"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -2446,7 +2446,7 @@
                         "var"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -2547,7 +2547,7 @@
                         "pi"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -2606,7 +2606,7 @@
                     "description": "List of annotations to remove, e.g. `[\"author\"]`.",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -2683,7 +2683,7 @@
                     "description": "A map of tags to replace.",
                     "defaultValue": {},
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -2931,7 +2931,7 @@
                         "YAML"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -3456,7 +3456,7 @@
                         "true"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -3472,7 +3472,7 @@
                     "description": "List of additional constants to fix.",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -3556,7 +3556,7 @@
                     "description": "List of functions to ignore.",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -3566,7 +3566,7 @@
                         "@compiler_optimized"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -3794,7 +3794,7 @@
                         "@pg"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -4007,7 +4007,7 @@
                         "extra"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -4286,7 +4286,7 @@
                         "outside"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -4447,7 +4447,7 @@
                         "group_import"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -4577,7 +4577,7 @@
                         "yield"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -5156,7 +5156,7 @@
                         "method_private"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 },
                 {
@@ -5225,7 +5225,7 @@
                     "description": "Defines the order of import types.",
                     "defaultValue": null,
                     "allowedTypes": [
-                        "array",
+                        "string[]",
                         "null"
                     ]
                 },
@@ -5487,7 +5487,7 @@
                         "assertNotSame"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -5756,7 +5756,7 @@
                         "final"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -5992,7 +5992,7 @@
                         "assertNotEquals"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -6074,7 +6074,7 @@
                     "description": "Dictionary of `method` => `call_type` values that differ from the default strategy.",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6175,7 +6175,7 @@
                         "var"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6269,7 +6269,7 @@
                         "tutorial"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6374,7 +6374,7 @@
                         "link": "see"
                     },
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6501,7 +6501,7 @@
                         "covers"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -6578,7 +6578,7 @@
                         "@static": "static"
                     },
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6793,7 +6793,7 @@
                         "inheritDoc"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6844,7 +6844,7 @@
                         "version": "annotation"
                     },
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -6881,7 +6881,7 @@
                     "description": "List of ignored tags (matched case insensitively).",
                     "defaultValue": [],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ]
                 }
             ],
@@ -7077,7 +7077,7 @@
                         "meta"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -7521,7 +7521,7 @@
                         "property"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -7610,7 +7610,7 @@
                         "hash"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -7762,7 +7762,7 @@
                         "yield_from"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -7870,7 +7870,7 @@
                         "yield_from"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -7945,7 +7945,7 @@
                         "yield_from"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -8021,7 +8021,7 @@
                         "use_lambda"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -8432,7 +8432,7 @@
                         "arrays"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -8498,7 +8498,7 @@
                         "property"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
@@ -8634,7 +8634,7 @@
                         "const"
                     ],
                     "allowedTypes": [
-                        "array"
+                        "string[]"
                     ],
                     "allowedValues": [
                         [
