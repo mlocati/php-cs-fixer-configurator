@@ -461,6 +461,45 @@ export default Vue.extend({
             this.viewFixerOrSet({fixerOrSet});
         }
     },
+    mounted() {
+        window.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (
+                e.target instanceof HTMLInputElement
+                || e.target instanceof HTMLTextAreaElement
+                || e.target instanceof HTMLSelectElement
+            ) {
+                return;
+            }
+            if (
+                this.viewingFixerOrSetAndFixer === null
+                || this.viewingFixerOrSetAndFixer.fixerOrSet.type !== 'fixer'
+                || this.viewingFixerOrSetAndFixer === null
+            ) {
+                return;
+            }
+            let delta;
+            switch (e.code) {
+                case 'ArrowLeft':
+                    delta = -1;
+                    break;
+                case 'ArrowRight':
+                    delta = 1;
+                    break;
+                default:
+                    return;
+            }
+            const oldIndex = this.visibleFixers.indexOf(<Fixer>this.viewingFixerOrSetAndFixer.fixerOrSet);
+            if (oldIndex < 0) {
+                return;
+            }
+            const newIndex = oldIndex + delta;
+            if (newIndex < 0 || newIndex >= this.visibleFixers.length) {
+                return;
+            }
+            this.viewingFixerOrSetAndFixer = null;
+            this.viewFixerOrSet({fixerOrSet: this.visibleFixers[newIndex]});
+        });
+    },
     computed: {
         unselectedFixerSets: function(): FixerSet[] {
             const selectedFixerSetNames: string[] = this.configuration.fixerSets.map((fixerSetName: string): string => {
