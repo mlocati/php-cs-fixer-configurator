@@ -37,7 +37,7 @@
                         >
                             <i class="fas fa-plus"></i>
                         </b-button>
-                        <br />Substract the fixers defined in other presets with
+                        <br />Subtract the fixers defined in other presets with
                         <b-button
                             size="sm"
                             variant="danger"

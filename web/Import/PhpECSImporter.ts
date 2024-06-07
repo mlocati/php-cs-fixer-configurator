@@ -61,7 +61,7 @@ export default class PhpECSImporter implements ImporterInterface {
             someData = true;
         }
         if (someData === false) {
-            throw new Error('No service definition, no sets and no configration found.');
+            throw new Error('No service definition, no sets and no configuration found.');
         }
         return configuration;
     }

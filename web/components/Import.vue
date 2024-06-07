@@ -55,15 +55,15 @@ export default Vue.extend({
         },
     },
     mounted: function(): void {
-        this.impotTextChanged();
+        this.importTextChanged();
     },
     watch: {
         importText: function() {
-            this.impotTextChanged();
+            this.importTextChanged();
         },
     },
     methods: {
-        impotTextChanged: function(): void {
+        importTextChanged: function(): void {
             this.$emit('importButtonTextChanged', this.importText === '' ? 'Clear configuration' : 'Import');
         },
         doImport: function(): SerializedConfigurationInterface | null {

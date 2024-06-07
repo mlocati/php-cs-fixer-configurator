@@ -420,11 +420,11 @@ class DataExtractor
     private function getOverrideRequiredPHPVersion($fixerName)
     {
         list($minPhpVersion, $maxPhpVersion) = $this->getFixerRequiredPHPVersion($fixerName);
-        $currentPhpVerion = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
-        if ($minPhpVersion !== null && version_compare($currentPhpVerion, $minPhpVersion) < 0) {
+        $currentPhpVersion = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+        if ($minPhpVersion !== null && version_compare($currentPhpVersion, $minPhpVersion) < 0) {
             return $minPhpVersion;
         }
-        if ($maxPhpVersion !== null && version_compare($currentPhpVerion, $maxPhpVersion) > 0) {
+        if ($maxPhpVersion !== null && version_compare($currentPhpVersion, $maxPhpVersion) > 0) {
             return $maxPhpVersion;
         }
         

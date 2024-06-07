@@ -17,7 +17,7 @@ class FixerRunnerLauncher
         $output = [];
         exec("{$cmd} 2>&1", $output, $rc);
         if ($rc !== 0) {
-            throw new RuntimeException("Invokation of fixer-runner for fixer {$fixer->getName()} with PHP {$phpVersion} failed:\n" . implode("\n", $output));
+            throw new RuntimeException("Invocation of fixer-runner for fixer {$fixer->getName()} with PHP {$phpVersion} failed:\n" . implode("\n", $output));
         }
         $decoded = base64_decode(trim(implode("\n", $output)), true);
         if ($decoded === false) {
