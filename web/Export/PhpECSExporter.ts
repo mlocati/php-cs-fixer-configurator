@@ -78,7 +78,7 @@ export default class PhpECSExporter implements ExporterInterface {
             lines.push(INDENT + INDENT + '// @TODO must be reviewed manually, as preset names differ');
             configuration.fixerSets.forEach((fixerSetName: string): void => {
                 if (fixerSetName.charAt(0) === '-') {
-                    throw new Error("easy-coding-standard doesn't support substracting presets.\nYour only option is to check the 'Expand presets' checkbox");
+                    throw new Error("easy-coding-standard doesn't support subtracting presets.\nYour only option is to check the 'Expand presets' checkbox");
                 }
                 lines.push(INDENT + INDENT + 'SetList::' + setNameToConst(fixerSetName.substr(1)) + ',');
             });
