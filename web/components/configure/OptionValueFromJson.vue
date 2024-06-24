@@ -60,13 +60,16 @@ export default Vue.extend({
             }
             const result: string[] = [];
             this.allowedTypes.forEach((allowedType: string): void => {
-                switch (allowedType) {
-                    case 'array':
+                switch (true) {
+                    case allowedType === 'array':
                         if (ValueType.get(this.defaultValue) === ValueType.OBJECT) {
                             result.push('object');
                         } else {
                             result.push(allowedType);
                         }
+                        break;
+                    case allowedType.includes('array<string,'):
+                        result.push('object');
                         break;
                     default:
                         result.push(allowedType);

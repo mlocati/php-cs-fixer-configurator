@@ -316,6 +316,11 @@ export default class Fixer implements FixerOrSetInterface {
                     case 'string[]':
                         typeFound = valueType === ValueType.ARRAY;
                         break;
+                    default:
+                        if (allowedType.includes('array<string,')) {
+                            typeFound = valueType === ValueType.OBJECT;
+                        }
+                        break;
                 }
                 return typeFound;
             });
