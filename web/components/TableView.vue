@@ -21,7 +21,6 @@
 <script lang="ts">
 import Configuration from '../Configuration';
 import TableViewFixer from './TableView.Fixer.vue';
-import Version from '../Version';
 import Vue from 'vue';
 
 export default Vue.extend({

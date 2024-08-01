@@ -32,7 +32,6 @@
 </template>
 
 <script lang="ts">
-import { toPhp, textToHtml } from "../../Utils";
 import Vue from "vue";
 
 export default Vue.extend({

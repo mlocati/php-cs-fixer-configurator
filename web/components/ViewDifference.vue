@@ -24,7 +24,7 @@
 <script lang="ts">
 import { Difference } from '../VersionComparison';
 import Prism from './Prism.vue';
-import { textToHtml, toPhp } from '../Utils';
+import { textToHtml } from '../Utils';
 import Vue from 'vue';
 
 export default Vue.extend({
