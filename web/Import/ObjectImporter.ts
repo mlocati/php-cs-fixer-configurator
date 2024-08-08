@@ -114,16 +114,3 @@ export default abstract class ObjectImporter {
         return result;
     }
 }
-/*
-        if (typeof v.fixers === 'object') {
-            Object.keys(v.fixers).forEach((fixerName: string) => {
-                let value = v.fixers[fixerName];
-                if (typeof value === 'boolean' || typeof value === 'object') {
-                    configuration.fixers[fixerName] = value;
-                }
-            });
-        }
-        return configuration;
-    }
-}
-*/

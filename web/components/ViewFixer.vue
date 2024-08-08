@@ -198,9 +198,8 @@
                     </b-card>
                 </div>
             </div>
-            <template v-for="(codeSample, codeSampleIndex) in fixer.codeSamples">
+            <template v-for="(codeSample, codeSampleIndex) in fixer.codeSamples" v-bind:key="codeSampleIndex">
                 <div
-                    v-bind:key="codeSampleIndex"
                     class="tab-pane"
                     v-bind:class="tab === 'codesample-' + codeSampleIndex ? 'active' : ''"
                 >

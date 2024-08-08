@@ -355,8 +355,6 @@ import Version from '../Version';
 import ViewFixer from './ViewFixer.vue';
 import ViewFixerSet from './ViewFixerSet.vue';
 import Vue from 'vue';
-import { createGzip } from 'zlib';
-import { debuglog } from 'util';
 import { BModal } from 'bootstrap-vue';
 
 export default Vue.extend({

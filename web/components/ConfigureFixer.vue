@@ -86,7 +86,6 @@ import { PFCFixerOption } from '../PCFDataDefinitions';
 import Prism from './Prism.vue';
 import { textToHtml } from '../Utils';
 import Vue from 'vue';
-import { unlink } from 'fs';
 
 export default Vue.extend({
     components: {

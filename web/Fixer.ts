@@ -1,7 +1,7 @@
 import Configuration, { FixerState } from './Configuration';
 import { PFCFixer, PFCFixerOption, PFCFixerCodeSample } from './PCFDataDefinitions';
 import FixerOrSetInterface from './FixerOrSetInterface';
-import FixerSet, { FixerSetFixer } from './FixerSet';
+import FixerSet from './FixerSet';
 import { textToHtml, getSearchableArray, ValueType } from './Utils';
 import Version from './Version';
 
