@@ -61,14 +61,11 @@
                     <td>
                         <i v-if="fixer.configuration === null">default</i>
                         <dl v-else>
-                            <template v-for="(configurationValue, configurationKey) in fixer.configuration">
-                                <dt v-bind:key="configurationKey + '@dt'">
+                            <template v-for="(configurationValue, configurationKey) in fixer.configuration" v-bind:key="configurationKey + '@dt'">
+                                <dt>
                                     <b-badge>{{ configurationKey }}</b-badge>
                                 </dt>
-                                <dd
-                                    v-bind:key="configurationKey + '@dd'"
-                                    class="mt-n3"
-                                >
+                                <dd class="mt-n3">
                                     <prism
                                         language="php"
                                         v-bind:code="toPhp(configurationValue)"

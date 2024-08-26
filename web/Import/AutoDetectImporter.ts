@@ -1,7 +1,5 @@
 import ImporterInterface from "./ImporterInterface";
-import JsonImporter from "./JsonImporter";
 import { SerializedConfigurationInterface } from "../Configuration";
-import YamlImporter from "./YamlImporter";
 
 interface FoundImporter {
     configuration: SerializedConfigurationInterface;
