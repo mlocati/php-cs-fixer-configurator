@@ -99,8 +99,9 @@ class PCFCWorker
     {
         $match = null;
         $wantedVersions = [];
-        $packageData = json_decode(file_get_contents('https://repo.packagist.org/p/friendsofphp/php-cs-fixer.json'), true);
-        foreach (array_keys($packageData['packages']['friendsofphp/php-cs-fixer']) as $rawVersion) {
+        $packageData = json_decode(file_get_contents('https://repo.packagist.org/p2/friendsofphp/php-cs-fixer.json'), true);
+        foreach ($packageData['packages']['friendsofphp/php-cs-fixer'] as $versionInfo) {
+            $rawVersion = $versionInfo['version'];
             if (!preg_match('/^(?:v\.?\s*)?(?<version>((?<majorMinor>\d+\.\d+).\d+)(?<dev>\W?(a|alpha|b|beta|rc)\W?\d*)?)$/i', $rawVersion, $match)) {
                 continue;
             }
