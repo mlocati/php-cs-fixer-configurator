@@ -302,6 +302,7 @@ export default class Fixer implements FixerOrSetInterface {
                         typeFound = valueType === ValueType.NULL;
                         break;
                     case 'string':
+                    case 'class-string':
                         typeFound = valueType === ValueType.STRING;
                         break;
                     case 'int':
@@ -314,6 +315,7 @@ export default class Fixer implements FixerOrSetInterface {
                         typeFound = valueType === ValueType.NULL;
                         break;
                     case 'string[]':
+                    case 'class-string[]':
                         typeFound = valueType === ValueType.ARRAY;
                         break;
                     default:
