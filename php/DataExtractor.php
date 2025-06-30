@@ -75,6 +75,7 @@ class DataExtractor
         $factory->registerBuiltInFixers();
         restore_error_handler();
         foreach ($factory->getFixers() as $fixer) {
+            echo $fixer->getName() . "\n";
             $fixerData = [];
             if ($fixer->isRisky()) {
                 $fixerData['risky'] = true;
@@ -372,7 +373,7 @@ class DataExtractor
      */
     private function extractTokens($code)
     {
-        set_error_handler(function () {}, E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING | E_USER_WARNING | E_USER_NOTICE | E_STRICT | E_RECOVERABLE_ERROR | E_DEPRECATED | E_USER_DEPRECATED);
+        set_error_handler(function () {}, E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING | E_USER_WARNING | E_USER_NOTICE | E_RECOVERABLE_ERROR | E_DEPRECATED | E_USER_DEPRECATED);
         $tokens = Tokens::fromCode($code);
         restore_error_handler();
 
@@ -458,9 +459,12 @@ class DataExtractor
             case 'native_type_declaration_casing':
                 // syntax error, unexpected identifier "BAR", expecting "=" in  on line 4
                 if (version_compare($this->getVersion(), '3.33.0') >= 0) {
-                    return ['8.3', null];
+                    return ['8.4', null];
                 }
                 break;
+            case 'normalize_index_brace':
+                // PHP Parse error:  syntax error, unexpected token "{", expecting "," or ";" in  on line 2
+                return [null, '7.4'];
             case 'short_scalar_cast':
                 // The (real) cast has been removed in PHP 8.0
                 return [null, '7.4'];
@@ -472,6 +476,6 @@ class DataExtractor
                 break;
         }
 
-        return ['8.3', null];
+        return ['8.4', null];
     }
 }
