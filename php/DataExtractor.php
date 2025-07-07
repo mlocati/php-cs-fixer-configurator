@@ -75,7 +75,6 @@ class DataExtractor
         $factory->registerBuiltInFixers();
         restore_error_handler();
         foreach ($factory->getFixers() as $fixer) {
-            echo $fixer->getName() . "\n";
             $fixerData = [];
             if ($fixer->isRisky()) {
                 $fixerData['risky'] = true;
