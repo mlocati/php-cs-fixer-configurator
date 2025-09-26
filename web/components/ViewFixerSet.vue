@@ -61,7 +61,7 @@
                     <td>
                         <i v-if="fixer.configuration === null">default</i>
                         <dl v-else>
-                            <template v-for="(configurationValue, configurationKey) in fixer.configuration" v-bind:key="configurationKey + '@dt'">
+                            <template v-for="(configurationValue, configurationKey) in fixer.configuration">
                                 <dt>
                                     <b-badge>{{ configurationKey }}</b-badge>
                                 </dt>

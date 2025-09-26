@@ -198,150 +198,150 @@
                     </b-card>
                 </div>
             </div>
-            <template v-for="(codeSample, codeSampleIndex) in fixer.codeSamples" v-bind:key="codeSampleIndex">
-                <div
-                    class="tab-pane"
-                    v-bind:class="tab === 'codesample-' + codeSampleIndex ? 'active' : ''"
-                >
-                    <template v-if="fixer.options.length">
-                        <b-card
-                            header="Configuration"
-                            class="w-100"
-                        >
-                            <ul
-                                class="mb-0 list-unstyled"
-                                v-if="codeSample.hasOwnProperty('configuration')"
-                            >
-                                <li
-                                    v-for="(optionValue, optionKey) in codeSample.configuration"
-                                    v-bind:key="optionKey"
-                                >
-                                    <b-badge>{{ optionKey }}</b-badge>
-                                    <prism
-                                        language="php"
-                                        v-bind:code="toPhp(optionValue)"
-                                        class="mt-n2"
-                                    ></prism>
-                                </li>
-                            </ul>
-                            <i v-else>Default configuration</i>
-                        </b-card>
-                    </template>
-                    <div class="d-none d-xl-block">
-                        <span style="position: absolute; right:31px; margin-top: 10px">
-                            <b-button
-                                v-bind:variant="examplesView === EXAMPLES_VIEW.tabs ? 'success' : 'default'"
-                                size="sm"
-                                v-on:click.prevent="examplesView = EXAMPLES_VIEW.tabs"
-                                title="Tab view"
-                            >
-                                <i class="far fa-square"></i>
-                            </b-button>
-                            <b-button
-                                v-bind:variant="examplesView === EXAMPLES_VIEW.sideBySide ? 'success' : 'default'"
-                                size="sm"
-                                v-on:click.prevent="examplesView = EXAMPLES_VIEW.sideBySide"
-                                title="Side-by-side view"
-                            >
-                                <i class="fas fa-columns"></i>
-                            </b-button>
-                            <b-button
-                                v-bind:variant="examplesView === EXAMPLES_VIEW.diff ? 'success' : 'default'"
-                                size="sm"
-                                v-on:click.prevent="examplesView = EXAMPLES_VIEW.diff"
-                                title="Diff view"
-                            >
-                                <i class="fas fa-grip-lines"></i>
-                            </b-button>
-                        </span>
-                        <div class="mt-3">
-                            <b-tabs
-                                v-if="examplesView === EXAMPLES_VIEW.tabs"
-                                content-class="mt-3"
-                                no-fade
-                            >
-                                <b-tab
-                                    title="Input"
-                                    active
-                                >
-                                    <prism
-                                        language="php"
-                                        v-bind:code="codeSample.from"
-                                        show-invisibles
-                                    ></prism>
-                                </b-tab>
-                                <b-tab title="Output">
-                                    <prism
-                                        language="php"
-                                        v-bind:code="codeSample.to"
-                                        show-invisibles
-                                    ></prism>
-                                </b-tab>
-                            </b-tabs>
-                            <table
-                                v-else-if="examplesView === EXAMPLES_VIEW.sideBySide"
-                                class="table"
-                            >
-                                <thead>
-                                    <tr>
-                                        <th>Input</th>
-                                        <th>Output</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <prism
-                                                language="php"
-                                                v-bind:code="codeSample.from"
-                                                show-invisibles
-                                            ></prism>
-                                        </td>
-                                        <td>
-                                            <prism
-                                                language="php"
-                                                v-bind:code="codeSample.to"
-                                                show-invisibles
-                                            ></prism>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <prism
-                                v-else
-                                language="diff"
-                                v-bind:code="getCodeSampleDiff(codeSample)"
-                                show-invisibles
-                            ></prism>
-                        </div>
-                        <div>
-                        </div>
-                    </div>
-                    <b-tabs
-                        class="mt-3 d-xl-none"
-                        content-class="mt-3"
-                        no-fade
+            <div
+                v-for="(codeSample, codeSampleIndex) in fixer.codeSamples"
+                v-bind:key="codeSampleIndex"
+                class="tab-pane"
+                v-bind:class="tab === 'codesample-' + codeSampleIndex ? 'active' : ''"
+            >
+                <template v-if="fixer.options.length">
+                    <b-card
+                        header="Configuration"
+                        class="w-100"
                     >
-                        <b-tab
-                            title="Input"
-                            active
+                        <ul
+                            class="mb-0 list-unstyled"
+                            v-if="codeSample.hasOwnProperty('configuration')"
                         >
-                            <prism
-                                language="php"
-                                v-bind:code="codeSample.from"
-                                show-invisibles
-                            ></prism>
-                        </b-tab>
-                        <b-tab title="Output">
-                            <prism
-                                language="php"
-                                v-bind:code="codeSample.to"
-                                show-invisibles
-                            ></prism>
-                        </b-tab>
-                    </b-tabs>
+                            <li
+                                v-for="(optionValue, optionKey) in codeSample.configuration"
+                                v-bind:key="optionKey"
+                            >
+                                <b-badge>{{ optionKey }}</b-badge>
+                                <prism
+                                    language="php"
+                                    v-bind:code="toPhp(optionValue)"
+                                    class="mt-n2"
+                                ></prism>
+                            </li>
+                        </ul>
+                        <i v-else>Default configuration</i>
+                    </b-card>
+                </template>
+                <div class="d-none d-xl-block">
+                    <span style="position: absolute; right:31px; margin-top: 10px">
+                        <b-button
+                            v-bind:variant="examplesView === EXAMPLES_VIEW.tabs ? 'success' : 'default'"
+                            size="sm"
+                            v-on:click.prevent="examplesView = EXAMPLES_VIEW.tabs"
+                            title="Tab view"
+                        >
+                            <i class="far fa-square"></i>
+                        </b-button>
+                        <b-button
+                            v-bind:variant="examplesView === EXAMPLES_VIEW.sideBySide ? 'success' : 'default'"
+                            size="sm"
+                            v-on:click.prevent="examplesView = EXAMPLES_VIEW.sideBySide"
+                            title="Side-by-side view"
+                        >
+                            <i class="fas fa-columns"></i>
+                        </b-button>
+                        <b-button
+                            v-bind:variant="examplesView === EXAMPLES_VIEW.diff ? 'success' : 'default'"
+                            size="sm"
+                            v-on:click.prevent="examplesView = EXAMPLES_VIEW.diff"
+                            title="Diff view"
+                        >
+                            <i class="fas fa-grip-lines"></i>
+                        </b-button>
+                    </span>
+                    <div class="mt-3">
+                        <b-tabs
+                            v-if="examplesView === EXAMPLES_VIEW.tabs"
+                            content-class="mt-3"
+                            no-fade
+                        >
+                            <b-tab
+                                title="Input"
+                                active
+                            >
+                                <prism
+                                    language="php"
+                                    v-bind:code="codeSample.from"
+                                    show-invisibles
+                                ></prism>
+                            </b-tab>
+                            <b-tab title="Output">
+                                <prism
+                                    language="php"
+                                    v-bind:code="codeSample.to"
+                                    show-invisibles
+                                ></prism>
+                            </b-tab>
+                        </b-tabs>
+                        <table
+                            v-else-if="examplesView === EXAMPLES_VIEW.sideBySide"
+                            class="table"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Input</th>
+                                    <th>Output</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <prism
+                                            language="php"
+                                            v-bind:code="codeSample.from"
+                                            show-invisibles
+                                        ></prism>
+                                    </td>
+                                    <td>
+                                        <prism
+                                            language="php"
+                                            v-bind:code="codeSample.to"
+                                            show-invisibles
+                                        ></prism>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <prism
+                            v-else
+                            language="diff"
+                            v-bind:code="getCodeSampleDiff(codeSample)"
+                            show-invisibles
+                        ></prism>
+                    </div>
+                    <div>
+                    </div>
                 </div>
-            </template>
+                <b-tabs
+                    class="mt-3 d-xl-none"
+                    content-class="mt-3"
+                    no-fade
+                >
+                    <b-tab
+                        title="Input"
+                        active
+                    >
+                        <prism
+                            language="php"
+                            v-bind:code="codeSample.from"
+                            show-invisibles
+                        ></prism>
+                    </b-tab>
+                    <b-tab title="Output">
+                        <prism
+                            language="php"
+                            v-bind:code="codeSample.to"
+                            show-invisibles
+                        ></prism>
+                    </b-tab>
+                </b-tabs>
+            </div>
             <div
                 class="tab-pane"
                 v-bind:class="tab === 'history' ? 'active' : ''"
