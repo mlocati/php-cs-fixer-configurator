@@ -80,7 +80,7 @@ const SPECIAL_PHP_CHAR_MAP: { [charCode: number]: string } = {
 
 };
 
-function valueToPhp(value: any, pretty: boolean, indentLevel: number): string {
+function valueToPhp(value: any, multiline: boolean, indentLevel: number): string {
     const INDENT1: string = '    ';
     if (value === null) {
         return 'null';
@@ -117,28 +117,28 @@ function valueToPhp(value: any, pretty: boolean, indentLevel: number): string {
     if (value instanceof Array) {
         const values: string[] = [];
         value.forEach((chunk: any) => {
-            values.push(valueToPhp(chunk, pretty, indentLevel + 1));
+            values.push(valueToPhp(chunk, multiline, indentLevel + 1));
         });
-        if (pretty && value.length > 1) {
+        if (multiline && value.length > 1) {
             return '[\n' + INDENT1.repeat(indentLevel + 1) + values.join(',\n' + INDENT1.repeat(indentLevel + 1)) + ',\n' + INDENT1.repeat(indentLevel) + ']';
         }
-        return '[' + values.join(',') + ']';
+        return '[' + values.join(', ') + ']';
     }
     if (typeof value === 'object') {
         const values: string[] = [];
         Object.keys(value).forEach((key: string) => {
-            values.push(valueToPhp(key, pretty, indentLevel + 1) + ' => ' + valueToPhp(value[key], pretty, indentLevel + 1));
+            values.push(valueToPhp(key, multiline, indentLevel + 1) + ' => ' + valueToPhp(value[key], multiline, indentLevel + 1));
         });
-        if (pretty && value.length > 0) {
+        if (multiline && value.length > 0) {
             return '[\n' + INDENT1.repeat(indentLevel + 1) + values.join(',\n' + INDENT1.repeat(indentLevel + 1)) + ',\n' + INDENT1.repeat(indentLevel) + ']';
         }
-        return '[' + values.join(',') + ']';
+        return '[' + values.join(', ') + ']';
     }
     throw new Error('Unhandled object type: ' + (typeof value));
 }
 
-export function toPhp(value: any, pretty: boolean = false, indentLevel: number = 0): string {
-    return valueToPhp(value, pretty, indentLevel);
+export function toPhp(value: any, multiline: boolean = false, indentLevel: number = 0): string {
+    return valueToPhp(value, multiline, indentLevel);
 }
 
 export function underscoreToCamelCase(text: string): string {
