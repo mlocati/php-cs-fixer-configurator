@@ -1,5 +1,5 @@
 {
-    "version": "3.88.0",
+    "version": "3.89.0",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -1340,12 +1340,36 @@
         },
         "declare_strict_types": {
             "risky": true,
+            "configuration": [
+                {
+                    "name": "preserve_existing_declaration",
+                    "description": "Whether existing strict_types=? should be preserved and not overridden.",
+                    "defaultValue": false,
+                    "allowedTypes": [
+                        "bool"
+                    ]
+                }
+            ],
             "summary": "Force strict types declaration in all files.",
             "riskyDescription": "Forcing strict types will stop non strict code from working.",
             "codeSamples": [
                 {
                     "from": "<?php\n",
                     "to": "<?php declare(strict_types=1);"
+                },
+                {
+                    "from": "<?php\ndeclare(Strict_Types=0);\n",
+                    "to": "<?php\ndeclare(strict_types=1);\n",
+                    "configuration": {
+                        "preserve_existing_declaration": false
+                    }
+                },
+                {
+                    "from": "<?php\ndeclare(Strict_Types=0);\n",
+                    "to": "<?php\ndeclare(strict_types=0);\n",
+                    "configuration": {
+                        "preserve_existing_declaration": true
+                    }
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\Strict\\DeclareStrictTypesFixer"
@@ -4719,7 +4743,7 @@
             "fullClassName": "PhpCsFixer\\Fixer\\FunctionNotation\\NoTrailingCommaInSinglelineFunctionCallFixer"
         },
         "no_trailing_whitespace": {
-            "summary": "Remove trailing whitespace at the end of non-blank lines.",
+            "summary": "There must be no trailing whitespace at the end of non-blank lines.",
             "codeSamples": [
                 {
                     "from": "<?php\n$a = 1;     \n",
@@ -4729,7 +4753,7 @@
             "fullClassName": "PhpCsFixer\\Fixer\\Whitespace\\NoTrailingWhitespaceFixer"
         },
         "no_trailing_whitespace_in_comment": {
-            "summary": "There MUST be no trailing spaces inside comment or PHPDoc.",
+            "summary": "There must be no trailing whitespace at the end of lines in comments and PHPDocs.",
             "codeSamples": [
                 {
                     "from": "<?php\n\/\/ This is \n\/\/ a comment. \n",
@@ -4740,7 +4764,7 @@
         },
         "no_trailing_whitespace_in_string": {
             "risky": true,
-            "summary": "There must be no trailing whitespace in strings.",
+            "summary": "There must be no trailing whitespace at the end of lines in strings.",
             "riskyDescription": "Changing the whitespaces in strings might affect string comparisons and outputs.",
             "codeSamples": [
                 {
@@ -6929,6 +6953,9 @@
                             "callback",
                             "double",
                             "integer",
+                            "never-return",
+                            "never-returns",
+                            "no-return",
                             "real",
                             "str"
                         ]
@@ -10506,7 +10533,19 @@
                     ]
                 },
                 "phpdoc_return_self_reference": null,
-                "phpdoc_scalar": null,
+                "phpdoc_scalar": {
+                    "types": [
+                        "boolean",
+                        "callback",
+                        "double",
+                        "integer",
+                        "never-return",
+                        "never-returns",
+                        "no-return",
+                        "real",
+                        "str"
+                    ]
+                },
                 "phpdoc_separation": {
                     "groups": [
                         [
