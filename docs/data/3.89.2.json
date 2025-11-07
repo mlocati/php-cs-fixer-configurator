@@ -1,5 +1,5 @@
 {
-    "version": "3.89.1",
+    "version": "3.89.2",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -4450,7 +4450,7 @@
             "fullClassName": "PhpCsFixer\\Fixer\\Basic\\NoMultipleStatementsPerLineFixer"
         },
         "no_null_property_initialization": {
-            "summary": "Properties MUST not be explicitly initialized with `null` except when they have a type declaration (PHP 7.4).",
+            "summary": "Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4).",
             "codeSamples": [
                 {
                     "from": "<?php\nclass Foo {\n    public $bar = null;\n    public ?string $baz = null;\n    public ?string $baux;\n}\n",
@@ -8658,7 +8658,7 @@
         "strict_comparison": {
             "risky": true,
             "summary": "Comparisons should be strict.",
-            "riskyDescription": "Changing comparisons to strict might change code behavior.",
+            "riskyDescription": "Changing comparisons to strict might change code behaviour.",
             "codeSamples": [
                 {
                     "from": "<?php\n$a = 1== $b;\n",
