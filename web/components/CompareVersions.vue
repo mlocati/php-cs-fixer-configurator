@@ -323,9 +323,10 @@
 import FixerLink from './FixerLink.vue';
 import FixerSetLink from './FixerSetLink.vue';
 import Version from '../Version';
-import { VersionChanges, compareVersions } from '../VersionComparison';
+import VersionComparison, { VersionChanges, compareVersions } from '../VersionComparison';
 import ViewDifference from './ViewDifference.vue';
 import Vue from 'vue';
+import EventBus from "../EventBus";
 
 export default Vue.extend({
     components: {
@@ -346,10 +347,9 @@ export default Vue.extend({
             },
             required: true,
         },
-        initialVersion: {
-            type: Object as (() => Version),
-            required: false,
-            default: undefined,
+        versionComparison: {
+            type: Object as (() => VersionComparison),
+            required: true,
         },
     },
     data: function() {
@@ -361,8 +361,9 @@ export default Vue.extend({
         };
     },
     beforeMount: function() {
-        this.newerVersionIndex = this.initialVersion ? Math.min(Math.max(this.versions.indexOf(this.initialVersion), 0), this.versions.length - 1) : 0;
-        this.olderVersionIndex = this.newerVersionIndex + 1;
+        this.newerVersionIndex = Math.min(Math.max(this.versions.indexOf(this.versionComparison.newerVersion), 0), this.versions.length - 1);
+        this.olderVersionIndex = Math.min(Math.max(this.versions.indexOf(this.versionComparison.olderVersion), 0), this.versions.length - 1);
+
         let newerVersionOptions: Array<any> = [];
         for (let index = 0; index < this.versions.length; index++) {
             newerVersionOptions.push({ value: index, text: this.versions[index].fullVersion, disabled: index === this.versions.length - 1 });
@@ -394,6 +395,9 @@ export default Vue.extend({
     },
     methods: {
         refreshComparison: function() {
+            const comparison = new VersionComparison(this.newerVersion, this.olderVersion);
+            EventBus.$emit('comparison-changed', comparison);
+
             this.changes = null;
             compareVersions(this.newerVersion, this.olderVersion).then(changes => {
                 if (changes.newerVersion === this.newerVersion && changes.olderVersion === this.olderVersion) {

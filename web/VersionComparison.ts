@@ -337,3 +337,41 @@ function sortArrayRecursive(value: any[]): any[] {
     }
     return clone;
 }
+
+export default class VersionComparison {
+    readonly newerVersion: Version;
+    readonly olderVersion: Version;
+    readonly threeDotNotation: string;
+    constructor(newerVersion: Version, olderVersion: Version) {
+        this.newerVersion = newerVersion;
+        this.olderVersion = olderVersion;
+
+        this.threeDotNotation = newerVersion.majorMinorVersion + '...' + olderVersion.majorMinorVersion;
+    }
+    static fromThreeDotNotation(notation: string, versions: Version[]): VersionComparison {
+        const match = notation.match(/^(\d+\.\d+)\.\.\.(\d+\.\d+)$/);
+        if (!match) {
+            throw new Error(
+                `Invalid three-dot notation format: "${notation}". Expected format: "X.Y...A.B" (e.g., "3.91...3.90")`
+            );
+        }
+        const [, newerStr, olderStr] = match;
+        let newerVersionIndex = versions.findIndex(version => version.majorMinorVersion === newerStr);
+        let olderVersionIndex = versions.findIndex(version => version.majorMinorVersion === olderStr);
+        if (newerVersionIndex === -1) {
+            throw new Error(`Version "${newerStr}" not found`);
+        }
+        if (olderVersionIndex === -1) {
+            throw new Error(`Version "${olderStr}" not found`);
+        }
+        if (newerVersionIndex === olderVersionIndex) {
+            throw new Error(`Cannot compare a version with itself: "${newerStr}"`);
+        }
+        if (newerVersionIndex > olderVersionIndex) {
+            [newerVersionIndex, olderVersionIndex] = [olderVersionIndex, newerVersionIndex];
+        }
+        const newerVersion = versions[newerVersionIndex];
+        const olderVersion = versions[olderVersionIndex];
+        return new VersionComparison(newerVersion, olderVersion);
+    }
+}
