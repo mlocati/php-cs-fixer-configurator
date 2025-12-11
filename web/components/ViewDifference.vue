@@ -44,7 +44,7 @@ export default Vue.extend({
     },
     methods: {
         toJSON: function (value: any): string {
-            return JSON.stringify(value, null, 4);
+            return JSON.stringify(value, null, 4) || '';
         },
     },
     computed: {
