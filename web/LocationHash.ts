@@ -1,5 +1,6 @@
 import FixerOrSetInterface from "./FixerOrSetInterface";
 import Version from "./Version";
+import { VersionPair } from "./VersionComparison"
 
 const CHUNK_SEPARATOR: string = '|';
 const KEYVALUE_SEPARATOR: string = ':';
@@ -7,16 +8,24 @@ const CHUNK_VERSION: string = 'version';
 const CHUNK_CONFIGURING: string = 'configurator';
 const CHUNK_FIXER: string = 'fixer';
 const CHUNK_FIXERSET: string = 'fixerset';
+const CHUNK_COMPARISON: string = 'compare';
 
 export class HashData {
     public majorMinorVersion: string = '';
     public configuring: boolean = false;
     public fixerOrSetName: string = '';
-    public static create(version: Version, configuring: boolean = false, fixerOrSet: FixerOrSetInterface | null = null): HashData {
+    public versionPairThreeDotNotation: string = '';
+    public static create(
+        version: Version,
+        configuring: boolean = false,
+        fixerOrSet: FixerOrSetInterface | null = null,
+        versionPair: VersionPair | null = null
+    ): HashData {
         let hashData = new HashData();
         hashData.majorMinorVersion = (fixerOrSet === null ? version : fixerOrSet.version).majorMinorVersion;
         hashData.configuring = configuring;
         hashData.fixerOrSetName = fixerOrSet === null ? '' : fixerOrSet.name;
+        hashData.versionPairThreeDotNotation = versionPair === null ? '' : versionPair.threeDotNotation;
         return hashData;
     }
 }
@@ -57,7 +66,7 @@ function fromLocationHash(hash: string): HashData {
                 }
                 break;
             case CHUNK_FIXERSET:
-                if (value !== null && value.match(/^@\w+$/)) {
+                if (value !== null && value.match(/^@[A-Za-z0-9:.-]+$/)) {
                     if (hashData.fixerOrSetName.length === 0) {
                         hashData.fixerOrSetName = value;
                     } else {
@@ -65,6 +74,14 @@ function fromLocationHash(hash: string): HashData {
                     }
                 } else {
                     console.warn(`Invalid fixer set specification in URL hash: ${value}`);
+                }
+                break;
+            case CHUNK_COMPARISON:
+                if (value !== null && value.match(/^\d+\.\d+\.\.\.\d+\.\d+$/)) {
+                    hashData.versionPairThreeDotNotation = value;
+                }
+                else {
+                    console.warn(`Invalid comparison specification in URL hash: ${value}`);
                 }
                 break;
             default:
@@ -89,6 +106,9 @@ function toHash(hashData: HashData): string {
         } else {
             chunks.push(CHUNK_FIXER + KEYVALUE_SEPARATOR + hashData.fixerOrSetName);
         }
+    }
+    if (hashData.versionPairThreeDotNotation.length !== 0) {
+        chunks.push(CHUNK_COMPARISON + KEYVALUE_SEPARATOR + hashData.versionPairThreeDotNotation);
     }
     return chunks.join(CHUNK_SEPARATOR);
 }
