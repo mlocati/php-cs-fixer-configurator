@@ -338,7 +338,7 @@ function sortArrayRecursive(value: any[]): any[] {
     return clone;
 }
 
-export default class VersionComparison {
+export class VersionPair {
     readonly newerVersion: Version;
     readonly olderVersion: Version;
     readonly threeDotNotation: string;
@@ -348,7 +348,7 @@ export default class VersionComparison {
 
         this.threeDotNotation = newerVersion.majorMinorVersion + '...' + olderVersion.majorMinorVersion;
     }
-    static fromThreeDotNotation(notation: string, versions: Version[]): VersionComparison {
+    static fromThreeDotNotation(notation: string, versions: Version[]): VersionPair {
         const match = notation.match(/^(\d+\.\d+)\.\.\.(\d+\.\d+)$/);
         if (!match) {
             throw new Error(
@@ -372,6 +372,6 @@ export default class VersionComparison {
         }
         const newerVersion = versions[newerVersionIndex];
         const olderVersion = versions[olderVersionIndex];
-        return new VersionComparison(newerVersion, olderVersion);
+        return new VersionPair(newerVersion, olderVersion);
     }
 }

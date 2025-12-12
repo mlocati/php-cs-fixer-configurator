@@ -252,7 +252,7 @@
         </b-modal>
 
         <b-modal
-            v-if="viewingVersionComparison"
+            v-if="viewingVersionPair"
             ref="viewingVersionComparisonModal"
             id="compare-versions"
             title="Compare versions"
@@ -265,7 +265,7 @@
         >
             <compare-versions
                 v-bind:versions="versions"
-                v-bind:version-comparison="viewingVersionComparison"
+                v-bind:version-pair="viewingVersionPair"
             ></compare-versions>
         </b-modal>
         <b-modal
@@ -359,7 +359,7 @@ import ViewFixer from './ViewFixer.vue';
 import ViewFixerSet from './ViewFixerSet.vue';
 import Vue from 'vue';
 import { BModal } from 'bootstrap-vue';
-import VersionComparison from "../VersionComparison";
+import { VersionPair } from "../VersionComparison";
 
 export default Vue.extend({
     components: {
@@ -413,7 +413,7 @@ export default Vue.extend({
                 },
             },
             view: PersistentStorage.getString('view', 'GRID', ['GRID', 'TABLE']),
-            viewingVersionComparison: <VersionComparison | null>null,
+            viewingVersionPair: <VersionPair | null>null,
             viewingFixerOrSetAndFixer: <FixerOrSetAndFixerInterface | null>null,
             viewingFixerOrSetAndFixerPrevious: <FixerOrSetAndFixerInterface[]>[],
             configuringFixer: <Fixer | null>null,
@@ -439,11 +439,11 @@ export default Vue.extend({
         EventBus.$on('configuration-changed', (fixer: Fixer) => {
             this.persistConfiguration();
         });
-        EventBus.$on('comparison-changed', (comparison: VersionComparison) => {
-           this.viewingVersionComparison = comparison;
+        EventBus.$on('version-pair-changed', (versionPair: VersionPair) => {
+           this.viewingVersionPair = versionPair;
         });
         let fixerOrSet: FixerOrSetInterface | null = null;
-        let versionComparison: VersionComparison | null = null;
+        let versionPair: VersionPair | null = null;
         this.visibleFixers = this.configuration.version.fixers;
         if (this.initialLocationHash) {
             this.configuring = this.initialLocationHash.configuring;
@@ -461,20 +461,20 @@ export default Vue.extend({
                     }
                 }
             }
-            if (this.initialLocationHash.versionComparisonThreeDotNotation.length !== 0) {
+            if (this.initialLocationHash.versionPairThreeDotNotation.length !== 0) {
                 try {
-                    versionComparison = VersionComparison.fromThreeDotNotation(this.initialLocationHash.versionComparisonThreeDotNotation, this.versions);
+                    versionPair = VersionPair.fromThreeDotNotation(this.initialLocationHash.versionPairThreeDotNotation, this.versions);
                 } catch (e) {
-                    versionComparison = null;
+                    versionPair = null;
                     console.warn(`Failed to parse comparison versions: ` + e.message);
                 }
             }
         }
-        if (fixerOrSet === null && versionComparison === null) {
+        if (fixerOrSet === null && versionPair === null) {
             this.refreshLocationHash();
         }
-        if (versionComparison !== null) {
-            this.viewVersionComparison(versionComparison);
+        if (versionPair !== null) {
+            this.viewVersionComparison(versionPair);
         }
         if (fixerOrSet !== null) {
             this.viewFixerOrSet({fixerOrSet});
@@ -666,11 +666,11 @@ export default Vue.extend({
             const olderVersionIndex = newerVersionIndex + 1;
             const newerVersion = this.versions[newerVersionIndex];
             const olderVersion = this.versions[olderVersionIndex];
-            const versionComparison = new VersionComparison(newerVersion, olderVersion);
-            this.viewVersionComparison(versionComparison);
+            const versionPair = new VersionPair(newerVersion, olderVersion);
+            this.viewVersionComparison(versionPair);
         },
-        viewVersionComparison: function(data: VersionComparison) {
-            this.viewingVersionComparison = data;
+        viewVersionComparison: function(data: VersionPair) {
+            this.viewingVersionPair = data;
             this.$nextTick(() => {
                 (<BModal>this.$refs.viewingVersionComparisonModal).show();
             });
@@ -692,7 +692,7 @@ export default Vue.extend({
             e.preventDefault();
         },
         hideVersionComparison: function() {
-            this.viewingVersionComparison = null;
+            this.viewingVersionPair = null;
         },
         refreshLocationHash: function() {
             LocationHash.toWindowLocation(
@@ -700,7 +700,7 @@ export default Vue.extend({
                     this.configuration.version,
                     this.configuring,
                     this.viewingFixerOrSetAndFixer ? this.viewingFixerOrSetAndFixer.fixerOrSet : null,
-                    this.viewingVersionComparison ? this.viewingVersionComparison : null,
+                    this.viewingVersionPair ? this.viewingVersionPair : null,
                 )
             );
         },
@@ -765,7 +765,7 @@ export default Vue.extend({
         viewingFixerOrSetAndFixer: function() {
             this.refreshLocationHash();
         },
-        viewingVersionComparison: function() {
+        viewingVersionPair: function() {
             this.refreshLocationHash();
         },
         configuring: function() {

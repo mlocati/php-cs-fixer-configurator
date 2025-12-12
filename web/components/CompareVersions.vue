@@ -323,7 +323,7 @@
 import FixerLink from './FixerLink.vue';
 import FixerSetLink from './FixerSetLink.vue';
 import Version from '../Version';
-import VersionComparison, { VersionChanges, compareVersions } from '../VersionComparison';
+import { VersionChanges, compareVersions, VersionPair } from '../VersionComparison';
 import ViewDifference from './ViewDifference.vue';
 import Vue from 'vue';
 import EventBus from "../EventBus";
@@ -347,8 +347,8 @@ export default Vue.extend({
             },
             required: true,
         },
-        versionComparison: {
-            type: Object as (() => VersionComparison),
+        versionPair: {
+            type: Object as (() => VersionPair),
             required: true,
         },
     },
@@ -361,8 +361,8 @@ export default Vue.extend({
         };
     },
     beforeMount: function() {
-        this.newerVersionIndex = Math.min(Math.max(this.versions.indexOf(this.versionComparison.newerVersion), 0), this.versions.length - 1);
-        this.olderVersionIndex = Math.min(Math.max(this.versions.indexOf(this.versionComparison.olderVersion), 0), this.versions.length - 1);
+        this.newerVersionIndex = Math.min(Math.max(this.versions.indexOf(this.versionPair.newerVersion), 0), this.versions.length - 1);
+        this.olderVersionIndex = Math.min(Math.max(this.versions.indexOf(this.versionPair.olderVersion), 0), this.versions.length - 1);
 
         let newerVersionOptions: Array<any> = [];
         for (let index = 0; index < this.versions.length; index++) {
@@ -395,8 +395,8 @@ export default Vue.extend({
     },
     methods: {
         refreshComparison: function() {
-            const comparison = new VersionComparison(this.newerVersion, this.olderVersion);
-            EventBus.$emit('comparison-changed', comparison);
+            const versionPair = new VersionPair(this.newerVersion, this.olderVersion);
+            EventBus.$emit('version-pair-changed', versionPair);
 
             this.changes = null;
             compareVersions(this.newerVersion, this.olderVersion).then(changes => {

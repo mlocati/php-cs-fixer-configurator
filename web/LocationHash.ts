@@ -1,6 +1,6 @@
 import FixerOrSetInterface from "./FixerOrSetInterface";
 import Version from "./Version";
-import VersionComparison from "./VersionComparison"
+import { VersionPair } from "./VersionComparison"
 
 const CHUNK_SEPARATOR: string = '|';
 const KEYVALUE_SEPARATOR: string = ':';
@@ -14,18 +14,18 @@ export class HashData {
     public majorMinorVersion: string = '';
     public configuring: boolean = false;
     public fixerOrSetName: string = '';
-    public versionComparisonThreeDotNotation: string = '';
+    public versionPairThreeDotNotation: string = '';
     public static create(
         version: Version,
         configuring: boolean = false,
         fixerOrSet: FixerOrSetInterface | null = null,
-        versionComparison: VersionComparison | null = null
+        versionPair: VersionPair | null = null
     ): HashData {
         let hashData = new HashData();
         hashData.majorMinorVersion = (fixerOrSet === null ? version : fixerOrSet.version).majorMinorVersion;
         hashData.configuring = configuring;
         hashData.fixerOrSetName = fixerOrSet === null ? '' : fixerOrSet.name;
-        hashData.versionComparisonThreeDotNotation = versionComparison === null ? '' : versionComparison.threeDotNotation;
+        hashData.versionPairThreeDotNotation = versionPair === null ? '' : versionPair.threeDotNotation;
         return hashData;
     }
 }
@@ -78,7 +78,7 @@ function fromLocationHash(hash: string): HashData {
                 break;
             case CHUNK_COMPARISON:
                 if (value !== null && value.match(/^\d+\.\d+\.\.\.\d+\.\d+$/)) {
-                    hashData.versionComparisonThreeDotNotation = value;
+                    hashData.versionPairThreeDotNotation = value;
                 }
                 else {
                     console.warn(`Invalid comparison specification in URL hash: ${value}`);
@@ -107,8 +107,8 @@ function toHash(hashData: HashData): string {
             chunks.push(CHUNK_FIXER + KEYVALUE_SEPARATOR + hashData.fixerOrSetName);
         }
     }
-    if (hashData.versionComparisonThreeDotNotation.length !== 0) {
-        chunks.push(CHUNK_COMPARISON + KEYVALUE_SEPARATOR + hashData.versionComparisonThreeDotNotation);
+    if (hashData.versionPairThreeDotNotation.length !== 0) {
+        chunks.push(CHUNK_COMPARISON + KEYVALUE_SEPARATOR + hashData.versionPairThreeDotNotation);
     }
     return chunks.join(CHUNK_SEPARATOR);
 }
