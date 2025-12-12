@@ -66,7 +66,7 @@ function fromLocationHash(hash: string): HashData {
                 }
                 break;
             case CHUNK_FIXERSET:
-                if (value !== null && value.match(/^@[A-Za-z0-9:-]+$/)) {
+                if (value !== null && value.match(/^@[A-Za-z0-9:.-]+$/)) {
                     if (hashData.fixerOrSetName.length === 0) {
                         hashData.fixerOrSetName = value;
                     } else {
