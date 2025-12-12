@@ -1,5 +1,5 @@
 {
-    "version": "3.91.2",
+    "version": "3.91.3",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -10651,7 +10651,6 @@
                 "statement_indentation": {
                     "stick_comment_to_next_continuous_control_statement": true
                 },
-                "stringable_for_to_string": null,
                 "switch_continue_to_break": null,
                 "trailing_comma_in_multiline": {
                     "after_heredoc": true,
