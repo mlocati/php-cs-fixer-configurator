@@ -215,7 +215,7 @@ class DataExtractor
                 sort($extends, SORT_NATURAL);
                 $result[$setName]['extends'] = $extends;
             }
-            if ($ruleSet instanceof RuleSet\RuleSetDescriptionInterface) {
+            if ($ruleSet instanceof RuleSet\RuleSetDescriptionInterface || $ruleSet instanceof RuleSet\RuleSetDefinitionInterface) {
                 if ($ruleSet->getDescription() !== '') {
                     $result[$setName]['description'] = $ruleSet->getDescription();
                 }
@@ -223,7 +223,7 @@ class DataExtractor
                     $result[$setName]['risky'] = true;
                 }
             }
-            if ($ruleSet instanceof RuleSet\DeprecatedRuleSetDescriptionInterface) {
+            if ($ruleSet instanceof RuleSet\DeprecatedRuleSetDescriptionInterface || $ruleSet instanceof RuleSet\DeprecatedRuleSetDefinitionInterface) {
                 $result[$setName]['deprecated_switchTo'] = $ruleSet->getSuccessorsNames();
             }
         }

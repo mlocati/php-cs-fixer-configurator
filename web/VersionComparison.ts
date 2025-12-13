@@ -277,6 +277,26 @@ function compareFixerSets(newerFixerSet: FixerSet, olderFixerSet: FixerSet): Dif
     if (newerFixerSet.risky !== olderFixerSet.risky) {
         diffs.push({ description: newerFixerSet.risky ? 'The fixer set became risky' : 'The fixer set is no more risky' });
     }
+    if ((newerFixerSet.deprecated_switchTo !== null) !== (olderFixerSet.deprecated_switchTo !== null)) {
+        switch (newerFixerSet.deprecated_switchTo === null ? -1 : newerFixerSet.deprecated_switchTo.length) {
+            case -1:
+                diffs.push({ description: 'The fixer set is no more deprecated' });
+                break;
+            case 0:
+                diffs.push({ description: 'The fixer set has been deprecated (no successor has been provided)' });
+                break;
+            case 1:
+                diffs.push({ description: `The fixer set has been deprecated in favor of \`${(<FixerSet[]>newerFixerSet.deprecated_switchTo)[0].name}\`` });
+                break;
+            default:
+                let newFixerSetNames: string[] = [];
+                (<FixerSet[]>newerFixerSet.deprecated_switchTo).forEach((fixer: FixerSet): void => {
+                    newFixerSetNames.push(fixer.name);
+                });
+                diffs.push({ description: 'The fixer set has been deprecated in favor of `' + newFixerSetNames.join('`, `') + '`' });
+                break;
+        }
+    }
     newerFixerSet.fixers.forEach((newerDefinition): void => {
         let olderDefinition: any = null;
         olderFixerSet.fixers.some((fixerDefinition): boolean => {
