@@ -9254,11 +9254,16 @@
                 "doctrine_annotation_spaces": {
                     "before_array_assignments_colon": false
                 }
-            }
+            },
+            "description": "Rules covering ``Doctrine`` annotations with configuration based on examples found in `Doctrine Annotation documentation <https:\/\/www.doctrine-project.org\/projects\/doctrine-annotations\/en\/latest\/annotations.html>`_ and `Symfony documentation <https:\/\/symfony.com\/doc\/master\/bundles\/SensioFrameworkExtraBundle\/annotations\/routing.html>`_."
         },
         "@PER": {
             "rules": [],
             "extends": [
+                "@PER-CS"
+            ],
+            "description": "Alias for the newest ``PER-CS`` rules. It is recommended you use ``@PER-CS3.0`` instead if you want to stick with stable ruleset.",
+            "deprecated_switchTo": [
                 "@PER-CS"
             ]
         },
@@ -9266,31 +9271,44 @@
             "rules": [],
             "extends": [
                 "@PER-CS3x0"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style (https:\/\/www.php-fig.org\/per\/coding-style\/)`_, Set is an alias for the latest revision of ``PER-CS`` rules - use it if you always want to be in sync with newest ``PER-CS`` standard."
         },
         "@PER-CS1.0": {
             "rules": [],
             "extends": [
                 "@PSR12"
+            ],
+            "description": "Rules that follow `PER Coding Style 1.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "deprecated_switchTo": [
+                "@PER-CS1x0"
             ]
         },
         "@PER-CS1.0:risky": {
             "rules": [],
             "extends": [
                 "@PSR12:risky"
+            ],
+            "description": "Rules that follow `PER Coding Style 1.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PER-CS1x0:risky"
             ]
         },
         "@PER-CS1x0": {
             "rules": [],
             "extends": [
                 "@PSR12"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style 1.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_."
         },
         "@PER-CS1x0:risky": {
             "rules": [],
             "extends": [
                 "@PSR12:risky"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style 1.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "risky": true
         },
         "@PER-CS2.0": {
             "rules": {
@@ -9369,12 +9387,21 @@
             },
             "extends": [
                 "@PER-CS1x0"
+            ],
+            "description": "Rules that follow `PER Coding Style 2.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "deprecated_switchTo": [
+                "@PER-CS2x0"
             ]
         },
         "@PER-CS2.0:risky": {
             "rules": [],
             "extends": [
                 "@PER-CS1x0:risky"
+            ],
+            "description": "Rules that follow `PER Coding Style 2.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PER-CS2x0:risky"
             ]
         },
         "@PER-CS2x0": {
@@ -9454,13 +9481,16 @@
             },
             "extends": [
                 "@PER-CS1x0"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style 2.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_."
         },
         "@PER-CS2x0:risky": {
             "rules": [],
             "extends": [
                 "@PER-CS1x0:risky"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style 2.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "risky": true
         },
         "@PER-CS3.0": {
             "rules": {
@@ -9475,12 +9505,21 @@
             },
             "extends": [
                 "@PER-CS2x0"
+            ],
+            "description": "Rules that follow `PER Coding Style 3.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "deprecated_switchTo": [
+                "@PER-CS3x0"
             ]
         },
         "@PER-CS3.0:risky": {
             "rules": [],
             "extends": [
                 "@PER-CS2x0:risky"
+            ],
+            "description": "Rules that follow `PER Coding Style 3.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PER-CS3x0:risky"
             ]
         },
         "@PER-CS3x0": {
@@ -9496,35 +9535,48 @@
             },
             "extends": [
                 "@PER-CS2x0"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style 3.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_."
         },
         "@PER-CS3x0:risky": {
             "rules": [],
             "extends": [
                 "@PER-CS2x0:risky"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style 3.0 <https:\/\/www.php-fig.org\/per\/coding-style\/>`_.",
+            "risky": true
         },
         "@PER-CS:risky": {
             "rules": [],
             "extends": [
                 "@PER-CS3x0:risky"
-            ]
+            ],
+            "description": "Rules that follow `PER Coding Style (https:\/\/www.php-fig.org\/per\/coding-style\/)`_, Set is an alias for the latest revision of ``PER-CS`` rules - use it if you always want to be in sync with newest ``PER-CS`` standard.",
+            "risky": true
         },
         "@PER:risky": {
             "rules": [],
             "extends": [
+                "@PER-CS:risky"
+            ],
+            "description": "Alias for the newest ``PER-CS`` risky rules. It is recommended you use ``@PER-CS2.0:risky`` instead if you want to stick with stable ruleset.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PER-CS:risky"
             ]
         },
         "@PHP5x4Migration": {
             "rules": {
                 "array_syntax": null
-            }
+            },
+            "description": "Rules to improve code for PHP 5.4 compatibility."
         },
         "@PHP5x6Migration:risky": {
             "rules": {
                 "pow_to_exponentiation": null
-            }
+            },
+            "description": "Rules to improve code for PHP 5.6 compatibility.",
+            "risky": true
         },
         "@PHP7x0Migration": {
             "rules": {
@@ -9532,7 +9584,8 @@
             },
             "extends": [
                 "@PHP5x4Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.0 compatibility."
         },
         "@PHP7x0Migration:risky": {
             "rules": {
@@ -9548,7 +9601,9 @@
             },
             "extends": [
                 "@PHP5x6Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.0 compatibility.",
+            "risky": true
         },
         "@PHP7x1Migration": {
             "rules": {
@@ -9557,7 +9612,8 @@
             },
             "extends": [
                 "@PHP7x0Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.1 compatibility."
         },
         "@PHP7x1Migration:risky": {
             "rules": {
@@ -9565,7 +9621,9 @@
             },
             "extends": [
                 "@PHP7x0Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.1 compatibility.",
+            "risky": true
         },
         "@PHP7x3Migration": {
             "rules": {
@@ -9582,7 +9640,8 @@
             },
             "extends": [
                 "@PHP7x1Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.3 compatibility."
         },
         "@PHP7x4Migration": {
             "rules": {
@@ -9592,7 +9651,8 @@
             },
             "extends": [
                 "@PHP7x3Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.4 compatibility."
         },
         "@PHP7x4Migration:risky": {
             "rules": {
@@ -9602,7 +9662,9 @@
             },
             "extends": [
                 "@PHP7x1Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 7.4 compatibility.",
+            "risky": true
         },
         "@PHP8x0Migration": {
             "rules": {
@@ -9611,7 +9673,8 @@
             },
             "extends": [
                 "@PHP7x4Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.0 compatibility."
         },
         "@PHP8x0Migration:risky": {
             "rules": {
@@ -9628,7 +9691,9 @@
             },
             "extends": [
                 "@PHP7x4Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.0 compatibility.",
+            "risky": true
         },
         "@PHP8x1Migration": {
             "rules": {
@@ -9636,13 +9701,16 @@
             },
             "extends": [
                 "@PHP8x0Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.1 compatibility."
         },
         "@PHP8x1Migration:risky": {
             "rules": [],
             "extends": [
                 "@PHP8x0Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.1 compatibility.",
+            "risky": true
         },
         "@PHP8x2Migration": {
             "rules": {
@@ -9650,7 +9718,8 @@
             },
             "extends": [
                 "@PHP8x1Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.2 compatibility."
         },
         "@PHP8x2Migration:risky": {
             "rules": {
@@ -9658,19 +9727,24 @@
             },
             "extends": [
                 "@PHP8x1Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.2 compatibility.",
+            "risky": true
         },
         "@PHP8x3Migration": {
             "rules": [],
             "extends": [
                 "@PHP8x2Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.3 compatibility."
         },
         "@PHP8x3Migration:risky": {
             "rules": [],
             "extends": [
                 "@PHP8x2Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.3 compatibility.",
+            "risky": true
         },
         "@PHP8x4Migration": {
             "rules": {
@@ -9679,13 +9753,16 @@
             },
             "extends": [
                 "@PHP8x3Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.4 compatibility."
         },
         "@PHP8x4Migration:risky": {
             "rules": [],
             "extends": [
                 "@PHP8x3Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.4 compatibility.",
+            "risky": true
         },
         "@PHP8x5Migration": {
             "rules": {
@@ -9693,17 +9770,24 @@
             },
             "extends": [
                 "@PHP8x4Migration"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.5 compatibility."
         },
         "@PHP8x5Migration:risky": {
             "rules": [],
             "extends": [
                 "@PHP8x4Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve code for PHP 8.5 compatibility.",
+            "risky": true
         },
         "@PHP54Migration": {
             "rules": [],
             "extends": [
+                "@PHP5x4Migration"
+            ],
+            "description": "Rules to improve code for PHP 5.4 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP5x4Migration"
             ]
         },
@@ -9711,11 +9795,20 @@
             "rules": [],
             "extends": [
                 "@PHP5x6Migration:risky"
+            ],
+            "description": "Rules to improve code for PHP 5.6 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHP5x6Migration:risky"
             ]
         },
         "@PHP70Migration": {
             "rules": [],
             "extends": [
+                "@PHP7x0Migration"
+            ],
+            "description": "Rules to improve code for PHP 7.0 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP7x0Migration"
             ]
         },
@@ -9723,11 +9816,20 @@
             "rules": [],
             "extends": [
                 "@PHP7x0Migration:risky"
+            ],
+            "description": "Rules to improve code for PHP 7.0 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHP7x0Migration:risky"
             ]
         },
         "@PHP71Migration": {
             "rules": [],
             "extends": [
+                "@PHP7x1Migration"
+            ],
+            "description": "Rules to improve code for PHP 7.1 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP7x1Migration"
             ]
         },
@@ -9735,11 +9837,20 @@
             "rules": [],
             "extends": [
                 "@PHP7x1Migration:risky"
+            ],
+            "description": "Rules to improve code for PHP 7.1 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHP7x1Migration:risky"
             ]
         },
         "@PHP73Migration": {
             "rules": [],
             "extends": [
+                "@PHP7x3Migration"
+            ],
+            "description": "Rules to improve code for PHP 7.3 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP7x3Migration"
             ]
         },
@@ -9747,11 +9858,20 @@
             "rules": [],
             "extends": [
                 "@PHP7x4Migration"
+            ],
+            "description": "Rules to improve code for PHP 7.4 compatibility.",
+            "deprecated_switchTo": [
+                "@PHP7x4Migration"
             ]
         },
         "@PHP74Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHP7x4Migration:risky"
+            ],
+            "description": "Rules to improve code for PHP 7.4 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHP7x4Migration:risky"
             ]
         },
@@ -9759,11 +9879,20 @@
             "rules": [],
             "extends": [
                 "@PHP8x0Migration"
+            ],
+            "description": "Rules to improve code for PHP 8.0 compatibility.",
+            "deprecated_switchTo": [
+                "@PHP8x0Migration"
             ]
         },
         "@PHP80Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHP8x0Migration:risky"
+            ],
+            "description": "Rules to improve code for PHP 8.0 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHP8x0Migration:risky"
             ]
         },
@@ -9771,11 +9900,19 @@
             "rules": [],
             "extends": [
                 "@PHP8x1Migration"
+            ],
+            "description": "Rules to improve code for PHP 8.1 compatibility.",
+            "deprecated_switchTo": [
+                "@PHP8x1Migration"
             ]
         },
         "@PHP82Migration": {
             "rules": [],
             "extends": [
+                "@PHP8x2Migration"
+            ],
+            "description": "Rules to improve code for PHP 8.2 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP8x2Migration"
             ]
         },
@@ -9783,11 +9920,20 @@
             "rules": [],
             "extends": [
                 "@PHP8x2Migration:risky"
+            ],
+            "description": "Rules to improve code for PHP 8.2 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHP8x2Migration:risky"
             ]
         },
         "@PHP83Migration": {
             "rules": [],
             "extends": [
+                "@PHP8x3Migration"
+            ],
+            "description": "Rules to improve code for PHP 8.3 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP8x3Migration"
             ]
         },
@@ -9795,11 +9941,19 @@
             "rules": [],
             "extends": [
                 "@PHP8x4Migration"
+            ],
+            "description": "Rules to improve code for PHP 8.4 compatibility.",
+            "deprecated_switchTo": [
+                "@PHP8x4Migration"
             ]
         },
         "@PHP85Migration": {
             "rules": [],
             "extends": [
+                "@PHP8x5Migration"
+            ],
+            "description": "Rules to improve code for PHP 8.5 compatibility.",
+            "deprecated_switchTo": [
                 "@PHP8x5Migration"
             ]
         },
@@ -9808,7 +9962,9 @@
                 "php_unit_dedicate_assert": {
                     "target": "3.0"
                 }
-            }
+            },
+            "description": "Rules to improve tests code for PHPUnit 3.0 compatibility.",
+            "risky": true
         },
         "@PHPUnit3x2Migration:risky": {
             "rules": {
@@ -9818,7 +9974,9 @@
             },
             "extends": [
                 "@PHPUnit3x0Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 3.2 compatibility.",
+            "risky": true
         },
         "@PHPUnit3x5Migration:risky": {
             "rules": {
@@ -9828,7 +9986,9 @@
             },
             "extends": [
                 "@PHPUnit3x2Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 3.5 compatibility.",
+            "risky": true
         },
         "@PHPUnit4x3Migration:risky": {
             "rules": {
@@ -9838,7 +9998,9 @@
             },
             "extends": [
                 "@PHPUnit3x5Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 4.3 compatibility.",
+            "risky": true
         },
         "@PHPUnit4x8Migration:risky": {
             "rules": {
@@ -9848,7 +10010,9 @@
             },
             "extends": [
                 "@PHPUnit4x3Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 4.8 compatibility.",
+            "risky": true
         },
         "@PHPUnit5x0Migration:risky": {
             "rules": {
@@ -9858,7 +10022,9 @@
             },
             "extends": [
                 "@PHPUnit4x8Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.0 compatibility.",
+            "risky": true
         },
         "@PHPUnit5x2Migration:risky": {
             "rules": {
@@ -9868,7 +10034,9 @@
             },
             "extends": [
                 "@PHPUnit5x0Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.2 compatibility.",
+            "risky": true
         },
         "@PHPUnit5x4Migration:risky": {
             "rules": {
@@ -9878,7 +10046,9 @@
             },
             "extends": [
                 "@PHPUnit5x2Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.4 compatibility.",
+            "risky": true
         },
         "@PHPUnit5x5Migration:risky": {
             "rules": {
@@ -9888,7 +10058,9 @@
             },
             "extends": [
                 "@PHPUnit5x4Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.5 compatibility.",
+            "risky": true
         },
         "@PHPUnit5x6Migration:risky": {
             "rules": {
@@ -9901,7 +10073,9 @@
             },
             "extends": [
                 "@PHPUnit5x5Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.6 compatibility.",
+            "risky": true
         },
         "@PHPUnit5x7Migration:risky": {
             "rules": {
@@ -9911,7 +10085,9 @@
             },
             "extends": [
                 "@PHPUnit5x6Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.7 compatibility.",
+            "risky": true
         },
         "@PHPUnit6x0Migration:risky": {
             "rules": {
@@ -9921,7 +10097,9 @@
             },
             "extends": [
                 "@PHPUnit5x7Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 6.0 compatibility.",
+            "risky": true
         },
         "@PHPUnit7x5Migration:risky": {
             "rules": {
@@ -9931,7 +10109,9 @@
             },
             "extends": [
                 "@PHPUnit6x0Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 7.5 compatibility.",
+            "risky": true
         },
         "@PHPUnit8x4Migration:risky": {
             "rules": {
@@ -9941,7 +10121,9 @@
             },
             "extends": [
                 "@PHPUnit7x5Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 8.4 compatibility.",
+            "risky": true
         },
         "@PHPUnit9x1Migration:risky": {
             "rules": {
@@ -9949,7 +10131,9 @@
             },
             "extends": [
                 "@PHPUnit8x4Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 9.1 compatibility.",
+            "risky": true
         },
         "@PHPUnit10x0Migration:risky": {
             "rules": {
@@ -9959,11 +10143,18 @@
             },
             "extends": [
                 "@PHPUnit9x1Migration:risky"
-            ]
+            ],
+            "description": "Rules to improve tests code for PHPUnit 10.0 compatibility.",
+            "risky": true
         },
         "@PHPUnit30Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit3x0Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 3.0 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit3x0Migration:risky"
             ]
         },
@@ -9971,11 +10162,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit3x2Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 3.2 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit3x2Migration:risky"
             ]
         },
         "@PHPUnit35Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit3x5Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 3.5 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit3x5Migration:risky"
             ]
         },
@@ -9983,11 +10184,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit4x3Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 4.3 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit4x3Migration:risky"
             ]
         },
         "@PHPUnit48Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit4x8Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 4.8 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit4x8Migration:risky"
             ]
         },
@@ -9995,11 +10206,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit5x0Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.0 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit5x0Migration:risky"
             ]
         },
         "@PHPUnit52Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit5x2Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.2 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit5x2Migration:risky"
             ]
         },
@@ -10007,11 +10228,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit5x4Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.4 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit5x4Migration:risky"
             ]
         },
         "@PHPUnit55Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit5x5Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.5 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit5x5Migration:risky"
             ]
         },
@@ -10019,11 +10250,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit5x6Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.6 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit5x6Migration:risky"
             ]
         },
         "@PHPUnit57Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit5x7Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 5.7 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit5x7Migration:risky"
             ]
         },
@@ -10031,11 +10272,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit6x0Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 6.0 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit6x0Migration:risky"
             ]
         },
         "@PHPUnit75Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit7x5Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 7.5 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit7x5Migration:risky"
             ]
         },
@@ -10043,11 +10294,21 @@
             "rules": [],
             "extends": [
                 "@PHPUnit8x4Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 8.4 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit8x4Migration:risky"
             ]
         },
         "@PHPUnit91Migration:risky": {
             "rules": [],
             "extends": [
+                "@PHPUnit9x1Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 9.1 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
                 "@PHPUnit9x1Migration:risky"
             ]
         },
@@ -10055,13 +10316,19 @@
             "rules": [],
             "extends": [
                 "@PHPUnit10x0Migration:risky"
+            ],
+            "description": "Rules to improve tests code for PHPUnit 10.0 compatibility.",
+            "risky": true,
+            "deprecated_switchTo": [
+                "@PHPUnit10x0Migration:risky"
             ]
         },
         "@PSR1": {
             "rules": {
                 "encoding": null,
                 "full_opening_tag": null
-            }
+            },
+            "description": "Rules that follow `PSR-1 <https:\/\/www.php-fig.org\/psr\/psr-1\/>`_ standard."
         },
         "@PSR2": {
             "rules": {
@@ -10145,7 +10412,8 @@
             },
             "extends": [
                 "@PSR1"
-            ]
+            ],
+            "description": "Rules that follow `PSR-2 <https:\/\/www.php-fig.org\/psr\/psr-2\/>`_ standard."
         },
         "@PSR12": {
             "rules": {
@@ -10244,13 +10512,16 @@
             },
             "extends": [
                 "@PSR2"
-            ]
+            ],
+            "description": "Rules that follow `PSR-12 <https:\/\/www.php-fig.org\/psr\/psr-12\/>`_ standard."
         },
         "@PSR12:risky": {
             "rules": {
                 "no_trailing_whitespace_in_string": null,
                 "no_unreachable_default_argument_value": null
-            }
+            },
+            "description": "Rules that follow `PSR-12 <https:\/\/www.php-fig.org\/psr\/psr-12\/>`_ standard.",
+            "risky": true
         },
         "@PhpCsFixer": {
             "rules": {
@@ -10366,7 +10637,8 @@
             "extends": [
                 "@PER-CS",
                 "@Symfony"
-            ]
+            ],
+            "description": "Rules recommended by ``PHP CS Fixer`` team, highly opinionated. Extends ``@PER-CS`` and ``@Symfony``."
         },
         "@PhpCsFixer:risky": {
             "rules": {
@@ -10409,7 +10681,9 @@
             "extends": [
                 "@PER-CS:risky",
                 "@Symfony:risky"
-            ]
+            ],
+            "description": "Rules recommended by ``PHP CS Fixer`` team, highly opinionated. Extends ``@PER-CS:risky`` and ``@Symfony:risky``.",
+            "risky": true
         },
         "@Symfony": {
             "rules": {
@@ -10674,7 +10948,8 @@
             },
             "extends": [
                 "@PER-CS3x0"
-            ]
+            ],
+            "description": "Rules that follow the official `Symfony Coding Standards <https:\/\/symfony.com\/doc\/current\/contributing\/code\/standards.html>`_. Extends ``@PER-CS``."
         },
         "@Symfony:risky": {
             "rules": {
@@ -10727,14 +11002,17 @@
             "extends": [
                 "@PHP5x6Migration:risky",
                 "@PSR12:risky"
-            ]
+            ],
+            "description": "Rules that follow the official `Symfony Coding Standards <https:\/\/symfony.com\/doc\/current\/contributing\/code\/standards.html>`_. Extends ``@PER-CS:risky``.",
+            "risky": true
         },
         "@auto": {
             "rules": [],
             "extends": [
                 "@PER-CS",
                 "@autoPHPMigration"
-            ]
+            ],
+            "description": "Default rule set. Applies newest ``PER-CS`` and optimizations for ``PHP``, based on project's ``composer.json`` file."
         },
         "@auto:risky": {
             "rules": [],
@@ -10742,25 +11020,32 @@
                 "@PER-CS:risky",
                 "@autoPHPMigration:risky",
                 "@autoPHPUnitMigration:risky"
-            ]
+            ],
+            "description": "Default (risky) rule set. Applies newest ``PER-CS`` and optimizations for ``PHP`` and ``PHPUnit``, based on project's ``composer.json`` file.",
+            "risky": true
         },
         "@autoPHPMigration": {
             "rules": [],
             "extends": [
                 "@PHP7x4Migration"
-            ]
+            ],
+            "description": "Migration rules to improve code towards the minimum ``PHP`` supported by your project (taken from ``composer.json`` file)."
         },
         "@autoPHPMigration:risky": {
             "rules": [],
             "extends": [
                 "@PHP7x4Migration:risky"
-            ]
+            ],
+            "description": "Migration rules to improve code towards the minimum ``PHP`` supported by your project (taken from ``composer.json`` file).",
+            "risky": true
         },
         "@autoPHPUnitMigration:risky": {
             "rules": [],
             "extends": [
                 "@PHPUnit9x1Migration:risky"
-            ]
+            ],
+            "description": "Migration rules to improve test code towards the minimum ``PHPUnit`` supported by your project (taken from ``composer.json`` file).",
+            "risky": true
         }
     }
 }
