@@ -71,6 +71,7 @@
                             size="sm"
                             v-if="configuration.version.fixerSets.length !== 0"
                             v-bind:disabled="busy"
+                            id="search-by-fixerset"
                         >
                             <b-dropdown-item>
                                 <div v-on:click.prevent.stop="toggleSearchFixerSet(null)">
@@ -84,6 +85,7 @@
                             <b-dropdown-divider></b-dropdown-divider>
                             <b-dropdown-item
                                 v-for="fixerSet in configuration.version.fixerSets"
+                                v-if="!fixerSet.deprecated_switchTo"
                                 v-bind:key="fixerSet.uniqueKey"
                             >
                                 <div v-on:click.prevent.stop="toggleSearchFixerSet(fixerSet)">
@@ -92,6 +94,31 @@
                                         v-bind:class="searchFixerSets.indexOf(fixerSet) === -1 ? 'fa-square' : 'fa-check-square'"
                                     ></i>
                                     {{ fixerSet.name }}
+                                </div>
+                            </b-dropdown-item>
+                            <b-dropdown-item
+                                v-for="fixerSet in configuration.version.fixerSets"
+                                v-if="fixerSet.deprecated_switchTo"
+                                v-bind:key="fixerSet.uniqueKey"
+                            >
+                                <div v-on:click.prevent.stop="toggleSearchFixerSet(fixerSet)">
+                                    <i
+                                        class="far"
+                                        v-bind:class="searchFixerSets.indexOf(fixerSet) === -1 ? 'fa-square' : 'fa-check-square'"
+                                    ></i>
+                                    {{ fixerSet.name }}
+                                    <i
+                                        v-if="fixerSet.deprecated_switchTo.length === 0"
+                                        class="fas fa-thumbs-down"
+                                        v-b-tooltip
+                                        title="Deprecated (no successor defined)"
+                                    ></i>
+                                    <i
+                                        v-else
+                                        class="fas fa-thumbs-down"
+                                        v-b-tooltip
+                                        v-bind:title="'Deprecated: switch to ' + fixerSet.deprecated_switchToNames.join(', ')"
+                                    ></i>
                                 </div>
                             </b-dropdown-item>
                         </b-dropdown>
@@ -123,12 +150,14 @@
                             right
                             size="sm"
                             v-bind:disabled="busy"
+                            id="configure-by-fixerset"
                         >
                             <template slot="button-content">
                                 <i class="fas fa-plus"></i>
                             </template>
                             <b-dropdown-item
                                 v-for="fixerSet in unselectedFixerSets"
+                                v-if="!fixerSet.deprecated_switchTo"
                                 v-bind:key="fixerSet.uniqueKey"
                             >
                                 <div v-on:click.prevent.stop>
@@ -148,6 +177,42 @@
                                         <i class="fas fa-minus"></i>
                                     </b-button>
                                     {{ fixerSet.name }}
+                                </div>
+                            </b-dropdown-item>
+                            <b-dropdown-item
+                                v-for="fixerSet in unselectedFixerSets"
+                                v-if="fixerSet.deprecated_switchTo"
+                                v-bind:key="fixerSet.uniqueKey"
+                            >
+                                <div v-on:click.prevent.stop>
+                                    <b-button
+                                        variant="success"
+                                        size="sm"
+                                        v-on:click.prevent.stop="includeFixerSet(fixerSet)"
+                                    >
+                                        <i class="fas fa-plus"></i>
+                                    </b-button>
+                                    <b-button
+                                        variant="danger"
+                                        size="sm"
+                                        v-if="configuration.fixerSets.length"
+                                        v-on:click.prevent.stop="excludeFixerSet(fixerSet)"
+                                    >
+                                        <i class="fas fa-minus"></i>
+                                    </b-button>
+                                    {{ fixerSet.name }}
+                                    <i
+                                        v-if="fixerSet.deprecated_switchTo.length === 0"
+                                        class="fas fa-thumbs-down"
+                                        v-b-tooltip
+                                        title="Deprecated (no successor defined)"
+                                    ></i>
+                                    <i
+                                        v-else
+                                        class="fas fa-thumbs-down"
+                                        v-b-tooltip
+                                        v-bind:title="'Deprecated: switch to ' + fixerSet.deprecated_switchToNames.join(', ')"
+                                    ></i>
                                 </div>
                             </b-dropdown-item>
                         </b-dropdown>
@@ -782,3 +847,9 @@ export default Vue.extend({
     },
 });
 </script>
+<style lang="css">
+    #search-by-fixerset .dropdown-menu, #configure-by-fixerset .dropdown-menu {
+        max-height: calc(100vh - 5rem);
+        overflow-y: auto;
+    }
+</style>
