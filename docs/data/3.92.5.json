@@ -1,5 +1,5 @@
 {
-    "version": "3.92.3",
+    "version": "3.92.5",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -9285,7 +9285,7 @@
             "extends": [
                 "@PER-CS3x0"
             ],
-            "description": "Rules that follow `PER Coding Style (https:\/\/www.php-fig.org\/per\/coding-style\/)`_, Set is an alias for the latest revision of ``PER-CS`` rules - use it if you always want to be in sync with newest ``PER-CS`` standard."
+            "description": "Rules that follow `PER Coding Style <https:\/\/www.php-fig.org\/per\/coding-style\/>`_, Set is an alias for the latest revision of ``PER-CS`` rules - use it if you always want to be in sync with newest ``PER-CS`` standard."
         },
         "@PER-CS1.0": {
             "rules": [],
@@ -9564,7 +9564,7 @@
             "extends": [
                 "@PER-CS3x0:risky"
             ],
-            "description": "Rules that follow `PER Coding Style (https:\/\/www.php-fig.org\/per\/coding-style\/)`_, Set is an alias for the latest revision of ``PER-CS`` rules - use it if you always want to be in sync with newest ``PER-CS`` standard.",
+            "description": "Rules that follow `PER Coding Style <https:\/\/www.php-fig.org\/per\/coding-style\/>`_, Set is an alias for the latest revision of ``PER-CS`` rules - use it if you always want to be in sync with newest ``PER-CS`` standard.",
             "risky": true
         },
         "@PER:risky": {
