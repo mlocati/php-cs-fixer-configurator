@@ -55,6 +55,10 @@
                     v-model="importFixerClasses"
                     v-bind:disabled="!exporter.supportImportFixerClasses"
                 >Import fixer classes</b-form-checkbox>
+                <b-form-checkbox
+                    v-model="checkMinVersion"
+                    v-bind:disabled="!exporter.supportCheckMinVersion"
+                >Check minimum PHP CS Fixer version</b-form-checkbox>
             </div>
         </b-form-group>
 
@@ -90,12 +94,12 @@ import Exporters from '../Export/Exporters';
 import * as PersistentStorage from '../PersistentStorage';
 import Prism from './Prism.vue';
 import Vue from 'vue';
-import { setTimeout } from 'timers';
 
 const LS_EXPORTER = 'export.exporter';
 const LS_EXPAND_FIXERSETS = 'export.expandFixerSets';
 const LS_EXPORT_FIXER_DESCRIPTIONS = 'export.exportFixerDescriptions';
 const LS_IMPORT_FIXER_CLASSES = 'export.importFixerClasses';
+const LS_CHECK_MIN_VERSION = 'export.checkMinVersion';
 
 export default Vue.extend({
     components: {
@@ -122,6 +126,7 @@ export default Vue.extend({
             expandFixerSets: PersistentStorage.getBoolean(LS_EXPAND_FIXERSETS),
             exportFixerDescriptions: PersistentStorage.getBoolean(LS_EXPORT_FIXER_DESCRIPTIONS),
             importFixerClasses: PersistentStorage.getBoolean(LS_IMPORT_FIXER_CLASSES),
+            checkMinVersion: PersistentStorage.getBoolean(LS_CHECK_MIN_VERSION),
         };
     },
     mounted: function() {
@@ -156,7 +161,11 @@ export default Vue.extend({
             this.refreshOutput(false);
         },
         importFixerClasses: function() {
-            PersistentStorage.setBoolean(LS_IMPORT_FIXER_CLASSES, this.importFixerClasses),
+            PersistentStorage.setBoolean(LS_IMPORT_FIXER_CLASSES, this.importFixerClasses);
+            this.refreshOutput(false);
+        },
+        checkMinVersion: function() {
+            PersistentStorage.setBoolean(LS_CHECK_MIN_VERSION, this.checkMinVersion);
             this.refreshOutput(false);
         },
     },
@@ -180,6 +189,7 @@ export default Vue.extend({
                     version: this.configuration.version,
                     exportFixerDescriptions: this.exportFixerDescriptions,
                     importFixerClasses: this.importFixerClasses,
+                    checkMinVersion: this.checkMinVersion,
                 });
                 this.outputError = null;
             } catch (e) {
