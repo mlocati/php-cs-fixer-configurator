@@ -5,6 +5,7 @@ export interface RenderOptions {
     readonly version: Version;
     readonly exportFixerDescriptions: boolean;
     readonly importFixerClasses?: boolean;
+    readonly checkMinVersion?: boolean;
 }
 
 interface ExporterInterface {
@@ -37,6 +38,11 @@ interface ExporterInterface {
      * Does this exporter support importing fixer classes?
      */
     readonly supportImportFixerClasses?: boolean;
+
+    /**
+     * Does this exporter support checking the minimum PHP CS Fixer version?
+     */
+    readonly supportCheckMinVersion?: boolean;
 
     /**
      * Generate the text representing the configuration

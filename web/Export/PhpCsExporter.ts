@@ -14,6 +14,8 @@ export default class PhpCsExporter implements ExporterInterface {
 
     readonly supportFixerDescriptions: boolean = true;
 
+    readonly supportCheckMinVersion: boolean = true;
+
     /**
      * Generate the text representing the configuration
      * @param version 
@@ -25,14 +27,33 @@ export default class PhpCsExporter implements ExporterInterface {
         const LINE_ENDING = '\n';
         let lines: string[] = [
             '<?php',
+            '',
+            'declare(strict_types=1);',
+            '',
             '/*',
             ' * This document has been generated with',
             ' * https://mlocati.github.io/php-cs-fixer-configurator/#version:' + configuration.version + '|configurator',
             ' * you can change this configuration by importing this file.',
             ' */',
+            '',
+        ];
+        if (options.checkMinVersion) {
+            lines.push(
+                "if (!defined('PhpCsFixer\\\\Console\\\\Application::VERSION')) {",
+                INDENT + 'fwrite(STDERR, "Your version of PHP CS Fixer is too old: please upgrade it\\n");',
+                INDENT + 'exit(1);',
+                '}',
+                "if (version_compare(PhpCsFixer\\Console\\Application::VERSION, '" + configuration.version + "') < 0) {",
+                INDENT + 'fprintf(STDERR, "Your version of PHP CS Fixer (%s) is too old: please upgrade it\\n", PhpCsFixer\\Console\\Application::VERSION);',
+                INDENT + 'exit(1);',
+                '}',
+                '',
+            );
+        }
+        lines.push(
             '$config = new PhpCsFixer\\Config();',
             'return $config'
-        ];
+        );
         if (configuration.risky) {
             lines.push(INDENT + '->setRiskyAllowed(true)');
         }
