@@ -1,5 +1,5 @@
 {
-    "version": "3.95.26",
+    "version": "3.95.27",
     "indent": "    ",
     "lineEnding": "\n",
     "fixers": {
@@ -2548,6 +2548,13 @@
                 {
                     "from": "<?php\n\nnamespace Foo\\Test;\n\nclass Foo extends \\Other\\BaseClass implements \\Other\\Interface1, \\Other\\Interface2\n{\n    \/** @var \\Other\\PropertyPhpDoc *\/\n    private $array;\n    public function __construct(\\Other\\FunctionArgument $arg) {}\n    public function foo(): \\Other\\FunctionReturnType\n    {\n        try {\n            \\Other\\StaticFunctionCall::bar();\n        } catch (\\Other\\CaughtThrowable $e) {}\n    }\n}\n",
                     "to": "<?php\n\nnamespace Foo\\Test;\nuse Other\\BaseClass;\nuse Other\\CaughtThrowable;\nuse Other\\FunctionArgument;\nuse Other\\FunctionReturnType;\nuse Other\\Interface1;\nuse Other\\Interface2;\nuse Other\\PropertyPhpDoc;\nuse Other\\StaticFunctionCall;\n\nclass Foo extends BaseClass implements Interface1, Interface2\n{\n    \/** @var PropertyPhpDoc *\/\n    private $array;\n    public function __construct(FunctionArgument $arg) {}\n    public function foo(): FunctionReturnType\n    {\n        try {\n            StaticFunctionCall::bar();\n        } catch (CaughtThrowable $e) {}\n    }\n}\n",
+                    "configuration": {
+                        "import_symbols": true
+                    }
+                },
+                {
+                    "from": "<?php\n\nnamespace Foo\\Test;\n\n#[\\Some\\Attribute]\nclass Foo\n{\n}\n",
+                    "to": "<?php\n\nnamespace Foo\\Test;\nuse Some\\Attribute;\n\n#[Attribute]\nclass Foo\n{\n}\n",
                     "configuration": {
                         "import_symbols": true
                     }
@@ -8120,7 +8127,7 @@
             "codeSamples": [
                 {
                     "from": "<?php\nif ($foo) { return true; } return false;\n",
-                    "to": "<?php\nreturn (bool) ($foo)      ;\n"
+                    "to": "<?php\nreturn (bool) ($foo);\n"
                 }
             ],
             "fullClassName": "PhpCsFixer\\Fixer\\ControlStructure\\SimplifiedIfReturnFixer"
